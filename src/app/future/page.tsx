@@ -1,8 +1,9 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Line, LineChart, ResponsiveContainer, CartesianGrid, XAxis, YAxis } from "recharts"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { Line, LineChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { motion } from "motion/react";
 
 function getPredictionData() {
   const predictionData = [];
@@ -20,7 +21,7 @@ export default function Predictions() {
   const predictionData = getPredictionData();
 
   return (
-    <div className="grid gap-4">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid gap-4">
       <Card>
         <CardHeader>
           <CardTitle>Energy Consumption Prediction</CardTitle>
@@ -62,7 +63,7 @@ export default function Predictions() {
           </ChartContainer>
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   )
 }
 

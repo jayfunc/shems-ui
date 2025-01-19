@@ -30,7 +30,7 @@ export function AddressBar() {
             return (
               <BreadcrumbItem key={value}>
                 <BreadcrumbSeparator />
-                <BreadcrumbLink href={path}>{label}</BreadcrumbLink>
+                <Link href={path}>{label}</Link>
               </BreadcrumbItem>
             );
           })}

@@ -1,4 +1,4 @@
-import { Calendar, ChartCandlestick, ChevronUp, CircuitBoard, Home, Inbox, Search, Settings, TrendingUpDown, User2 } from "lucide-react"
+import { ChartCandlestick, ChevronUp, CircuitBoard, Home, Settings, TrendingUpDown, User2 } from "lucide-react"
 
 import {
   Sidebar,
@@ -6,16 +6,13 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./dropdown-menu"
 import Link from "next/link"
-import Image from "next/image"
 import { Label } from "./label"
 
 // Menu items.

@@ -1,9 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-
 import { Bar, BarChart, XAxis, YAxis } from "recharts"
-
 import {
 	ChartConfig,
 	ChartContainer,
@@ -14,7 +12,8 @@ import EquipmentService from "@/app/services/equipment"
 import { Equipment } from "@/app/models/equipment"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import UotPriceChart from "./uot-price-chart"
+import UotPriceChart from "./uot-price-chart";
+import { motion } from "motion/react";
 
 export default function UsageSummaryPage() {
 	const [data, setData] = useState<Equipment[]>([]);
@@ -26,7 +25,7 @@ export default function UsageSummaryPage() {
 	}, []);
 
 	return (
-		<div className="grid md:grid-cols-1 lg:grid-cols-2 gap-4">
+		<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid md:grid-cols-1 lg:grid-cols-2 gap-4">
 			<Card>
 				<CardHeader>
 					<CardTitle>Usage summary</CardTitle>
@@ -81,6 +80,6 @@ export default function UsageSummaryPage() {
 					</Card>
 				</CardContent>
 			</Card>
-		</div>
+		</motion.div>
 	)
 }

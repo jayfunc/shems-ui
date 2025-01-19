@@ -3,7 +3,8 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { ArrowLeftRight, Check, X } from 'lucide-react'
+import { ArrowLeftRight, Check, X } from 'lucide-react';
+import { motion } from "framer-motion";
 
 const trades = [
   {
@@ -31,7 +32,7 @@ const trades = [
 
 export default function Trading() {
   return (
-    <div className="grid gap-4">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid gap-4">
       <Card>
         <CardHeader>
           <CardTitle>P2P Energy Trading</CardTitle>
@@ -55,9 +56,8 @@ export default function Trading() {
                   <TableCell>{trade.amount}</TableCell>
                   <TableCell>{trade.price}</TableCell>
                   <TableCell>
-                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                      trade.status === "Completed" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
-                    }`}>
+                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${trade.status === "Completed" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
+                      }`}>
                       {trade.status}
                     </span>
                   </TableCell>
@@ -93,7 +93,7 @@ export default function Trading() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   )
 }
 

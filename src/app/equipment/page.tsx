@@ -10,10 +10,13 @@ import EquipmentService from "../services/equipment"
 import { Equipment } from "../models/equipment"
 import { useEffect, useState } from "react"
 import { Plus } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { DialogHeader, DialogFooter, DialogDescription, DialogContent, DialogTrigger, Dialog, DialogTitle } from "@/components/ui/dialog";
+import { motion } from "motion/react"
 
 function EquipmentGrid({ equipment }: { equipment: any }) {
   return (
-    <div >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       {Object.keys(equipment).toSorted().map((key) => (
         <div key={key}>
           <CardHeader className="pl-0 mt-4">
@@ -43,7 +46,7 @@ function EquipmentGrid({ equipment }: { equipment: any }) {
           </div>
         </div>
       ))}
-    </div>
+    </motion.div>
   );
 }
 
@@ -57,7 +60,7 @@ export default function EquipmentPage() {
   }, []);
 
   return (
-    <div className="gap-4">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="gap-4">
       <Card>
         <CardContent>
           <Tabs defaultValue="area">
@@ -76,7 +79,37 @@ export default function EquipmentPage() {
                   <TabsTrigger value="area">Area</TabsTrigger>
                   <TabsTrigger value="usage">Usage</TabsTrigger>
                 </TabsList>
-                <Button><Plus />New equipment</Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button><Plus />New equipment</Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Nwe equipment</DialogTitle>
+                      <DialogDescription>
+                        Fill in the form below to create a new equipment.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="name" className="text-right">
+                          Name
+                        </Label>
+                        <Input id="name" value="Oven" className="col-span-3" />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="area" className="text-right">
+                          Area
+                        </Label>
+                        <Input id="area" value="Kitchen" className="col-span-3" />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button type="submit">Save</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+
               </div>
             </CardHeader>
             <TabsContent value="area">
@@ -88,11 +121,6 @@ export default function EquipmentPage() {
           </Tabs>
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   )
 }
-
-function setData(data: Equipment[]) {
-  throw new Error("Function not implemented.")
-}
-

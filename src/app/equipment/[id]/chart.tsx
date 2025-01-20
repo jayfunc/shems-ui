@@ -11,7 +11,7 @@ import {
 import { Usage } from "@/app/models/usage";
 
 function getUsage(): Usage[] {
-	let usage: Usage[] = [];
+	const usage: Usage[] = [];
 	for (let i = 0; i < 12; i++) {
 		usage.push({ month: `${i + 1}`, usage: `${Math.floor(Math.random() * 1000)}` });
 	}

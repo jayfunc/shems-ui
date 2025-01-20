@@ -6,8 +6,8 @@ import { motion } from 'motion/react';
 import SettingsService from '@/app/services/settings';
 
 export function LoadingPlaceholder({ children }: { children: React.ReactNode }) {
-	const [isVisible, setIsVisible] = React.useState(false);
-	SettingsService.initDarkMode();
+	// const [isVisible, setIsVisible] = React.useState(false);
+	const [isVisible] = React.useState(false);
 
 	// Bad performance on commtented lines,
 	// and error may occur when using them
@@ -16,6 +16,7 @@ export function LoadingPlaceholder({ children }: { children: React.ReactNode }) 
 			// setIsVisible(true);
 		},
 		onRouteChangeComplete: () => {
+			SettingsService.initDarkMode();
 			// setIsVisible(false);
 		},
 	});

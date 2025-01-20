@@ -1,4 +1,4 @@
 const baseUri: string = "https://api.example.com";
-export const useMock: Boolean = true;
+export const useMock: boolean = true;
 
 export default baseUri;

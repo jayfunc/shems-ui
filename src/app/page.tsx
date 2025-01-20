@@ -1,11 +1,10 @@
 "use client"
 
-import { Battery, BatteryCharging, BatteryFull, BatteryLow, BatteryMedium, BatteryMediumIcon, Home, Sun, UtilityPole, Wind, Zap } from "lucide-react"
+import { Battery, BatteryCharging, Home, Sun, UtilityPole } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { motion } from "motion/react"
-import SettingsService from "./services/settings"
 
 const energyData = [
   { time: "00:00", production: 0, consumption: 2, storage: 80 },

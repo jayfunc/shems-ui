@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input"
 import { DialogHeader, DialogFooter, DialogDescription, DialogContent, DialogTrigger, Dialog, DialogTitle } from "@/components/ui/dialog";
 import { motion } from "motion/react"
 
-function EquipmentGrid({ equipment }: { equipment: any }) {
+function EquipmentGrid({ equipment }: { equipment: Partial<Record<string, Equipment[]>> }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       {Object.keys(equipment).toSorted().map((key) => (
@@ -23,7 +23,7 @@ function EquipmentGrid({ equipment }: { equipment: any }) {
             <CardTitle>{key}</CardTitle>
           </CardHeader>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {equipment[key].map((item: Equipment) => (
+            {equipment[key]?.map((item: Equipment) => (
               <Card key={item.id}>
                 <div className="flex flex-row place-items-center ">
                   <item.icon className="ml-6" />

@@ -72,7 +72,7 @@ export default function AgentSystem() {
 					<CardDescription>About this project</CardDescription>
 				</CardHeader>
 				<CardContent>
-					A project for the course "Agile Software Development" at Lakehead University.
+					A project for the course Agile Software Development at Lakehead University.
 				</CardContent>
 			</Card>
 		</motion.div>

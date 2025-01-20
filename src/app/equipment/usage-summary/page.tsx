@@ -3,7 +3,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Bar, BarChart, XAxis, YAxis } from "recharts"
 import {
-	ChartConfig,
 	ChartContainer,
 	ChartTooltip,
 	ChartTooltipContent,

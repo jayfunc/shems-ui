@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { usePathname } from 'next/navigation';
-import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator } from './breadcrumb';
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem } from './breadcrumb';
 import { Home } from 'lucide-react';
 import { Button } from './button';
 import Link from 'next/link';
@@ -10,10 +10,10 @@ import { titleCase } from '@/lib/utils';
 
 export function AddressBar() {
   const pathname = usePathname();
-  let pathnameArray = pathname.split('/');
+  const pathnameArray = pathname.split('/');
 
   return (
-    <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+    <div className="sticky top-0 backdrop-blur realtive h-16 border-b items-center flex gap-2 px-4" style={{ zIndex: 1000 }}>
       <Button variant="link" className='p-1'>
         <Link href='/' >
           <Home />
@@ -25,17 +25,16 @@ export function AddressBar() {
             if (value === "") {
               return;
             }
-            let label = titleCase(value.replace("-", " "));
-            let path = pathnameArray.slice(0, index + 1).join("/");
+            const label = titleCase(value.replace("-", " "));
+            const path = pathnameArray.slice(0, index + 1).join("/");
             return (
               <BreadcrumbItem key={value}>
-                <BreadcrumbSeparator />
-                <Link href={path}>{label}</Link>
+                / <Link href={path}>{label}</Link>
               </BreadcrumbItem>
             );
           })}
         </BreadcrumbList>
       </Breadcrumb>
-    </header>
+    </div>
   );
 }

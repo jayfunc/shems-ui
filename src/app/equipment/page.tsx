@@ -60,11 +60,11 @@ export default function EquipmentPage() {
   }, []);
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="gap-4">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="gap-4">
       <Card>
         <CardContent>
           <Tabs defaultValue="area">
-            <CardHeader className="flex flex-row place-content-between place-items-center px-0">
+            <CardHeader className="sticky top-14 backdrop-blur flex flex-row place-content-between place-items-center px-0" style={{ zIndex: 999 }}>
               <CardTitle className="flex flex-row place-items-center gap-4">
                 Equipment
                 <Link href="/equipment/usage-summary">
@@ -112,10 +112,10 @@ export default function EquipmentPage() {
 
               </div>
             </CardHeader>
-            <TabsContent value="area">
+            <TabsContent value="area" className="z-0">
               <EquipmentGrid equipment={Object.groupBy(data, (item) => item.area)} />
             </TabsContent>
-            <TabsContent value="usage">
+            <TabsContent value="usage" className="z-0">
               <EquipmentGrid equipment={Object.groupBy(data, (item) => item.usage)} />
             </TabsContent>
           </Tabs>

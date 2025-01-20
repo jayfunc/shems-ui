@@ -4,6 +4,9 @@ import "./globals.css";
 import { AppSidebar } from "@/components/ui/app-sidebar";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AddressBar } from "@/components/ui/address-bar";
+import { RouteChangesProvider } from 'nextjs-router-events';
+import { LoadingPlaceholder } from "@/components/ui/loading-placeholder";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,16 +33,21 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="flex min-h-screen flex-col">
-          <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset>
-              <AddressBar />
-              <div className="p-4">
-                {children}
-              </div>
-            </SidebarInset>
-          </SidebarProvider>
+        <div className="min-h-screen dark:bg-black">
+          <RouteChangesProvider>
+            <SidebarProvider>
+              <AppSidebar />
+              <SidebarInset>
+                <AddressBar />
+                <div className="p-4 relative">
+                  <LoadingPlaceholder>
+                    {children}
+                  </LoadingPlaceholder>
+                  <Toaster />
+                </div>
+              </SidebarInset>
+            </SidebarProvider>
+          </RouteChangesProvider>
         </div>
       </body>
     </html>

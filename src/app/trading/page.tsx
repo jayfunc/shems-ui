@@ -32,7 +32,7 @@ const trades = [
 
 export default function Trading() {
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid gap-4">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid gap-4">
       <Card>
         <CardHeader>
           <CardTitle>P2P Energy Trading</CardTitle>

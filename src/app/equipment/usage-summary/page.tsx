@@ -14,6 +14,7 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import UotPriceChart from "./uot-price-chart";
 import { motion } from "motion/react";
+import { toast } from "@/hooks/use-toast"
 
 export default function UsageSummaryPage() {
 	const [data, setData] = useState<Equipment[]>([]);
@@ -25,7 +26,7 @@ export default function UsageSummaryPage() {
 	}, []);
 
 	return (
-		<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid md:grid-cols-1 lg:grid-cols-2 gap-4">
+		<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid md:grid-cols-1 lg:grid-cols-2 gap-4">
 			<Card>
 				<CardHeader>
 					<CardTitle>Usage summary</CardTitle>
@@ -75,7 +76,12 @@ export default function UsageSummaryPage() {
 							<CardDescription>9 A.M. - 5 P.M.</CardDescription>
 						</CardHeader>
 						<CardContent>
-							<Button className="w-full">Set schedule</Button>
+							<Button className="w-full" onClick={() => {
+								toast({
+									title: "Schedule is now set up!",
+									description: "The schedule has been set to 9 A.M. - 5 P.M.",
+								})
+							}}>Set schedule</Button>
 						</CardContent>
 					</Card>
 				</CardContent>

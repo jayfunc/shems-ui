@@ -1,4 +1,4 @@
-import { ChartCandlestick, ChevronUp, CircuitBoard, Home, Settings, TrendingUpDown, User2 } from "lucide-react"
+import { ChevronUp, LucideProps, User2 } from "lucide-react"
 
 import {
   Sidebar,
@@ -14,47 +14,24 @@ import {
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./dropdown-menu"
 import Link from "next/link"
 import { Label } from "./label"
+import { ForwardRefExoticComponent, RefAttributes } from "react"
+import { redirect } from "next/navigation"
 
-// Menu items.
-const items = [
-  {
-    title: "Dashboard",
-    url: "/",
-    icon: Home,
-  },
-  {
-    title: "Equipment",
-    url: "/equipment",
-    icon: CircuitBoard,
-  },
-  {
-    title: "Trading",
-    url: "/trading",
-    icon: ChartCandlestick,
-  },
-  {
-    title: "Future",
-    url: "/future",
-    icon: TrendingUpDown,
-  },
-  {
-    title: "Settings",
-    url: "/settings",
-    icon: Settings,
-  },
-]
-
-export function AppSidebar() {
+export function AppSidebar({ menuItems }: { menuItems: { title: string, url: string, icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> }[] }) {
+  function signOut() {
+    redirect('/household');
+  }
+  
   return (
     <Sidebar>
-      <SidebarHeader className="h-16 shrink-0 gap-2 border-b px-4 place-content-center">
+      <SidebarHeader className="h-16 shrink-0 gap-2 border-b px-4 place-items-center flex flex-row">
         <Label className="font-bold font-serif">SHEMS</Label>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link href={item.url}>
@@ -74,7 +51,7 @@ export function AppSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <User2 /> Username
+                  <User2 /> Household
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -82,7 +59,7 @@ export function AppSidebar() {
                 side="top"
                 className="w-[--radix-popper-anchor-width]"
               >
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={signOut}>
                   <span>Sign out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>

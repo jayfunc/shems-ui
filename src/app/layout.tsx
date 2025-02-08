@@ -1,12 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AppSidebar } from "@/components/ui/app-sidebar";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { AddressBar } from "@/components/ui/address-bar";
-import { RouteChangesProvider } from 'nextjs-router-events';
-import { LoadingPlaceholder } from "@/components/ui/loading-placeholder";
-import { Toaster } from "@/components/ui/toaster";
+// import { RouteChangesProvider } from 'nextjs-router-events';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,26 +23,14 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="min-h-screen dark:bg-black">
-          <RouteChangesProvider>
-            <SidebarProvider>
-              <AppSidebar />
-              <SidebarInset>
-                <AddressBar />
-                <div className="p-4 relative">
-                  <LoadingPlaceholder>
-                    {children}
-                  </LoadingPlaceholder>
-                  <Toaster />
-                </div>
-              </SidebarInset>
-            </SidebarProvider>
-          </RouteChangesProvider>
+        <div className="min-h-screen">
+          {children}
         </div>
       </body>
     </html>

@@ -36,7 +36,8 @@
     "recharts": "^2.15.0",
     "shems-ui": "file:",
     "tailwind-merge": "^2.6.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "use-local-storage": "^3.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

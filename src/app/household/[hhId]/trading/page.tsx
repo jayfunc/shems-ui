@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import UotPriceChart from "./uot-price-chart";
 import MainGridUsageChart from "./main-grid-usage-chart";
 import { autoRefreshInterval, energyUnit, routing } from "@/constants/routing";
-import MainGridAcct from "@/models/main-grid-acct";
 import ApiService from "@/services/api";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
@@ -125,11 +124,11 @@ export default function Trading() {
                   <TableCell>{trade.amount}</TableCell>
                   <TableCell>{trade.price}</TableCell>
                   <TableCell>
-                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium 
-                    ${trade.status === "Completed" ? "bg-green-100 text-green-800" : (trade.status === "Canceled" ? "bg-red-100 text-red-800" : "bg-yellow-100 text-yellow-800")
-                      }`}>
-                      {trade.status}
-                    </span>
+                    <Badge variant={
+                      trade.status === "Completed" ? "default" :
+                      trade.status === "Canceled" ? "secondary" :
+                      "destructive"
+                    }>{trade.status}</Badge>
                   </TableCell>
                 </TableRow>
               ))}

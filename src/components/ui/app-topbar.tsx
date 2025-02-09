@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { toTitleCase } from '@/lib/utils';
+import { toTitleCase } from '@/extensions/string';
 import { Label } from './label';
 import { SidebarTrigger } from './sidebar';
 import { Clock, CloudFog, Thermometer } from 'lucide-react';

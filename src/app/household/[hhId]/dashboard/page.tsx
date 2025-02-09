@@ -20,7 +20,7 @@ import CnsmpPredChart from "./cnsmp-pred-chart"
 import CnsmpChart from "./cnsmp-chart"
 import GenChart from "./gen-chart"
 import GenPredChart from "./gen-pred-chart"
-import { insertSpaces, toTitleCase } from "@/lib/utils"
+import { insertSpaces, toTitleCase } from "@/extensions/string"
 
 export default function Dashboard() {
 

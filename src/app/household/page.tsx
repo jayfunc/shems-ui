@@ -30,9 +30,16 @@ export default function Page() {
 	}, []);
 
 	return (
-		<motion.div className="min-h-screen bg-[url(/login-bg-light.png)] dark:bg-[url(/login-bg-dark.png)] place-content-center place-items-center"
+		<motion.div className="min-h-screen grid grid-cols-2 place-items-center"
 			initial={{ opacity: 0 }} animate={{ opacity: 1 }} >
-			<Card className="w-[400px]">
+			<div className="col-span-1 p-20 font-serif w-full h-full place-content-end space-y-2
+			bg-gradient-to-br
+			text-neutral-700 from-lime-100 to-lime-50
+			dark:text-neutral-50 dark:from-teal-500 darl:to-teal-800" >
+				<div className="text-xl">"In the end, we will conserve only what we love; we will love only what we understand; and we will understand only what we are taught."</div>
+				<div>- Baba Dioum</div>
+			</div>
+			<div className="col-span-1">
 				<CardHeader>
 					<CardTitle>Log in</CardTitle>
 					<CardDescription>
@@ -48,7 +55,7 @@ export default function Page() {
 								<DropdownMenuTrigger asChild>
 									<Button variant="outline"><ChevronDown /></Button>
 								</DropdownMenuTrigger>
-								<DropdownMenuContent side="bottom" align="end" className="w-[351px]">
+								<DropdownMenuContent side="bottom" align="end" className="min-w-[461px]">
 									{hses.map((value) => {
 										return <DropdownMenuItem onClick={() => onHHSelected(value)} key={value.id}>{value.householdName}</DropdownMenuItem>;
 									})}
@@ -61,12 +68,15 @@ export default function Page() {
 						<Input id="pwd" type="password" defaultValue="mockpassword" disabled />
 					</div>
 				</CardContent>
-				<CardFooter>
+				<CardFooter className="grid space-y-2">
 					<Button disabled={hse === undefined}>
 						<Link href={`/${routing.household}/${hse?.id}`}>Log in</Link>
 					</Button>
+					<Label className="text-muted-foreground">
+						By clicking continue, you agree to our <Link className="underline" href={""}>Terms of Service</Link> and <Link className="underline" href={""}>Privacy Policy</Link>.
+					</Label>
 				</CardFooter>
-			</Card>
+			</div>
 		</motion.div>
 	);
 }

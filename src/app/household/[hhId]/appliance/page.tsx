@@ -10,28 +10,34 @@ import { useEffect, useState } from "react"
 import { motion } from "motion/react"
 import Appl, { AppliancePriority, ApplianceType } from "../../../../models/appl"
 import { insertSpaces, toTitleCase } from "@/lib/utils"
-import { Lightbulb, Refrigerator, Microwave, WashingMachine, Tv, Heater, AirVent, PcCase, Atom } from "lucide-react"
+import { Lightbulb, Refrigerator, Microwave, WashingMachine, Tv, Heater, AirVent, PcCase, Atom, Wine, Waves, ShowerHead } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { usePathname } from "next/navigation"
 
 function ApplianceIcon({ applianceType }: { applianceType: ApplianceType }) {
   switch (applianceType) {
-    case ApplianceType.Lightbulb:
-      return <Lightbulb />;
+    case ApplianceType.Others:
+      return <Atom />;
+    case ApplianceType.Furnace:
+      return <Heater />;
+    case ApplianceType.Dishwasher:
+      return <Waves />;
     case ApplianceType.Fridge:
       return <Refrigerator />;
-    case ApplianceType.Microwave:
+    case ApplianceType.ElectricRange:
       return <Microwave />;
-    case ApplianceType.WashMachine:
-      return <WashingMachine />;
-    case ApplianceType.TV:
+    case ApplianceType.Television:
       return <Tv />;
-    case ApplianceType.Heater:
-      return <Heater />;
-    case ApplianceType.AC:
-      return <AirVent />;
     case ApplianceType.Computer:
       return <PcCase />;
+    case ApplianceType.WashMachine:
+      return <WashingMachine />;
+    case ApplianceType.WineCeller:
+      return <Wine />;
+    case ApplianceType.WaterHeater:
+      return <ShowerHead />;
+    case ApplianceType.AirCondictioner:
+      return <AirVent />;
     default:
       return <Atom />;
   }

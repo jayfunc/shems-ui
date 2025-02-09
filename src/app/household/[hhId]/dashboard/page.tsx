@@ -1,6 +1,6 @@
 "use client"
 
-import { Battery, BatteryCharging, Home, Sun, UtilityPole } from "lucide-react"
+import { Battery, BatteryCharging, Home, Info, Sun, UtilityPole } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts"
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
@@ -14,286 +14,13 @@ import HseCnsmpPred from "@/models/hse-cnsmp-pred"
 import HseGen from "@/models/hse-gen"
 import HseGenPred from "@/models/hse-gen-pred"
 import LocStor from "@/models/loc-stor"
-
-function EnergyCard({ title, subtitle, delta, icon }: { title: string, subtitle: string, delta?: number, icon: React.ReactNode }) {
-  return (
-    <Card className="flex flex-row items-center col-span-2">
-      <div>
-        <CardHeader className="flex flex-row space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{subtitle}</div>
-          {
-            delta === undefined ?
-              null :
-              <p className="text-xs text-muted-foreground">{delta >= 0 ? '+' : ''}{delta}{energyUnit} from last hour</p>
-          }
-        </CardContent>
-      </div>
-      <div className="flex-1" />
-      <div className="h-16 w-16 mr-4" >
-        {icon}
-      </div>
-    </Card>
-  );
-}
-
-function CnsmpPredChart({ hseCnsmpPred }: { hseCnsmpPred: HseCnsmpPred[] }) {
-  return (
-    <Card className="col-span-full">
-      <CardHeader>
-        <CardTitle>House energy consumption forcast</CardTitle>
-        <CardDescription>12-hour energy consumption forcast level</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer
-          config={
-            {
-              dishwasher: {
-                label: "Consumption Prediction",
-                color: "hsl(var(--chart-2))",
-              }
-            }
-          }
-          className="max-h-[30vh] w-full">
-          <LineChart accessibilityLayer
-            data={hseCnsmpPred}
-            margin={{
-              top: 20,
-              left: 40,
-              right: 40,
-            }}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="predictTime"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => new Date(value).toLocaleTimeString()}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="line" />}
-            />
-            <Line
-              dataKey="dishwasher"
-              type="natural"
-              stroke="var(--color-dishwasher)"
-              strokeWidth={2}
-              dot={{
-                fill: "var(--color-dishwasher)",
-              }}
-              activeDot={{
-                r: 6,
-              }}
-            >
-              <LabelList
-                position="top"
-                offset={12}
-                className="fill-foreground"
-                fontSize={12}
-              />
-            </Line>
-            <ChartLegend content={<ChartLegendContent />} />
-          </LineChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
-  );
-}
-
-function CnsmpChart({ hseCnsmps }: { hseCnsmps: HseCnsmp[] }) {
-  return (
-    <Card className="col-span-full">
-      <CardHeader>
-        <CardTitle>House energy consumption</CardTitle>
-        <CardDescription>12-hour energy consumption level</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer
-          config={
-            {
-              totalConsumeAmount: {
-                label: "Consumption",
-                color: "hsl(var(--chart-1))",
-              }
-            }
-          }
-          className="max-h-[30vh] w-full">
-          <LineChart accessibilityLayer
-            data={hseCnsmps}
-            margin={{
-              top: 20,
-              left: 40,
-              right: 40,
-            }}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="consumeTime"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => new Date(value).toLocaleTimeString()}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="line" />}
-            />
-            <Line
-              dataKey="totalConsumeAmount"
-              type="natural"
-              stroke="var(--color-totalConsumeAmount)"
-              strokeWidth={2}
-              dot={{
-                fill: "var(--color-totalConsumeAmount)",
-              }}
-              activeDot={{
-                r: 6,
-              }}
-            >
-              <LabelList
-                position="top"
-                offset={12}
-                className="fill-foreground"
-                fontSize={12}
-              />
-            </Line>
-            <ChartLegend content={<ChartLegendContent />} />
-          </LineChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
-  );
-}
-
-function GenChart({ hseGen }: { hseGen: HseGen[] }) {
-  return (
-    <Card className="col-span-full">
-      <CardHeader>
-        <CardTitle>Solar energy output</CardTitle>
-        <CardDescription>12-hour energy output level</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer
-          config={
-            {
-              powerAmount: {
-                label: "Generation",
-                color: "hsl(var(--chart-4))",
-              }
-            }
-          }
-          className="max-h-[30vh] w-full">
-          <LineChart accessibilityLayer
-            data={hseGen}
-            margin={{
-              top: 20,
-              left: 40,
-              right: 40,
-            }}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="generateTime"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => new Date(value).toLocaleTimeString()}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="line" />}
-            />
-            <Line
-              dataKey="powerAmount"
-              type="natural"
-              stroke="var(--color-powerAmount)"
-              strokeWidth={2}
-              dot={{
-                fill: "var(--color-powerAmount)",
-              }}
-              activeDot={{
-                r: 6,
-              }}
-            >
-              <LabelList
-                position="top"
-                offset={12}
-                className="fill-foreground"
-                fontSize={12}
-              />
-            </Line>
-            <ChartLegend content={<ChartLegendContent />} />
-          </LineChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
-  );
-}
-
-function GenPredChart({ hseGenPred }: { hseGenPred: HseGenPred[] }) {
-  return (
-    <Card className="col-span-full">
-      <CardHeader>
-        <CardTitle>Solar energy output forcast</CardTitle>
-        <CardDescription>12-hour energy output forcast level</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer
-          config={
-            {
-              solar: {
-                label: "Generation Prediction",
-                color: "hsl(var(--chart-5))",
-              }
-            }
-          }
-          className="max-h-[30vh] w-full">
-          <LineChart accessibilityLayer
-            data={hseGenPred}
-            margin={{
-              top: 20,
-              left: 40,
-              right: 40,
-            }}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="predictTime"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => new Date(value).toLocaleTimeString()}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="line" />}
-            />
-            <Line
-              dataKey="solar"
-              type="natural"
-              stroke="var(--color-solar)"
-              strokeWidth={2}
-              dot={{
-                fill: "var(--color-solar)",
-              }}
-              activeDot={{
-                r: 6,
-              }}
-            >
-              <LabelList
-                position="top"
-                offset={12}
-                className="fill-foreground"
-                fontSize={12}
-              />
-            </Line>
-            <ChartLegend content={<ChartLegendContent />} />
-          </LineChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
-  );
-}
+import Hse, { HouseholdType } from "@/models/hse"
+import EnergyCard from "./energy-card"
+import CnsmpPredChart from "./cnsmp-pred-chart"
+import CnsmpChart from "./cnsmp-chart"
+import GenChart from "./gen-chart"
+import GenPredChart from "./gen-pred-chart"
+import { insertSpaces, toTitleCase } from "@/lib/utils"
 
 export default function Dashboard() {
 
@@ -310,9 +37,17 @@ export default function Dashboard() {
   // Local energy storage (battery)
   const [locStor, setLocStor] = useState<LocStor>();
 
+  // Current house
+  const [currentHouse, setCurrentHouse] = useState<Hse>();
+
   const hhId = parseInt(usePathname().replace(routing.household, "").replace(routing.dashboard, "").replaceAll("/", ""));
 
   useEffect(() => {
+
+    ApiService.getHse(hhId).then((ret) => {
+      setCurrentHouse(ret.data);
+    });
+
     const fetchData = async () => {
       // House energy consumption
       ApiService.getHseCnsmp(hhId).then((ret) => {
@@ -401,7 +136,9 @@ export default function Dashboard() {
           </div>
         } />
 
-      <EnergyCard title="Grid" subtitle="4.2 kWh" icon={<UtilityPole className="h-full w-full text-muted-foreground" />} />
+      <EnergyCard
+        title={`${currentHouse?.householdName}'s house - ${toTitleCase(insertSpaces(HouseholdType[currentHouse?.householdType ?? 0]))}`}
+        subtitle={`${currentHouse?.area} ft²`} icon={<Info className="h-full w-full text-muted-foreground" />} />
 
       <CnsmpChart hseCnsmps={hseCnsmp} />
       <CnsmpPredChart hseCnsmpPred={hseCnsmpPred} />

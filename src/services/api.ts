@@ -24,8 +24,8 @@ const wxUri: string = `${baseUri}/wx`;
 export default class ApiService {
 	// Appl
 
-	static async getAppl(id: number): Promise<ResponseData<Appl>> {
-		const response = await fetch(`${applUri}?id=${id}`);
+	static async getAppl(applianceId: number): Promise<ResponseData<Appl>> {
+		const response = await fetch(`${applUri}?applianceId=${applianceId}`);
 		const data = await response.json();
 		return data;
 	}
@@ -36,22 +36,22 @@ export default class ApiService {
 		return data;
 	}
 
-	static async getApplCnsmp(id: number): Promise<ResponseData<ApplCnsmp>> {
-		const response = await fetch(`${applUri}/cnsmp?id=${id}`);
+	static async getApplCnsmp(applianceId: number): Promise<ResponseData<ApplCnsmp>> {
+		const response = await fetch(`${applUri}/cnsmp?applianceId=${applianceId}`);
 		const data = await response.json();
 		return data;
 	}
 
 	// Grid
 
-	static async getCmtyGridAcct(id: number): Promise<ResponseData<CmtyGridAcct>> {
-		const response = await fetch(`${gridUri}/cmty?id=${id}`);
+	static async getCmtyGridAcct(houseId: number): Promise<ResponseData<CmtyGridAcct>> {
+		const response = await fetch(`${gridUri}/cmty?houseId=${houseId}`);
 		const data = await response.json();
 		return data;
 	}
 
-	static async getMainGridAcct(id: number): Promise<ResponseData<MainGridAcct>> {
-		const response = await fetch(`${gridUri}/main?id=${id}`);
+	static async getMainGridAcct(houseId: number): Promise<ResponseData<MainGridAcct>> {
+		const response = await fetch(`${gridUri}/main?houseId=${houseId}`);
 		const data = await response.json();
 		return data;
 	}
@@ -64,32 +64,32 @@ export default class ApiService {
 
 	// Hse
 
-	static async getHseCnsmp(id: number): Promise<ResponseData<HseCnsmp>> {
-		const response = await fetch(`${hseUri}/cnsmp?id=${id}`);
+	static async getHseCnsmp(houseId: number): Promise<ResponseData<HseCnsmp>> {
+		const response = await fetch(`${hseUri}/cnsmp?houseId=${houseId}`);
 		const data = await response.json();
 		return data;
 	}
 
-	static async getHseGen(id: number): Promise<ResponseData<HseGen>> {
-		const response = await fetch(`${hseUri}/gen?id=${id}`);
+	static async getHseGen(houseId: number): Promise<ResponseData<HseGen>> {
+		const response = await fetch(`${hseUri}/gen?houseId=${houseId}`);
 		const data = await response.json();
 		return data;
 	}
 
-	static async getHseCnsmpPred(id: number): Promise<ResponseData<HseCnsmpPred>> {
-		const response = await fetch(`${hseUri}/cnsmp/pred?id=${id}`);
+	static async getHseCnsmpPred(householdType: number): Promise<ResponseData<HseCnsmpPred>> {
+		const response = await fetch(`${hseUri}/cnsmp/pred?householdType=${householdType}`);
 		const data = await response.json();
 		return data;
 	}
 
-	static async getHseGenPred(id: number): Promise<ResponseData<HseGenPred>> {
-		const response = await fetch(`${hseUri}/gen/pred?id=${id}`);
+	static async getHseGenPred(householdType: number): Promise<ResponseData<HseGenPred>> {
+		const response = await fetch(`${hseUri}/gen/pred?householdType=${householdType}`);
 		const data = await response.json();
 		return data;
 	}
 
-	static async getHse(id: number): Promise<ResponseData<Hse>> {
-		const response = await fetch(`${hseUri}?id=${id}`);
+	static async getHse(houseId: number): Promise<ResponseData<Hse>> {
+		const response = await fetch(`${hseUri}?houseId=${houseId}`);
 		const data = await response.json();
 		return data;
 	}
@@ -102,14 +102,14 @@ export default class ApiService {
 
 	// Stor
 
-	static async getLocStor(id: number): Promise<ResponseData<LocStor>> {
-		const response = await fetch(`${storUri}/loc?id=${id}`);
+	static async getLocStor(houseId: number): Promise<ResponseData<LocStor>> {
+		const response = await fetch(`${storUri}/loc?houseId=${houseId}`);
 		const data = await response.json();
 		return data;
 	}
 
-	static async getRmtStor(id: number): Promise<ResponseData<RmtStor>> {
-		const response = await fetch(`${storUri}/rmt?id=${id}`);
+	static async getRmtStor(houseId: number): Promise<ResponseData<RmtStor>> {
+		const response = await fetch(`${storUri}/rmt?houseId=${houseId}`);
 		const data = await response.json();
 		return data;
 	}

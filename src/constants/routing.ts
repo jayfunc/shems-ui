@@ -5,7 +5,7 @@ export const routing = {
 	trading: 'trading',
 };
 
-export const autoRefreshInterval: number = 10000;
+export const autoRefreshInterval: number = 5000;
 
 export const loadingHint = 'Loading...';
 

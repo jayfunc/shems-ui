@@ -6,14 +6,17 @@ export enum AppliancePriority {
 }
 
 export enum ApplianceType {
-	Lightbulb,
+	Others,
+	Furnace,
+	Dishwasher,
 	Fridge,
-	Microwave,
-	WashMachine,
-	TV,
-	Heater,
-	AC,
+	ElectricRange,
+	Television,
 	Computer,
+	WashMachine,
+	WineCeller,
+	WaterHeater,
+	AirCondictioner,
 }
 
 /**

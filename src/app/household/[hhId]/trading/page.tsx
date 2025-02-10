@@ -1,8 +1,21 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Coins, Zap } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Coins, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import UotPriceChart from "./uot-price-chart";
@@ -35,7 +48,7 @@ const trades = [
     price: "$0.18/kWh",
     status: "Pending",
   },
-]
+];
 
 const chartConfig = {
   onPeak: {
@@ -53,7 +66,12 @@ const chartConfig = {
 };
 
 export default function Trading() {
-  const hhId = parseInt(usePathname().replace(routing.household, "").replace(routing.trading, "").replaceAll("/", ""));
+  const hhId = parseInt(
+    usePathname()
+      .replace(routing.household, "")
+      .replace(routing.trading, "")
+      .replaceAll("/", ""),
+  );
 
   const [cmtyGridAcct, setCmtyGridAcct] = useState<CmtyGridAcct>();
 
@@ -74,8 +92,12 @@ export default function Trading() {
   }, []);
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid grid-cols-2 gap-4">
-
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="grid grid-cols-2 gap-4"
+    >
       <MainGridUsageChart hhId={hhId} chartConfig={chartConfig} />
 
       <UotPriceChart chartConfig={chartConfig} />
@@ -87,25 +109,32 @@ export default function Trading() {
             <Coins />
             <div className="flex flex-col gap-2 pl-2">
               ${cmtyGridAcct?.balance} CAD
-              <Badge variant="secondary">${cmtyGridAcct?.frozenPaidBalance} CAD Pending</Badge>
+              <Badge variant="secondary">
+                ${cmtyGridAcct?.frozenPaidBalance} CAD Pending
+              </Badge>
             </div>
             <div className="flex-1" />
             <Zap />
             <div className="flex flex-col gap-2 pl-2">
-              {cmtyGridAcct?.totalSurplusPowerAmount}{energyUnit}
-              <Badge variant="secondary">{cmtyGridAcct?.powerFrozenAmount}{energyUnit} Pending</Badge>
+              {cmtyGridAcct?.totalSurplusPowerAmount}
+              {energyUnit}
+              <Badge variant="secondary">
+                {cmtyGridAcct?.powerFrozenAmount}
+                {energyUnit} Pending
+              </Badge>
             </div>
             <div className="flex-1" />
           </CardTitle>
         </CardHeader>
-        <CardContent>
-        </CardContent>
+        <CardContent></CardContent>
       </Card>
 
       <Card className="col-span-full">
         <CardHeader>
           <CardTitle>P2P energy trading</CardTitle>
-          <CardDescription>Current energy trading opportunities and history</CardDescription>
+          <CardDescription>
+            Current energy trading opportunities and history
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Table className="text-center">
@@ -124,11 +153,17 @@ export default function Trading() {
                   <TableCell>{trade.amount}</TableCell>
                   <TableCell>{trade.price}</TableCell>
                   <TableCell>
-                    <Badge variant={
-                      trade.status === "Completed" ? "default" :
-                      trade.status === "Canceled" ? "secondary" :
-                      "destructive"
-                    }>{trade.status}</Badge>
+                    <Badge
+                      variant={
+                        trade.status === "Completed"
+                          ? "default"
+                          : trade.status === "Canceled"
+                            ? "secondary"
+                            : "destructive"
+                      }
+                    >
+                      {trade.status}
+                    </Badge>
                   </TableCell>
                 </TableRow>
               ))}
@@ -136,8 +171,6 @@ export default function Trading() {
           </Table>
         </CardContent>
       </Card>
-
     </motion.div>
-  )
+  );
 }
-

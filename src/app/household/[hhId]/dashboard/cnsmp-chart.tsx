@@ -1,5 +1,17 @@
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart";
 import HseCnsmp from "@/models/hse-cnsmp";
 import { CartesianGrid, XAxis, Line, LabelList, LineChart } from "recharts";
 
@@ -12,22 +24,23 @@ export default function CnsmpChart({ hseCnsmps }: { hseCnsmps: HseCnsmp[] }) {
       </CardHeader>
       <CardContent>
         <ChartContainer
-          config={
-            {
-              totalConsumeAmount: {
-                label: "Consumption",
-                color: "hsl(var(--chart-1))",
-              }
-            }
-          }
-          className="max-h-[30vh] w-full">
-          <LineChart accessibilityLayer
+          config={{
+            totalConsumeAmount: {
+              label: "Consumption",
+              color: "hsl(var(--chart-1))",
+            },
+          }}
+          className="max-h-[30vh] w-full"
+        >
+          <LineChart
+            accessibilityLayer
             data={hseCnsmps}
             margin={{
               top: 20,
               left: 40,
               right: 40,
-            }}>
+            }}
+          >
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="consumeTime"

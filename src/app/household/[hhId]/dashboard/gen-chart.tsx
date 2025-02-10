@@ -1,5 +1,17 @@
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart";
 import HseGen from "@/models/hse-gen";
 import { CartesianGrid, XAxis, Line, LabelList, LineChart } from "recharts";
 
@@ -12,22 +24,23 @@ export default function GenChart({ hseGen }: { hseGen: HseGen[] }) {
       </CardHeader>
       <CardContent>
         <ChartContainer
-          config={
-            {
-              powerAmount: {
-                label: "Generation",
-                color: "hsl(var(--chart-4))",
-              }
-            }
-          }
-          className="max-h-[30vh] w-full">
-          <LineChart accessibilityLayer
+          config={{
+            powerAmount: {
+              label: "Generation",
+              color: "hsl(var(--chart-4))",
+            },
+          }}
+          className="max-h-[30vh] w-full"
+        >
+          <LineChart
+            accessibilityLayer
             data={hseGen}
             margin={{
               top: 20,
               left: 40,
               right: 40,
-            }}>
+            }}
+          >
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="generateTime"

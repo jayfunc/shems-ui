@@ -1,4 +1,4 @@
-import { LogOut, LucideProps } from "lucide-react"
+import { LogOut, LucideProps } from "lucide-react";
 
 import {
   Sidebar,
@@ -10,14 +10,24 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import Link from "next/link"
-import { Label } from "./label"
-import { ForwardRefExoticComponent, RefAttributes } from "react"
-import { redirect } from "next/navigation"
-import { routing } from "@/constants/routing"
+} from "@/components/ui/sidebar";
+import Link from "next/link";
+import { Label } from "./label";
+import { ForwardRefExoticComponent, RefAttributes } from "react";
+import { redirect } from "next/navigation";
+import { routing } from "@/constants/routing";
 
-export function AppSidebar({ menuItems }: { menuItems: { title: string, url: string, icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>> }[] }) {
+export function AppSidebar({
+  menuItems,
+}: {
+  menuItems: {
+    title: string;
+    url: string;
+    icon: ForwardRefExoticComponent<
+      Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
+    >;
+  }[];
+}) {
   function logOut() {
     redirect(`/${routing.login}`);
   }
@@ -56,5 +66,5 @@ export function AppSidebar({ menuItems }: { menuItems: { title: string, url: str
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

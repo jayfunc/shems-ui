@@ -2,11 +2,11 @@ import { routing } from "@/constants/routing";
 import { redirect } from "next/navigation";
 
 export default async function Page({
-	params,
+  params,
 }: {
-	params: Promise<{ hhId: number }>
+  params: Promise<{ hhId: number }>;
 }) {
-	const hhId = (await params).hhId;
+  const hhId = (await params).hhId;
 
-	redirect(`/${routing.household}/${hhId}/${routing.dashboard}`);
+  redirect(`/${routing.household}/${hhId}/${routing.dashboard}`);
 }

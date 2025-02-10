@@ -12,9 +12,9 @@ import Appl, { AppliancePriority, ApplianceType } from "../../../../models/appl"
 import { insertSpaces, toTitleCase } from "@/extensions/string"
 import { Refrigerator, Microwave, WashingMachine, Tv, Heater, AirVent, PcCase, Atom, Wine, Waves, ShowerHead } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { usePathname } from "next/navigation"
+import { routing } from "@/constants/routing"
 
-function ApplianceIcon({ applianceType }: { applianceType: ApplianceType }) {
+export function ApplianceIcon({ applianceType }: { applianceType: ApplianceType }) {
   switch (applianceType) {
     case ApplianceType.Others:
       return <Atom />;
@@ -43,8 +43,8 @@ function ApplianceIcon({ applianceType }: { applianceType: ApplianceType }) {
   }
 }
 
-function ApplianceGrid({ currentPathname, appliancesByGroup, groupEnum }:
-  { currentPathname: string, appliancesByGroup: Partial<Record<number, Appl[]>>, groupEnum: typeof ApplianceType | typeof AppliancePriority }) {
+function ApplianceGrid({ appliancesByGroup, groupEnum }:
+  { appliancesByGroup: Partial<Record<number, Appl[]>>, groupEnum: typeof ApplianceType | typeof AppliancePriority }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       {Object.keys(appliancesByGroup).toSorted().map((key) => (
@@ -68,7 +68,7 @@ function ApplianceGrid({ currentPathname, appliancesByGroup, groupEnum }:
                 </div>
                 <CardContent className="flex flex-row">
                   <div className="flex-1" />
-                  <Link href={`${currentPathname}/${item.id}`}>
+                  <Link href={`${routing.appliance}/${item.id}`}>
                     <Button variant="secondary">View</Button>
                   </Link>
                 </CardContent>
@@ -82,8 +82,6 @@ function ApplianceGrid({ currentPathname, appliancesByGroup, groupEnum }:
 }
 
 export default function AppliancePage() {
-  const currentPathname = usePathname();
-
   const [data, setData] = useState<Appl[]>([]);
 
   useEffect(() => {
@@ -106,10 +104,10 @@ export default function AppliancePage() {
           </div>
         </div>
         <TabsContent value="type">
-          <ApplianceGrid appliancesByGroup={Object.groupBy(data, (item) => item.applianceType)} groupEnum={ApplianceType} currentPathname={currentPathname} />
+          <ApplianceGrid appliancesByGroup={Object.groupBy(data, (item) => item.applianceType)} groupEnum={ApplianceType} />
         </TabsContent>
         <TabsContent value="priority">
-          <ApplianceGrid appliancesByGroup={Object.groupBy(data, (item) => item.priority)} groupEnum={AppliancePriority} currentPathname={currentPathname} />
+          <ApplianceGrid appliancesByGroup={Object.groupBy(data, (item) => item.priority)} groupEnum={AppliancePriority} />
         </TabsContent>
       </Tabs>
     </motion.div>

@@ -40,6 +40,16 @@ export function AppTopbar() {
   labels.pop();
   pathnames.pop();
 
+  // Hide path like '/household/1'
+  labels.shift();
+  labels.shift();
+  labels.shift();
+  labels.shift();
+  pathnames.shift();
+  pathnames.shift();
+  pathnames.shift();
+  pathnames.shift();
+
   const [time, setTime] = useState<string>();
   const [showTime, setShowTime] = useState<boolean>(true);
 

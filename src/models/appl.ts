@@ -1,42 +1,45 @@
-import Base from './base';
+import Base from "./base";
 export enum AppliancePriority {
-	HighPriority,
-	MediumPriority,
-	LowPriority,
+  HighPriority,
+  MediumPriority,
+  LowPriority,
 }
 
 export enum ApplianceType {
-	Lightbulb,
-	Fridge,
-	Microwave,
-	WashMachine,
-	TV,
-	Heater,
-	AC,
-	Computer,
+  Others,
+  Furnace,
+  Dishwasher,
+  Fridge,
+  ElectricRange,
+  Television,
+  Computer,
+  WashMachine,
+  WineCeller,
+  WaterHeater,
+  AirCondictioner,
 }
 
 /**
  * Appliance Model
  */
 export default class Appl extends Base {
-	houseId: bigint;
-	name: string;
-	applianceType: ApplianceType;
-	priority: AppliancePriority;
+  houseId: bigint;
+  name: string;
+  applianceType: ApplianceType;
+  priority: AppliancePriority;
 
-	constructor(
-		id: bigint,
-		houseId: bigint,
-		name: string,
-		applianceType: ApplianceType,
-		priority: AppliancePriority,
-		simulationTime: string,
-	) {
-		super(id, simulationTime);
-		this.houseId = houseId;
-		this.name = name;
-		this.applianceType = applianceType;
-		this.priority = priority;
-	}
+  constructor(
+    id: bigint,
+    houseId: bigint,
+    name: string,
+    applianceType: ApplianceType,
+    priority: AppliancePriority,
+    simulationTime: string,
+  ) {
+    super(id, simulationTime);
+    this.houseId = houseId;
+    this.name = name;
+    this.applianceType = applianceType;
+    this.priority = priority;
+  }
 }

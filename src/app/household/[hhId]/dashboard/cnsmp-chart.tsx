@@ -1,15 +1,3 @@
-"use client";
-
-import { CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import ApiService from "@/services/api";
-import ApplCnsmp from "@/models/appl-cnsmp";
-import { useEffect, useState } from "react";
-import { autoRefreshInterval } from "@/constants/routing";
 import {
   Card,
   CardHeader,
@@ -17,40 +5,27 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart";
+import HseCnsmp from "@/models/hse-cnsmp";
+import { CartesianGrid, XAxis, Line, LabelList, LineChart } from "recharts";
 
-export function CnsmpsChart({ applId }: { applId: number }) {
-  const [data, setData] = useState<ApplCnsmp[]>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      ApiService.getApplCnsmp(applId).then((ret) => {
-        data.push(ret.data);
-        if (data.length >= 12) {
-          data.shift();
-        }
-        setData([...data]);
-      });
-    };
-
-    fetchData();
-
-    const interval = setInterval(() => {
-      fetchData();
-    }, autoRefreshInterval);
-
-    return () => clearInterval(interval);
-  }, []);
-
+export default function CnsmpChart({ hseCnsmps }: { hseCnsmps: HseCnsmp[] }) {
   return (
-    <Card className="lg:col-span-full">
+    <Card className="col-span-full">
       <CardHeader>
-        <CardTitle>Energy consumption</CardTitle>
-        <CardDescription>Energy consumption by hours</CardDescription>
+        <CardTitle>House energy consumption</CardTitle>
+        <CardDescription>12-hour energy consumption level</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer
           config={{
-            consumeAmount: {
+            totalConsumeAmount: {
               label: "Consumption",
               color: "hsl(var(--chart-1))",
             },
@@ -59,7 +34,7 @@ export function CnsmpsChart({ applId }: { applId: number }) {
         >
           <LineChart
             accessibilityLayer
-            data={data}
+            data={hseCnsmps}
             margin={{
               top: 20,
               left: 40,
@@ -79,12 +54,12 @@ export function CnsmpsChart({ applId }: { applId: number }) {
               content={<ChartTooltipContent indicator="line" />}
             />
             <Line
-              dataKey="consumeAmount"
+              dataKey="totalConsumeAmount"
               type="natural"
-              stroke="var(--color-consumeAmount)"
+              stroke="var(--color-totalConsumeAmount)"
               strokeWidth={2}
               dot={{
-                fill: "var(--color-consumeAmount)",
+                fill: "var(--color-totalConsumeAmount)",
               }}
               activeDot={{
                 r: 6,
@@ -97,6 +72,7 @@ export function CnsmpsChart({ applId }: { applId: number }) {
                 fontSize={12}
               />
             </Line>
+            <ChartLegend content={<ChartLegendContent />} />
           </LineChart>
         </ChartContainer>
       </CardContent>

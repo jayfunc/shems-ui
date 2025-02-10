@@ -53,8 +53,8 @@ export default function Page() {
 			dark:text-neutral-50 dark:from-teal-500 dark:to-teal-800"
       >
         <div className="text-xl">
-          "In the end, we will conserve only what we love; we will love only
-          what we understand; and we will understand only what we are taught."
+          &quot;In the end, we will conserve only what we love; we will love only
+          what we understand; and we will understand only what we are taught.&quot;
         </div>
         <div>- Baba Dioum</div>
       </div>

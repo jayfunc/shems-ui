@@ -57,7 +57,7 @@ export function TermOfUseButton() {
             You agree to use our services only for lawful purposes. You must not
             use our services in any manner that could damage, disable,
             overburden, or impair our servers or networks, or interfere with any
-            other party's use and enjoyment of our services.
+            other party&apos;s use and enjoyment of our services.
           </p>
 
           <br />

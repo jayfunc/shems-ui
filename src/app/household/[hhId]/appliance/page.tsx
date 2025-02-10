@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import ApiService from "../../../../services/api";
-import { useEffect, useState } from "react";
+import { JSX, useEffect, useState } from "react";
 import { motion } from "motion/react";
 import Appl, {
   AppliancePriority,
@@ -35,7 +35,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { routing } from "@/constants/routing";
 
-export function ApplianceIcon({
+function ApplianceIcon({
   applianceType,
 }: {
   applianceType: ApplianceType;

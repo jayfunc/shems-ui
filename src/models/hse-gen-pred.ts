@@ -5,19 +5,19 @@ import Base from "./base";
  */
 export default class HseGenPred extends Base {
   householdType: number;
-  predictTime: Date;
-  solar: number;
+  dateTime: Date;
+  data: number;
 
   constructor(
     id: bigint,
     householdType: number,
-    predictTime: Date,
-    solar: number,
+    dateTime: Date,
+    data: number,
     simulationTime: string,
   ) {
     super(id, simulationTime);
     this.householdType = householdType;
-    this.predictTime = predictTime;
-    this.solar = solar;
+    this.dateTime = dateTime;
+    this.data = data;
   }
 }

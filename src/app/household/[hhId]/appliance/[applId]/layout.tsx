@@ -1,15 +1,12 @@
 "use client";
 
 import { motion } from "motion/react";
+import { usePathname } from "next/navigation";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const applId = usePathname().split("/").pop();
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="grid gap-4"
-    >
+    <motion.div layoutId={`appl-${applId}`} className="grid gap-4">
       {children}
     </motion.div>
   );

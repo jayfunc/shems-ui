@@ -16,15 +16,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Coins, Zap } from "lucide-react";
-import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import UotPriceChart from "./uot-price-chart";
 import MainGridUsageChart from "./main-grid-usage-chart";
-import { autoRefreshInterval, energyUnit, routing } from "@/constants/routing";
+import {
+  autoRefreshInterval,
+  routing,
+} from "@/constants/constants";
 import ApiService from "@/services/api";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import CmtyGridAcct from "@/models/cmty-grid-acct";
+import { Fade } from "react-awesome-reveal";
+import { motion } from "motion/react";
+import formatEnergy from "@/extensions/energy";
 
 const trades = [
   {
@@ -92,12 +97,7 @@ export default function Trading() {
   }, []);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="grid grid-cols-2 gap-4"
-    >
+    <motion.div className="grid grid-cols-2 gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <MainGridUsageChart hhId={hhId} chartConfig={chartConfig} />
 
       <UotPriceChart chartConfig={chartConfig} />
@@ -116,11 +116,9 @@ export default function Trading() {
             <div className="flex-1" />
             <Zap />
             <div className="flex flex-col gap-2 pl-2">
-              {cmtyGridAcct?.totalSurplusPowerAmount}
-              {energyUnit}
+              {formatEnergy(cmtyGridAcct?.totalSurplusPowerAmount)}
               <Badge variant="secondary">
-                {cmtyGridAcct?.powerFrozenAmount}
-                {energyUnit} Pending
+                {formatEnergy(cmtyGridAcct?.powerFrozenAmount)} Pending
               </Badge>
             </div>
             <div className="flex-1" />

@@ -1,3 +1,6 @@
+import { ChartConfig } from "@/components/ui/chart";
+import { getTargetEnergyUnit } from "@/extensions/energy";
+
 export const routing = {
   household: "household",
   dashboard: "dashboard",
@@ -8,6 +11,6 @@ export const routing = {
 
 export const autoRefreshInterval: number = 5000;
 
-export const loadingHint = "Loading...";
+export const chartMaxPoints = 12;
 
-export const energyUnit = " Wh";
+export const fractionDigits = 2;

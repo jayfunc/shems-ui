@@ -16,15 +16,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { routing } from "@/constants/routing";
+import { routing } from "@/constants/constants";
 import Hse from "@/models/hse";
 import ApiService from "@/services/api";
 import { ChevronDown } from "lucide-react";
-import { motion } from "motion/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PrivacyPolicyButton } from "../login/privacy-policy";
 import { TermOfUseButton } from "../login/term-of-use";
+import { Fade } from "react-awesome-reveal";
+import AuroraGradient from "@/animations/aurora-gradient";
+import { motion } from "motion/react";
 
 export default function Page() {
   const [hses, setHses] = useState<Hse[]>([]);
@@ -41,23 +43,15 @@ export default function Page() {
   }, []);
 
   return (
-    <motion.div
-      className="min-h-screen grid grid-cols-2 place-items-center"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-    >
-      <div
-        className="col-span-1 p-20 font-serif w-full h-full place-content-end space-y-2
-			bg-gradient-to-br
-			text-neutral-700 from-lime-100 to-lime-50
-			dark:text-neutral-50 dark:from-teal-500 dark:to-teal-800"
-      >
-        <div className="text-xl">
-          &quot;In the end, we will conserve only what we love; we will love only
-          what we understand; and we will understand only what we are taught.&quot;
+    <motion.div className="min-h-screen grid grid-cols-2 place-items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <AuroraGradient className="col-span-1 p-16 text-white font-serif w-full h-full place-content-end space-y-4">
+        <div className="text-2xl">
+          &quot;In the end, we will conserve only what we love; we will love
+          only what we understand; and we will understand only what we are
+          taught.&quot;
         </div>
         <div>- Baba Dioum</div>
-      </div>
+      </AuroraGradient>
       <div className="col-span-1">
         <CardHeader>
           <CardTitle>Log in</CardTitle>

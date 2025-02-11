@@ -15,7 +15,7 @@ import Link from "next/link";
 import { Label } from "./label";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 import { redirect } from "next/navigation";
-import { routing } from "@/constants/routing";
+import { routing } from "@/constants/constants";
 
 export function AppSidebar({
   menuItems,

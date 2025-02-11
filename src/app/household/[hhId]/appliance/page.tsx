@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import ApiService from "../../../../services/api";
 import { useEffect, useState } from "react";
-import { motion } from "motion/react";
 import Appl, {
   AppliancePriority,
   ApplianceType,
@@ -33,13 +32,10 @@ import {
   ShowerHead,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { routing } from "@/constants/routing";
+import { routing } from "@/constants/constants";
+import { motion } from "motion/react";
 
-function ApplianceIcon({
-  applianceType,
-}: {
-  applianceType: ApplianceType;
-}) {
+function ApplianceIcon({ applianceType }: { applianceType: ApplianceType }) {
   switch (applianceType) {
     case ApplianceType.Others:
       return <Atom />;
@@ -88,29 +84,31 @@ function ApplianceGrid({
             </CardHeader>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {appliancesByGroup[parseInt(key)]?.map((item: Appl) => (
-                <Card key={item.id}>
-                  <div className="flex flex-row place-items-center ">
-                    <div className="ml-6">
-                      <ApplianceIcon applianceType={item.applianceType} />
+                <motion.div layoutId={`appl-${item.id}`} key={item.id}>
+                  <Card>
+                    <div className="flex flex-row place-items-center ">
+                      <div className="ml-6">
+                        <ApplianceIcon applianceType={item.applianceType} />
+                      </div>
+                      <CardHeader>
+                        <CardTitle>{item.name}</CardTitle>
+                        <CardDescription>
+                          <Badge variant="outline" className="mr-2">
+                            {toTitleCase(
+                              insertSpaces(AppliancePriority[item.priority]),
+                            )}
+                          </Badge>
+                        </CardDescription>
+                      </CardHeader>
                     </div>
-                    <CardHeader>
-                      <CardTitle>{item.name}</CardTitle>
-                      <CardDescription>
-                        <Badge variant="outline" className="mr-2">
-                          {toTitleCase(
-                            insertSpaces(AppliancePriority[item.priority]),
-                          )}
-                        </Badge>
-                      </CardDescription>
-                    </CardHeader>
-                  </div>
-                  <CardContent className="flex flex-row">
-                    <div className="flex-1" />
-                    <Link href={`${routing.appliance}/${item.id}`}>
-                      <Button variant="secondary">View</Button>
-                    </Link>
-                  </CardContent>
-                </Card>
+                    <CardContent className="flex flex-row">
+                      <div className="flex-1" />
+                      <Link href={`${routing.appliance}/${item.id}`}>
+                        <Button variant="secondary">View</Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -119,7 +117,7 @@ function ApplianceGrid({
   );
 }
 
-export default function AppliancePage() {
+export default function Page() {
   const [data, setData] = useState<Appl[]>([]);
 
   useEffect(() => {
@@ -129,11 +127,7 @@ export default function AppliancePage() {
   }, []);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <Tabs defaultValue="type">
         <div
           className="sticky top-16 backdrop-blur flex flex-row place-items-center pt-4"

@@ -19,7 +19,7 @@ import {
 import MainGridCfg from "@/models/main-grid-cfg";
 import { useEffect, useState } from "react";
 import ApiService from "@/services/api";
-import { autoRefreshInterval } from "@/constants/routing";
+import { autoRefreshInterval } from "@/constants/constants";
 
 export default function UotPriceChart({
   chartConfig,

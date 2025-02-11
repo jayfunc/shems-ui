@@ -18,7 +18,8 @@ import {
 } from "./breadcrumb";
 import { Separator } from "./separator";
 import ApiService from "@/services/api";
-import { autoRefreshInterval } from "@/constants/routing";
+import { autoRefreshInterval } from "@/constants/constants";
+import { motion } from "motion/react";
 
 export function AppTopbar() {
   const separatorSign = ">";
@@ -121,25 +122,34 @@ export function AppTopbar() {
 
       <div className="flex-1" />
 
-      <Button
-        variant="ghost"
-        size="icon"
-        className="w-7 h-7"
-        onClick={() => setShowWeather(!showWeather)}
-      >
-        <Thermometer />
-      </Button>
-      {showWeather ? <Label>{temp}</Label> : null}
+      <motion.div layout className="flex items-center">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="w-7 h-7"
+          onClick={() => setShowWeather(!showWeather)}
+        >
+          <Thermometer />
+        </Button>
+        {showWeather ? <Label className="m-1.5">{`${temp ?? '-20 °C'}`}</Label> : null}
+      </motion.div>
 
-      <Button
-        variant="ghost"
-        size="icon"
-        className="w-7 h-7"
-        onClick={() => setShowTime(!showTime)}
-      >
-        <Clock />
-      </Button>
-      {showTime ? <Label>{time}</Label> : null}
+      <Separator orientation="vertical" className="h-4" />
+
+      <motion.div layout className="flex items-center">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="w-7 h-7"
+          onClick={() => setShowTime(!showTime)}
+        >
+          <Clock />
+        </Button>
+        {showTime ? <Label className="m-1.5">{time}</Label> : null}
+      </motion.div>
+
+      <Separator orientation="vertical" className="h-4" />
+
       <ThemeSwitch />
     </div>
   );

@@ -1,4 +1,4 @@
-import { routing } from "@/constants/routing";
+import { routing } from "@/constants/constants";
 import { redirect } from "next/navigation";
 
 export default async function Page({

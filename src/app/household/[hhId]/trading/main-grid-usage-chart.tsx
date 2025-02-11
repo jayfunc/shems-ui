@@ -14,10 +14,12 @@ import {
   ChartLegend,
   ChartConfig,
 } from "@/components/ui/chart";
-import { autoRefreshInterval, energyUnit, routing } from "@/constants/routing";
+import {
+  autoRefreshInterval,
+} from "@/constants/constants";
+import formatEnergy, { getTargetEnergyUnit } from "@/extensions/energy";
 import MainGridAcct from "@/models/main-grid-acct";
 import ApiService from "@/services/api";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Label, Pie, PieChart } from "recharts";
 
@@ -96,16 +98,16 @@ export default function MainGridUsageChart({
                           y={viewBox.cy}
                           className="fill-foreground text-3xl font-bold"
                         >
-                          {(mainGridAcct?.onPeakPowerUsage ?? 0) +
+                          {formatEnergy((mainGridAcct?.onPeakPowerUsage ?? 0) +
                             (mainGridAcct?.midPeakPowerUsage ?? 0) +
-                            (mainGridAcct?.offPeakPowerUsage ?? 0)}
+                            (mainGridAcct?.offPeakPowerUsage ?? 0), false)}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          {energyUnit}
+                          {getTargetEnergyUnit()}
                         </tspan>
                       </text>
                     );

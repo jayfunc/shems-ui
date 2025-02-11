@@ -162,7 +162,7 @@ export default function Dashboard() {
             <CardDescription>{`${chartMaxPoints}-hour energy real-time consumption and generation level`}</CardDescription>
           </CardHeader>
           <CardContent>
-            <EnergyLineChart data={[hseCnsmp, hseGen]} labels={["Consumption", "Generation"]} />
+            <EnergyLineChart data={[hseCnsmp, hseGen]} labels={["Consumption", "Generation"]} colors={[1, 2]} />
           </CardContent>
         </Card>
 
@@ -173,7 +173,7 @@ export default function Dashboard() {
             <CardDescription>{`${chartMaxPoints}-hour energy generation with forcast level`}</CardDescription>
           </CardHeader>
           <CardContent>
-            <EnergyLineChart data={[hseGen, hseGenPred]} labels={["Generation", "Generation forcast"]} />
+            <EnergyLineChart data={[hseGen, hseGenPred]} labels={["Generation", "Generation forcast"]} colors={[2, 3]} />
           </CardContent>
         </Card> */}
 

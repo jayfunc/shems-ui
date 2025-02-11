@@ -32,8 +32,7 @@ function handleSingleData(data: any[]) {
   return data;
 }
 
-// TODO 考虑增加参数：颜色列表，如 [1,2,3] 避免同一曲线存在不同表时颜色不同造成混淆
-export function EnergyLineChart({ data, labels }: { data: any[], labels: string[] }) {
+export function EnergyLineChart({ data, labels, colors }: { data: any[], labels: string[], colors?: number[] }) {
   if (data.length === 1) {
     data = handleSingleData(data[0]);
   } else {
@@ -44,7 +43,7 @@ export function EnergyLineChart({ data, labels }: { data: any[], labels: string[
       config={labels.reduce((acc, label, index) => {
         acc[`data${index + 1}`] = {
           label: `${label} (${getTargetEnergyUnit()})`,
-          color: `hsl(var(--chart-${index + 1}))`,
+          color: `hsl(var(--chart-${colors?.at(index) ?? index + 1}))`,
         };
         return acc;
       }, {} as Record<string, { label: string; color: string }>)}

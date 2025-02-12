@@ -1,4 +1,5 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { getTargetEnergyUnit } from "@/extensions/energy";
 
 export default function EnergyCard({
   title,
@@ -8,7 +9,7 @@ export default function EnergyCard({
 }: {
   title: string;
   subtitle: string;
-  delta?: string;
+  delta?: number;
   icon: React.ReactNode;
 }) {
   return (
@@ -21,8 +22,8 @@ export default function EnergyCard({
           <div className="text-2xl font-bold">{subtitle}</div>
           {delta === undefined ? null : (
             <p className="text-xs text-muted-foreground">
-              {parseInt(delta) >= 0 ? "+" : ""}
-              {delta} from last hour
+              {delta >= 0 ? "+" : ""}
+              {delta} {getTargetEnergyUnit()} from last hour
             </p>
           )}
         </CardContent>

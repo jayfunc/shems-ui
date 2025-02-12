@@ -18,9 +18,9 @@ import Hse, { HouseholdType } from "@/models/hse";
 import EnergyCard from "./energy-card";
 import { insertSpaces, toTitleCase } from "@/extensions/string";
 import { motion } from "motion/react";
-import formatEnergy from "@/extensions/energy";
+import formatEnergy, { getTargetEnergyUnit } from "@/extensions/energy";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { EnergyLineChart } from "@/extensions/chart";
+import { EnergyLineChart } from "@/components/chart";
 
 export default function Dashboard() {
   // House energy consumption (appliances)
@@ -123,7 +123,7 @@ export default function Dashboard() {
         <EnergyCard
           title="Solar energy"
           subtitle={
-            `${formatEnergy(hseGen.at(hseGen.length - 1)!.data)}`
+            `${formatEnergy(hseGen.at(hseGen.length - 1)!.data)} ${getTargetEnergyUnit()}`
           }
           delta={formatEnergy(hseGenDelta)}
           icon={<Sun className="h-full w-full text-muted-foreground" />}
@@ -132,7 +132,7 @@ export default function Dashboard() {
         <EnergyCard
           title="House consumption"
           subtitle={
-            `${formatEnergy(hseCnsmp.at(hseCnsmp.length - 1)!.data)}`
+            `${formatEnergy(hseCnsmp.at(hseCnsmp.length - 1)!.data)} ${getTargetEnergyUnit()}`
           }
           delta={formatEnergy(hseCnsmpDelta)}
           icon={<Home className="h-full w-full text-muted-foreground" />}
@@ -165,6 +165,7 @@ export default function Dashboard() {
             <EnergyLineChart data={[hseCnsmp, hseGen]} labels={["Consumption", "Generation"]} colors={[1, 2]} />
           </CardContent>
         </Card>
+
 
         {/* TODO: 预测数据未准备好 */}
         {/* <Card className="col-span-full">

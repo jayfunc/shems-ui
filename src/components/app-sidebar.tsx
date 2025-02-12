@@ -12,7 +12,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { Label } from "./label";
+import { Label } from "./ui/label";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 import { redirect } from "next/navigation";
 import { routing } from "@/constants/constants";

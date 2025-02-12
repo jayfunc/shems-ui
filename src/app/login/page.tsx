@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import {
+  Card,
   CardContent,
   CardDescription,
   CardFooter,
@@ -27,13 +28,14 @@ import { TermOfUseButton } from "../login/term-of-use";
 import { Fade } from "react-awesome-reveal";
 import AuroraGradient from "@/animations/aurora-gradient";
 import { motion } from "motion/react";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Page() {
   const [hses, setHses] = useState<Hse[]>([]);
-  const [hse, setHse] = useState<Hse>();
+  const [hseId, setHseId] = useState<number>();
 
-  function onHHSelected(hse: Hse) {
-    setHse(hse);
+  function onHHSelected(hseId: number) {
+    setHseId(hseId);
   }
 
   useEffect(() => {
@@ -43,53 +45,30 @@ export default function Page() {
   }, []);
 
   return (
-    <motion.div className="min-h-screen grid grid-cols-2 place-items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <AuroraGradient className="col-span-1 p-16 text-white font-serif w-full h-full place-content-end space-y-4">
-        <div className="text-2xl">
-          &quot;In the end, we will conserve only what we love; we will love
-          only what we understand; and we will understand only what we are
-          taught.&quot;
-        </div>
-        <div>- Baba Dioum</div>
-      </AuroraGradient>
-      <div className="col-span-1">
-        <CardHeader>
-          <CardTitle>Log in</CardTitle>
-          <CardDescription>Log in to your household account</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <div className="space-y-1 flex flex-col">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <AuroraGradient className="min-h-screen text-white place-content-center flex place-items-center">
+        <Card>
+          <CardHeader>
+            <CardTitle>Log in</CardTitle>
+            <CardDescription>Log in to your household account</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-2">
             <Label>Account</Label>
-            <div className="relative">
-              <Input value={hse?.householdName ?? "Choose account"} disabled />
-              <div className="absolute right-0 top-0">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost">
-                      <ChevronDown />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    side="bottom"
-                    align="end"
-                    className="min-w-[415px]"
-                  >
-                    {hses.map((value) => {
-                      return (
-                        <DropdownMenuItem
-                          onClick={() => onHHSelected(value)}
-                          key={value.id}
-                        >
-                          {value.householdName}
-                        </DropdownMenuItem>
-                      );
-                    })}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
-          </div>
-          <div className="space-y-1">
+            <Select onValueChange={(value) => onHHSelected(parseInt(value))}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a account" />
+              </SelectTrigger>
+              <SelectContent>
+                {hses.map((value) => {
+                  return (
+                    <SelectItem value={value.id.toString()} key={value.id}>
+                      {value.householdName}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+            <div />
             <Label htmlFor="pwd" className="text-muted-foreground">
               Password
             </Label>
@@ -99,18 +78,18 @@ export default function Page() {
               defaultValue="mockpassword"
               disabled
             />
-          </div>
-        </CardContent>
-        <CardFooter className="grid space-y-2">
-          <Button disabled={hse === undefined}>
-            <Link href={`/${routing.household}/${hse?.id}`}>Log in</Link>
-          </Button>
-          <Label className="text-muted-foreground">
-            By clicking log in, you agree to our <TermOfUseButton /> and{" "}
-            <PrivacyPolicyButton />.
-          </Label>
-        </CardFooter>
-      </div>
+          </CardContent>
+          <CardFooter className="grid space-y-2">
+            <Link href={`/${routing.household}/${hseId}`}>
+              <Button className="w-full" disabled={hseId === undefined}>Log in</Button>
+            </Link>
+            <Label className="text-muted-foreground">
+              By clicking log in, you agree to our <TermOfUseButton /> and{" "}
+              <PrivacyPolicyButton />.
+            </Label>
+          </CardFooter>
+        </Card>
+      </AuroraGradient>
     </motion.div>
   );
 }

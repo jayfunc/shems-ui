@@ -17,8 +17,6 @@ import {
 } from "@/components/ui/table";
 import { Coins, Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import UotPriceChart from "./uot-price-chart";
-import MainGridUsageChart from "./main-grid-usage-chart";
 import {
   autoRefreshInterval,
   routing,
@@ -27,9 +25,9 @@ import ApiService from "@/services/api";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import CmtyGridAcct from "@/models/cmty-grid-acct";
-import { Fade } from "react-awesome-reveal";
 import { motion } from "motion/react";
-import formatEnergy from "@/extensions/energy";
+import formatEnergy, { getTargetEnergyUnit } from "@/extensions/energy";
+import { EnergyGlobe } from "./energy-globe";
 
 const trades = [
   {
@@ -54,21 +52,6 @@ const trades = [
     status: "Pending",
   },
 ];
-
-const chartConfig = {
-  onPeak: {
-    label: "On-peak",
-    theme: { light: "hsl(var(--lime-600))", dark: "hsl(var(--teal-700))" },
-  },
-  midPeak: {
-    label: "Mid-peak",
-    theme: { light: "hsl(var(--lime-700))", dark: "hsl(var(--teal-600))" },
-  },
-  offPeak: {
-    label: "Off-peak",
-    theme: { light: "hsl(var(--lime-800))", dark: "hsl(var(--teal-800))" },
-  },
-};
 
 export default function Trading() {
   const hhId = parseInt(
@@ -98,13 +81,21 @@ export default function Trading() {
 
   return (
     <motion.div className="grid grid-cols-2 gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <MainGridUsageChart hhId={hhId} chartConfig={chartConfig} />
-
-      <UotPriceChart chartConfig={chartConfig} />
+      <Card className="col-span-full">
+        <CardHeader>
+          <CardTitle>Energy globe</CardTitle>
+          <CardDescription>
+            Energy trading history
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <EnergyGlobe />
+        </CardContent>
+      </Card>
 
       <Card className="col-span-full">
         <CardHeader>
-          <CardDescription>Community grid account</CardDescription>
+          <CardDescription>Community account</CardDescription>
           <CardTitle className="grid flex flex-row place-items-center gap-2 pt-2">
             <Coins />
             <div className="flex flex-col gap-2 pl-2">
@@ -116,9 +107,9 @@ export default function Trading() {
             <div className="flex-1" />
             <Zap />
             <div className="flex flex-col gap-2 pl-2">
-              {formatEnergy(cmtyGridAcct?.totalSurplusPowerAmount)}
+              {formatEnergy(cmtyGridAcct?.totalSurplusPowerAmount)} {getTargetEnergyUnit()}
               <Badge variant="secondary">
-                {formatEnergy(cmtyGridAcct?.powerFrozenAmount)} Pending
+                {formatEnergy(cmtyGridAcct?.powerFrozenAmount)} {getTargetEnergyUnit()} Pending
               </Badge>
             </div>
             <div className="flex-1" />

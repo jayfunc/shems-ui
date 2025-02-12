@@ -36,4 +36,6 @@ const AuroraGradient = React.forwardRef<
   );
 });
 
+AuroraGradient.displayName = "AuroraGradient";
+
 export default AuroraGradient;

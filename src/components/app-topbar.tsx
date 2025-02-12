@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { toTitleCase } from "@/extensions/string";
-import { Label } from "./label";
-import { SidebarTrigger } from "./sidebar";
+import { Label } from "./ui/label";
+import { SidebarTrigger } from "./ui/sidebar";
 import { Clock, CloudFog, Thermometer } from "lucide-react";
-import { ThemeSwitch } from "@/services/settings";
-import { Button } from "./button";
+import { ThemeSwitch } from "@/components/theme-switch";
+import { Button } from "./ui/button";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,8 +15,8 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "./breadcrumb";
-import { Separator } from "./separator";
+} from "./ui/breadcrumb";
+import { Separator } from "./ui/separator";
 import ApiService from "@/services/api";
 import { autoRefreshInterval } from "@/constants/constants";
 import { motion } from "motion/react";
@@ -126,7 +126,6 @@ export function AppTopbar() {
         <Button
           variant="ghost"
           size="icon"
-          className="w-7 h-7"
           onClick={() => setShowWeather(!showWeather)}
         >
           <Thermometer />
@@ -140,7 +139,6 @@ export function AppTopbar() {
         <Button
           variant="ghost"
           size="icon"
-          className="w-7 h-7"
           onClick={() => setShowTime(!showTime)}
         >
           <Clock />

@@ -64,17 +64,17 @@ export default function MainGridUsageChart({
               data={[
                 {
                   section: `On-peak`,
-                  hours: mainGridAcct?.onPeakPowerUsage,
+                  hours: formatEnergy(mainGridAcct?.onPeakPowerUsage),
                   fill: "var(--color-onPeak)",
                 },
                 {
                   section: `Mid-peak`,
-                  hours: mainGridAcct?.midPeakPowerUsage,
+                  hours: formatEnergy(mainGridAcct?.midPeakPowerUsage),
                   fill: "var(--color-midPeak)",
                 },
                 {
                   section: `Off-peak`,
-                  hours: mainGridAcct?.offPeakPowerUsage,
+                  hours: formatEnergy(mainGridAcct?.offPeakPowerUsage),
                   fill: "var(--color-offPeak)",
                 },
               ]}
@@ -100,7 +100,7 @@ export default function MainGridUsageChart({
                         >
                           {formatEnergy((mainGridAcct?.onPeakPowerUsage ?? 0) +
                             (mainGridAcct?.midPeakPowerUsage ?? 0) +
-                            (mainGridAcct?.offPeakPowerUsage ?? 0), false)}
+                            (mainGridAcct?.offPeakPowerUsage ?? 0))}
                         </tspan>
                         <tspan
                           x={viewBox.cx}

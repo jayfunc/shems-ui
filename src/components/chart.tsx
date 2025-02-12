@@ -1,6 +1,6 @@
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { chartMaxPoints } from "@/constants/constants";
-import formatEnergy, { getTargetEnergyUnit } from "./energy";
+import formatEnergy, { getTargetEnergyUnit } from "../extensions/energy";
 import { CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts";
 import React from "react";
 
@@ -16,9 +16,9 @@ function combineDates(data1: any[], data2: any[]): any[] {
     data.push({
       dateTime: dateTime,
       data1: formatEnergy(data1.find((element) => element.dateTime === dateTime)
-        ?.data, false),
+        ?.data),
       data2: formatEnergy(data2.find((element) => element.dateTime === dateTime)
-        ?.data, false),
+        ?.data),
     });
   });
   data = data.slice(0, chartMaxPoints).reverse();
@@ -27,7 +27,7 @@ function combineDates(data1: any[], data2: any[]): any[] {
 
 function handleSingleData(data: any[]) {
   data.forEach((element) => {
-    element.data1 = formatEnergy(element.data, false);
+    element.data1 = formatEnergy(element.data);
   });
   return data;
 }
@@ -47,7 +47,7 @@ export function EnergyLineChart({ data, labels, colors }: { data: any[], labels:
         };
         return acc;
       }, {} as Record<string, { label: string; color: string }>)}
-      className="max-h-[30vh] w-full"
+      className="max-h-[35vh] w-full"
     >
       <LineChart
         accessibilityLayer

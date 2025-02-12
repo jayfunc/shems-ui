@@ -8,11 +8,11 @@ enum EnergyUnit {
 const sourceEnergyUnit = EnergyUnit.Wh;
 const targetEnergyUnit = EnergyUnit.kWh;
 
-export default function formatEnergy(value?: number, showUnit = true): string {
+export default function formatEnergy(value?: number): number {
 	if (!value) {
-		return "-";
+		return 0;
 	}
-	return `${(value / (targetEnergyUnit / sourceEnergyUnit)).toFixed(fractionDigits)} ${showUnit ? getTargetEnergyUnit() : ''}`;
+	return parseFloat((value / (targetEnergyUnit / sourceEnergyUnit)).toFixed(fractionDigits));
 }
 
 export function getTargetEnergyUnit(): string {

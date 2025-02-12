@@ -27,7 +27,7 @@ import { usePathname } from "next/navigation";
 import CmtyGridAcct from "@/models/cmty-grid-acct";
 import { motion } from "motion/react";
 import formatEnergy, { getTargetEnergyUnit } from "@/extensions/energy";
-import { EnergyGlobe } from "./energy-globe";
+import { EnergyMap } from "./energy-globe";
 
 const trades = [
   {
@@ -83,13 +83,13 @@ export default function Trading() {
     <motion.div className="grid grid-cols-2 gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <Card className="col-span-full">
         <CardHeader>
-          <CardTitle>Energy globe</CardTitle>
+          <CardTitle>Energy map</CardTitle>
           <CardDescription>
-            Energy trading history
+            Energy trading map
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <EnergyGlobe />
+          <EnergyMap />
         </CardContent>
       </Card>
 

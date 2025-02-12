@@ -20,7 +20,7 @@ import { insertSpaces, toTitleCase } from "@/extensions/string";
 import { motion } from "motion/react";
 import formatEnergy, { getTargetEnergyUnit } from "@/extensions/energy";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { EnergyLineChart } from "@/components/chart";
+import { EnergyLineChart } from "@/components/line-chart";
 
 export default function Dashboard() {
   // House energy consumption (appliances)

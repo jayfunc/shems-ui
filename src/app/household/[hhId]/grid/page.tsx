@@ -7,21 +7,7 @@ import {
 } from "@/constants/constants";
 import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
-
-const chartConfig = {
-  onPeak: {
-    label: "On-peak",
-    theme: { light: "hsl(var(--lime-600))", dark: "hsl(var(--teal-700))" },
-  },
-  midPeak: {
-    label: "Mid-peak",
-    theme: { light: "hsl(var(--lime-700))", dark: "hsl(var(--teal-600))" },
-  },
-  offPeak: {
-    label: "Off-peak",
-    theme: { light: "hsl(var(--lime-800))", dark: "hsl(var(--teal-800))" },
-  },
-};
+import { ChartConfig } from "@/components/ui/chart";
 
 export default function Trading() {
   const hhId = parseInt(
@@ -34,9 +20,9 @@ export default function Trading() {
   return (
     <motion.div className="grid grid-cols-2 gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
 
-      <MainGridUsageChart hhId={hhId} chartConfig={chartConfig} />
+      <MainGridUsageChart hhId={hhId} />
 
-      <UotPriceChart chartConfig={chartConfig} />
+      <UotPriceChart />
 
       {/* <NeonGradientCard className="items-center justify-center text-center col-span-full" borderSize={0}>
         <div className="min-h-[30vh] bg-transparent"></div>

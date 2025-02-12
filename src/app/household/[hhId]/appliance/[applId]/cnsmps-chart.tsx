@@ -17,7 +17,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { EnergyLineChart } from "@/components/chart";
+import { EnergyLineChart } from "@/components/line-chart";
 
 export function CnsmpsChart({ applId }: { applId: number }) {
   const [data, setData] = useState<ApplCnsmp[]>([]);

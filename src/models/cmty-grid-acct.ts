@@ -5,17 +5,17 @@ import Base from "./base";
  */
 export default class CmtyGridAcct extends Base {
   houseId: bigint;
-  totalSurplusPowerAmount: number;
-  availableForSalePowerAmount: number;
-  powerFrozenAmount: number;
-  powerSoldAmount: bigint;
-  totalBoughtPowerAmount: bigint;
-  availableForUsePowerAmount: bigint;
-  totalUsedPowerAmount: bigint;
-  balanceEarned: number;
-  balancePaid: number;
-  balance: number;
-  frozenPaidBalance: number;
+  totalSurplusPowerAmount: number; // 1 = 2 + 4
+  availableForSalePowerAmount: number; // 2
+  powerFrozenAmount: number; // 3
+  powerSoldAmount: bigint; // 4 = 很多个 3
+  totalBoughtPowerAmount: bigint; // 5 = 6 + 7 
+  availableForUsePowerAmount: bigint; // 6
+  totalUsedPowerAmount: bigint; // 7
+  balanceEarned: number; // 8
+  balancePaid: number; // 9 = 很多个 11
+  balance: number; // 10 = 8 - 9
+  frozenPaidBalance: number; // 11
 
   constructor(
     id: bigint,

@@ -1,5 +1,5 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { energyUnit } from "@/constants/routing";
+import { getTargetEnergyUnit } from "@/extensions/energy";
 
 export default function EnergyCard({
   title,
@@ -23,8 +23,7 @@ export default function EnergyCard({
           {delta === undefined ? null : (
             <p className="text-xs text-muted-foreground">
               {delta >= 0 ? "+" : ""}
-              {delta}
-              {energyUnit} from last hour
+              {delta} {getTargetEnergyUnit()} from last hour
             </p>
           )}
         </CardContent>

@@ -17,9 +17,9 @@ export default class MainGridCfg extends Base {
   onPeakPrice: number;
   midPeakPrice: number;
   offPeakPrice: number;
-  onPeakHour: string;
-  midPeakHour: string;
-  offPeakHour: string;
+  onPeakHour: number[];
+  midPeakHour: number[];
+  offPeakHour: number[];
 
   constructor(
     id: bigint,
@@ -28,9 +28,9 @@ export default class MainGridCfg extends Base {
     onPeakPrice: number,
     midPeakPrice: number,
     offPeakPrice: number,
-    onPeakHour: string,
-    midPeakHour: string,
-    offPeakHour: string,
+    onPeakHour: number[],
+    midPeakHour: number[],
+    offPeakHour: number[],
     simulationTime: string,
   ) {
     super(id, simulationTime);

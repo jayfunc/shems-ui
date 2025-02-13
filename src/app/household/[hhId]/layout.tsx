@@ -1,12 +1,14 @@
 "use client";
 
-import { AppSidebar } from "@/components/ui/app-sidebar";
-import { AppTopbar } from "@/components/ui/app-topbar";
-import { LoadingPlaceholder } from "@/components/ui/loading-placeholder";
+import { AppSidebar } from "@/components/app-sidebar";
+import { AppTopbar } from "@/components/app-topbar";
+import { Placeholder } from "@/components/placeholder";
+import { Button } from "@/components/ui/button";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/toaster";
-import { routing } from "@/constants/routing";
-import { Home, CircuitBoard, ChartCandlestick } from "lucide-react";
+import { routing } from "@/constants/constants";
+import { Home, CircuitBoard, ChartCandlestick, UtilityPole } from "lucide-react";
+import { motion } from "motion/react";
 import { usePathname } from "next/navigation";
 import { Suspense } from "react";
 
@@ -29,6 +31,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       icon: CircuitBoard,
     },
     {
+      title: "Grid",
+      url: `${hhPathname}/${routing.grid}`,
+      icon: UtilityPole,
+    },
+    {
       title: "Trading",
       url: `${hhPathname}/${routing.trading}`,
       icon: ChartCandlestick,
@@ -36,15 +43,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   ];
 
   return (
-    <SidebarProvider>
-      <AppSidebar menuItems={menuItems} />
-      <SidebarInset>
-        <AppTopbar />
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <div className="relative p-4 lg:px-24">{children}</div>
-          <Toaster />
-        </Suspense>
-      </SidebarInset>
-    </SidebarProvider>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <SidebarProvider>
+        <AppSidebar menuItems={menuItems} />
+        <SidebarInset>
+          <AppTopbar />
+          <Suspense fallback={<Placeholder />}>
+            <div className="relative p-4 lg:px-24">
+              {children}
+            </div>
+            <Toaster />
+          </Suspense>
+        </SidebarInset>
+      </SidebarProvider>
+    </motion.div>
   );
 }

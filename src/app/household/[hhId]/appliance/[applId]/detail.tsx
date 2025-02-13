@@ -1,11 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { toTitleCase, insertSpaces } from "@/extensions/string";
 import Appl, { AppliancePriority, ApplianceType } from "@/models/appl";
 import ApiService from "@/services/api";

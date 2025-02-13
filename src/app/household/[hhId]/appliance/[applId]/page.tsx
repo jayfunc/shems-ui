@@ -9,7 +9,9 @@ export default async function Page({
   const applId = (await params).applId;
 
   return (
-    <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
+    <div
+      className="grid gap-4 md:grid-cols-1 lg:grid-cols-2"
+    >
       <Detail applId={applId} />
       <CnsmpsChart applId={applId} />
     </div>

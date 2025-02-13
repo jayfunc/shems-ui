@@ -16,15 +16,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Coins, Zap } from "lucide-react";
-import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
-import UotPriceChart from "./uot-price-chart";
-import MainGridUsageChart from "./main-grid-usage-chart";
-import { autoRefreshInterval, energyUnit, routing } from "@/constants/routing";
+import {
+  autoRefreshInterval,
+  routing,
+} from "@/constants/constants";
 import ApiService from "@/services/api";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import CmtyGridAcct from "@/models/cmty-grid-acct";
+import { motion } from "motion/react";
+import formatEnergy, { getTargetEnergyUnit } from "@/extensions/energy";
+import WorldMap from "@/components/ui/world-map";
 
 const trades = [
   {
@@ -49,21 +52,6 @@ const trades = [
     status: "Pending",
   },
 ];
-
-const chartConfig = {
-  onPeak: {
-    label: "On-peak",
-    theme: { light: "hsl(var(--lime-600))", dark: "hsl(var(--teal-700))" },
-  },
-  midPeak: {
-    label: "Mid-peak",
-    theme: { light: "hsl(var(--lime-700))", dark: "hsl(var(--teal-600))" },
-  },
-  offPeak: {
-    label: "Off-peak",
-    theme: { light: "hsl(var(--lime-800))", dark: "hsl(var(--teal-800))" },
-  },
-};
 
 export default function Trading() {
   const hhId = parseInt(
@@ -92,19 +80,50 @@ export default function Trading() {
   }, []);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="grid grid-cols-2 gap-4"
-    >
-      <MainGridUsageChart hhId={hhId} chartConfig={chartConfig} />
-
-      <UotPriceChart chartConfig={chartConfig} />
+    <motion.div className="grid grid-cols-2 gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <Card className="col-span-full">
+        <CardHeader>
+          <CardTitle>Energy map</CardTitle>
+          <CardDescription>
+            Energy trading map
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <WorldMap
+            dots={[
+              {
+                start: { lat: 34.0522, lng: -118.2437, }, // Los Angeles
+                end: { lat: 64.2008, lng: -149.4937, }, // Alaska (Fairbanks)
+              },
+              {
+                start: { lat: 64.2008, lng: -149.4937 }, // Alaska (Fairbanks)
+                end: { lat: -15.7975, lng: -47.8919 }, // Brazil (Brasília)
+              },
+              {
+                start: { lat: -15.7975, lng: -47.8919 }, // Brazil (Brasília)
+                end: { lat: 51.5074, lng: -0.1278 }, // London
+              },
+              {
+                start: { lat: 51.5074, lng: -0.1278 }, // London
+                end: { lat: 28.6139, lng: 77.209 }, // New Delhi
+              },
+              {
+                start: { lat: 28.6139, lng: 77.209 }, // New Delhi
+                end: { lat: 43.1332, lng: 131.9113 }, // Vladivostok
+              },
+              {
+                start: { lat: 43.1332, lng: 131.9113 }, // Vladivostok
+                end: { lat: 34.0522, lng: -118.2437, }, // Los Angeles
+              },
+            ]}
+            lineColor="#000"
+          />
+        </CardContent>
+      </Card>
 
       <Card className="col-span-full">
         <CardHeader>
-          <CardDescription>Community grid account</CardDescription>
+          <CardDescription>Community account</CardDescription>
           <CardTitle className="grid flex flex-row place-items-center gap-2 pt-2">
             <Coins />
             <div className="flex flex-col gap-2 pl-2">
@@ -116,11 +135,9 @@ export default function Trading() {
             <div className="flex-1" />
             <Zap />
             <div className="flex flex-col gap-2 pl-2">
-              {cmtyGridAcct?.totalSurplusPowerAmount}
-              {energyUnit}
+              {formatEnergy(cmtyGridAcct?.totalSurplusPowerAmount)} {getTargetEnergyUnit()}
               <Badge variant="secondary">
-                {cmtyGridAcct?.powerFrozenAmount}
-                {energyUnit} Pending
+                {formatEnergy(cmtyGridAcct?.powerFrozenAmount)} {getTargetEnergyUnit()} Pending
               </Badge>
             </div>
             <div className="flex-1" />

@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { toTitleCase } from "@/extensions/string";
-import { Label } from "./label";
-import { SidebarTrigger } from "./sidebar";
+import { Label } from "./ui/label";
+import { SidebarTrigger } from "./ui/sidebar";
 import { Clock, CloudFog, Thermometer } from "lucide-react";
-import { ThemeSwitch } from "@/services/settings";
-import { Button } from "./button";
+import { ThemeSwitch } from "@/components/theme-switch";
+import { Button } from "./ui/button";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,10 +15,11 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "./breadcrumb";
-import { Separator } from "./separator";
+} from "./ui/breadcrumb";
+import { Separator } from "./ui/separator";
 import ApiService from "@/services/api";
-import { autoRefreshInterval } from "@/constants/routing";
+import { autoRefreshInterval } from "@/constants/constants";
+import { motion } from "motion/react";
 
 export function AppTopbar() {
   const separatorSign = ">";
@@ -121,25 +122,32 @@ export function AppTopbar() {
 
       <div className="flex-1" />
 
-      <Button
-        variant="ghost"
-        size="icon"
-        className="w-7 h-7"
-        onClick={() => setShowWeather(!showWeather)}
-      >
-        <Thermometer />
-      </Button>
-      {showWeather ? <Label>{temp}</Label> : null}
+      <motion.div layout className="flex items-center">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setShowWeather(!showWeather)}
+        >
+          <Thermometer />
+        </Button>
+        {showWeather ? <Label className="m-1.5">{`${temp ?? '-20 °C'}`}</Label> : null}
+      </motion.div>
 
-      <Button
-        variant="ghost"
-        size="icon"
-        className="w-7 h-7"
-        onClick={() => setShowTime(!showTime)}
-      >
-        <Clock />
-      </Button>
-      {showTime ? <Label>{time}</Label> : null}
+      <Separator orientation="vertical" className="h-4" />
+
+      <motion.div layout className="flex items-center">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setShowTime(!showTime)}
+        >
+          <Clock />
+        </Button>
+        {showTime ? <Label className="m-1.5">{time}</Label> : null}
+      </motion.div>
+
+      <Separator orientation="vertical" className="h-4" />
+
       <ThemeSwitch />
     </div>
   );

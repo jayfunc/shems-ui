@@ -5,7 +5,7 @@ import Base from "./base";
  */
 export default class HseCnsmpPred extends Base {
   householdType: number;
-  predictTime: Date;
+  dateTime: Date;
   furnace1: number;
   furnace2: number;
   dishwasher: number;
@@ -23,7 +23,7 @@ export default class HseCnsmpPred extends Base {
   constructor(
     id: bigint,
     householdType: number,
-    predictTime: Date,
+    dateTime: Date,
     furnace1: number,
     furnace2: number,
     dishwasher: number,
@@ -41,7 +41,7 @@ export default class HseCnsmpPred extends Base {
   ) {
     super(id, simulationTime);
     this.householdType = householdType;
-    this.predictTime = predictTime;
+    this.dateTime = dateTime;
     this.furnace1 = furnace1;
     this.furnace2 = furnace2;
     this.dishwasher = dishwasher;

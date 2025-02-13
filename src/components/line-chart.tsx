@@ -4,8 +4,11 @@ import formatEnergy, { getTargetEnergyUnit } from "../extensions/energy";
 import { CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts";
 import React from "react";
 
-function combineDates(data1: any[], data2: any[]): any[] {
-  let data: any[] = [];
+interface InputDataProps { dateTime: Date, data: number };
+interface OutputDataProps { dateTime: Date, data1: number, data2: number };
+
+function combineDates(data1: InputDataProps[], data2: InputDataProps[]): OutputDataProps[] {
+  let data: OutputDataProps[] = [];
   new Set(
     data1
       .map((val) => val.dateTime)
@@ -25,18 +28,22 @@ function combineDates(data1: any[], data2: any[]): any[] {
   return data;
 }
 
-function handleSingleData(data: any[]) {
-  data.forEach((element) => {
-    element.data1 = formatEnergy(element.data);
+function handleSingleData(data: InputDataProps[]) {
+  return data.map((element) => {
+    return {
+      dateTime: element.dateTime,
+      data1: element.data,
+      data2: 0,
+    } satisfies OutputDataProps;
   });
-  return data;
 }
 
-export function EnergyLineChart({ data, labels, colors }: { data: any[], labels: string[], colors?: number[] }) {
+export function EnergyLineChart({ data, labels, colors }: { data: InputDataProps[][], labels: string[], colors?: number[] }) {
+  let outputData: OutputDataProps[] = [];
   if (data.length === 1) {
-    data = handleSingleData(data[0]);
+    outputData = handleSingleData(data[0]);
   } else {
-    data = combineDates(data[0], data[1]);
+    outputData = combineDates(data[0], data[1]);
   }
   return (
     <ChartContainer
@@ -51,7 +58,7 @@ export function EnergyLineChart({ data, labels, colors }: { data: any[], labels:
     >
       <LineChart
         accessibilityLayer
-        data={data}
+        data={outputData}
         margin={{
           top: 20,
           left: 40,

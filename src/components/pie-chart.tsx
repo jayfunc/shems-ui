@@ -24,9 +24,9 @@ export default function EnergyPieChart({
 	colorEnd?: number,
 	cfgKeys: string[],
 	cfgLabels: string[],
-	data?: any[],
+	data?: unknown[],
 	dataKey: string,
-	dataValues?: any[],
+	dataValues?: number[] | string[],
 	centerTitle?: string,
 	centerSubtitle?: string,
 }) {

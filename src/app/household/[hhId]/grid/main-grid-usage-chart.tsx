@@ -24,7 +24,7 @@ export default function MainGridUsageChart({
   const [mainGridAcct, setMainGridAcct] = useState<MainGridAcct>();
 
   const cfgKeys = ["onPeak", "midPeak", "offPeak"];
-	const cfgLabels = ["On-peak", "Mid-peak", "Off-peak"];
+  const cfgLabels = ["On-peak", "Mid-peak", "Off-peak"];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,16 +48,18 @@ export default function MainGridUsageChart({
         <CardDescription>Last 24 hours usage</CardDescription>
       </CardHeader>
       <CardContent>
-        <EnergyPieChart
-          cfgKeys={cfgKeys}
-          cfgLabels={cfgLabels}
-          dataKey="hours"
-          dataValues={[mainGridAcct?.onPeakPowerUsage, mainGridAcct?.midPeakPowerUsage, mainGridAcct?.offPeakPowerUsage]}
-          centerTitle={`${formatEnergy((mainGridAcct?.onPeakPowerUsage ?? 0) +
-            (mainGridAcct?.midPeakPowerUsage ?? 0) +
-            (mainGridAcct?.offPeakPowerUsage ?? 0))}`}
-          centerSubtitle={getTargetEnergyUnit()}
-        />
+        {mainGridAcct !== undefined ?
+          <EnergyPieChart
+            cfgKeys={cfgKeys}
+            cfgLabels={cfgLabels}
+            dataKey="hours"
+            dataValues={[mainGridAcct?.onPeakPowerUsage, mainGridAcct?.midPeakPowerUsage, mainGridAcct?.offPeakPowerUsage]}
+            centerTitle={`${formatEnergy((mainGridAcct?.onPeakPowerUsage ?? 0) +
+              (mainGridAcct?.midPeakPowerUsage ?? 0) +
+              (mainGridAcct?.offPeakPowerUsage ?? 0))}`}
+            centerSubtitle={getTargetEnergyUnit()}
+          /> :
+          null}
       </CardContent>
     </Card>
   );

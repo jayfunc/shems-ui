@@ -78,12 +78,12 @@ const WorldMap = memo(function WorldMap({
                 }}
                 transition={{
                   duration: 1,
-                  // 如需使用点对点连贯动画，取消下面的注释
-                  // delay: dots.length + i,
-                  // repeatDelay: dots.length,
-                  // repeat: Infinity,
-                  // repeatType: "loop",
                   ease: "easeInOut",
+                  // 如需使用点对点连贯动画，取消下面的注释
+                  delay: dots.length + i,
+                  repeatDelay: dots.length,
+                  repeat: Infinity,
+                  repeatType: "loop",
                 }}
                 key={`start-upper-${i}`}
               ></motion.path>

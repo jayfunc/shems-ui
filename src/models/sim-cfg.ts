@@ -11,7 +11,7 @@ export default class SimCfg extends Base {
     id: bigint,
     simulationTimeStart: Date,
     simulationTimeEnd: Date,
-    simulationTime: string,
+    simulationTime: Date,
   ) {
     super(id, simulationTime);
     this.simulationTimeStart = simulationTimeStart;

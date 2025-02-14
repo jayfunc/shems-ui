@@ -23,6 +23,9 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { EnergyLineChart } from "@/components/line-chart";
 
 export default function Dashboard() {
+  // Simulation time
+  const [time, setTime] = useState<Date>();
+
   // House energy consumption (appliances)
   const [hseCnsmp, setHseCnsmp] = useState<HseCnsmp[]>([]);
   const [hseCnsmpPred, setHseCnsmpPred] = useState<HseCnsmpPred[]>([]);
@@ -52,42 +55,45 @@ export default function Dashboard() {
     });
 
     const fetchData = async () => {
+      // Simulation time
+      ApiService.getSimCfg().then((res) => {
+        setTime(res.data.simulationTime);
+      });
+
       // House energy consumption
       ApiService.getHseCnsmp(hhId).then((ret) => {
-        setHseCnsmp(ret.data.slice(Math.max(0, ret.data.length - chartMaxPoints)));
-
-        // Calculate delta
-        if (hseCnsmp.length > 1) {
-          setHseCnsmpDelta(
-            hseCnsmp[hseCnsmp.length - 1].data -
-            hseCnsmp[hseCnsmp.length - 2].data,
-          );
-        }
+        setHseCnsmp(ret.data.slice(-chartMaxPoints));
       });
+
+      // Calculate delta
+      if (hseCnsmp.length > 1) {
+        setHseCnsmpDelta(
+          hseCnsmp[hseCnsmp.length - 1].data -
+          hseCnsmp[hseCnsmp.length - 2].data,
+        );
+      }
 
       // House energy consumption prediction
       ApiService.getHseCnsmpPred(hhId).then((ret) => {
-        setHseCnsmpPred(ret.data.slice(Math.max(0, ret.data.length - chartMaxPoints)));
+        setHseCnsmpPred(ret.data);
       });
 
       // House energy generation
       ApiService.getHseGen(hhId).then((ret) => {
-        setHseGen(ret.data.slice(Math.max(0, ret.data.length - chartMaxPoints)));
-
-        console.log(hseGen.length);
-
-        // Calculate delta
-        if (hseGen.length > 1) {
-          setHseGenDelta(
-            hseGen[hseGen.length - 1].data -
-            hseGen[hseGen.length - 2].data,
-          );
-        }
+        setHseGen(ret.data);
       });
+
+      // Calculate delta
+      if (hseGen.length > 1) {
+        setHseGenDelta(
+          hseGen[hseGen.length - 1].data -
+          hseGen[hseGen.length - 2].data,
+        );
+      }
 
       // House energy generation prediction
       ApiService.getHseGenPred(hhId).then((ret) => {
-        setHseGenPred(ret.data.slice(Math.max(0, ret.data.length - chartMaxPoints)));
+        setHseGenPred(ret.data);
       });
 
       // Local energy storage
@@ -106,7 +112,7 @@ export default function Dashboard() {
   }, []);
 
   return (
-    hseGen.length > 0 && hseCnsmp.length > 0 && locStor !== undefined && currentHouse !== undefined && currentHouse !== undefined ? (
+    hseGen.length > 0 && hseCnsmp.length > 0 && locStor !== undefined && currentHouse !== undefined && currentHouse !== undefined && (
       <motion.div className="grid grid-cols-4 gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         <EnergyCard
           title="Solar energy"
@@ -150,7 +156,7 @@ export default function Dashboard() {
             <CardDescription>{`${chartMaxPoints}-hour energy real-time consumption and generation level`}</CardDescription>
           </CardHeader>
           <CardContent>
-            <EnergyLineChart data={[hseCnsmp, hseGen]} labels={["Consumption", "Generation"]} colors={[1, 2]} />
+            {time !== undefined && <EnergyLineChart simulationTime={time} data={[hseCnsmp, hseGen]} labels={["Consumption", "Generation"]} colors={[1, 2]} />}
           </CardContent>
         </Card>
 
@@ -167,6 +173,6 @@ export default function Dashboard() {
         </Card> */}
 
       </motion.div>
-    ) : null
+    )
   );
 }

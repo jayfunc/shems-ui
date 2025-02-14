@@ -13,7 +13,7 @@ export default class HseGen extends Base {
     houseId: bigint,
     data: number,
     dateTime: Date,
-    simulationTime: string,
+    simulationTime: Date,
   ) {
     super(id, simulationTime);
     this.houseId = houseId;

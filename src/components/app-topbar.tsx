@@ -55,7 +55,7 @@ export function AppTopbar() {
   pathnames.shift();
   pathnames.shift();
 
-  const [time, setTime] = useState<string>();
+  const [time, setTime] = useState<Date>();
   const [showTime, setShowTime] = useState<boolean>(true);
 
   const [showWeather, setShowWeather] = useState<boolean>(true);
@@ -65,21 +65,13 @@ export function AppTopbar() {
     const fetchData = async () => {
       // Get simulation time
       ApiService.getSimCfg().then((res) => {
-        setTime(
-          new Date(res.data.simulationTime).toLocaleString("en-US", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-        );
+        setTime(res.data.simulationTime);
       });
 
-      // Get weather
-      ApiService.getWx().then((res) => {
-        setTemp(res.data.temperature);
-      });
+      // TODO: Get weather
+      // ApiService.getWx().then((res) => {
+      //   setTemp(res.data.temperature);
+      // });
     };
 
     fetchData();
@@ -130,7 +122,7 @@ export function AppTopbar() {
         >
           <Thermometer />
         </Button>
-        {showWeather ? <Label className="m-1.5">{`${temp ?? '-20 °C'}`}</Label> : null}
+        {showWeather && <Label className="m-1.5">{`${temp ?? '-20 °C'}`}</Label>}
       </motion.div>
 
       <Separator orientation="vertical" className="h-4" />
@@ -143,7 +135,7 @@ export function AppTopbar() {
         >
           <Clock />
         </Button>
-        {showTime ? <Label className="m-1.5">{time}</Label> : null}
+        {showTime && time !== undefined && <Label className="m-1.5">{new Date(time).toLocaleString()}</Label>}
       </motion.div>
 
       <Separator orientation="vertical" className="h-4" />

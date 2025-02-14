@@ -31,7 +31,7 @@ export default class CmtyGridAcct extends Base {
     balancePaid: number,
     balance: number,
     frozenPaidBalance: number,
-    simulationTime: string,
+    simulationTime: Date,
   ) {
     super(id, simulationTime);
     this.houseId = houseId;

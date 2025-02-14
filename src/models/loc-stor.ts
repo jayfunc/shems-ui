@@ -17,7 +17,7 @@ export default class LocStor extends Base {
     capacity: number,
     powerInput: number,
     powerOutput: number,
-    simulationTime: string,
+    simulationTime: Date,
   ) {
     super(id, simulationTime);
     this.houseId = houseId;

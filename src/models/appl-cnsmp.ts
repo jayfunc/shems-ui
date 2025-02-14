@@ -17,7 +17,7 @@ export default class ApplCnsmp extends Base {
     applianceId: bigint,
     data: number,
     dateTime: Date,
-    simulationTime: string,
+    simulationTime: Date,
   ) {
     super(id, simulationTime);
     this.houseId = houseId;

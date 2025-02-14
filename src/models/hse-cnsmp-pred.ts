@@ -37,7 +37,7 @@ export default class HseCnsmpPred extends Base {
     wineCellar: number,
     waterHeater: number,
     airConditioner: number,
-    simulationTime: string,
+    simulationTime: Date,
   ) {
     super(id, simulationTime);
     this.householdType = householdType;

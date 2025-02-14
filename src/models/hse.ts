@@ -22,7 +22,7 @@ export default class Hse extends Base {
     longitude: number,
     householdType: HouseholdType,
     householdName: string,
-    simulationTime: string,
+    simulationTime: Date,
     area?: number,
   ) {
     super(id, simulationTime);

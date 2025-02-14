@@ -31,7 +31,7 @@ export default class MainGridCfg extends Base {
     onPeakHour: number[],
     midPeakHour: number[],
     offPeakHour: number[],
-    simulationTime: string,
+    simulationTime: Date,
   ) {
     super(id, simulationTime);
     this.status = status;

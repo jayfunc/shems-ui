@@ -1,4 +1,4 @@
-import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/chart-patched";
 import { chartMaxPoints } from "@/constants/constants";
 import formatEnergy, { getTargetEnergyUnit } from "../extensions/energy";
 import { CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts";
@@ -38,12 +38,27 @@ function handleSingleData(data: InputDataProps[]) {
   });
 }
 
-export function EnergyLineChart({ data, labels, colors }: { data: InputDataProps[][], labels: string[], colors?: number[] }) {
+export function EnergyLineChart({ simulationTime, data, labels, colors }: { simulationTime: Date, data: InputDataProps[][], labels: string[], colors?: number[] }) {
   let outputData: OutputDataProps[] = [];
   if (data.length === 1) {
     outputData = handleSingleData(data[0]);
   } else {
     outputData = combineDates(data[0], data[1]);
+  }
+
+  // 若 outputData 最后一项的时间戳小于 simulationTime 则在末端补全
+  const lastItemDate = outputData.at(-1)?.dateTime;
+  if (lastItemDate !== undefined) {
+    const hoursDelay = (+new Date(simulationTime) - +new Date(lastItemDate)) / 1000 / 60 / 60;
+    if (hoursDelay > 0) {
+      for (let i = 1; i <= hoursDelay; i++) {
+        outputData.push({
+          dateTime: new Date(+new Date(lastItemDate) + i * 60 * 60 * 1000),
+          data1: undefined,
+          data2: undefined,
+        });
+      }
+    }
   }
 
   // outputData 如果不满 chartMaxPoints 长度则在前端补全
@@ -55,15 +70,18 @@ export function EnergyLineChart({ data, labels, colors }: { data: InputDataProps
     });
   }
 
+  // Make sure outputData has at most chartMaxPoints
+  outputData = outputData.slice(-chartMaxPoints);
+
   return (
     <ChartContainer
       config={labels.reduce((acc, label, index) => {
         acc[`data${index + 1}`] = {
-          label: `${label} (${getTargetEnergyUnit()})`,
+          label: `${label}`,
           color: `hsl(var(--chart-${colors?.at(index) ?? index + 1}))`,
         };
         return acc;
-      }, {} as Record<string, { label: string; color: string }>)}
+      }, {} as ChartConfig)}
       className="max-h-[35vh] w-full"
     >
       <LineChart
@@ -82,36 +100,43 @@ export function EnergyLineChart({ data, labels, colors }: { data: InputDataProps
           tickLine={false}
           tickMargin={10}
           axisLine={false}
-          tickFormatter={(value) => {
-            return value === '' ? '' : new Date(value).toLocaleTimeString();
-          }}
+          tickFormatter={(value) => value === '' ? '' : new Date(value).toLocaleTimeString()}
         />
         <ChartTooltip
           cursor={false}
-          content={<ChartTooltipContent indicator="line" />}
-        />
-        {labels.map((label, index) => (
-          <Line
-            key={label}
-            dataKey={`data${index + 1}`}
-            type="natural"
-            stroke={`var(--color-data${index + 1})`}
-            strokeWidth={2}
-            dot={{
-              fill: `var(--color-data${index + 1})`,
-            }}
-            activeDot={{
-              r: 6,
-            }}
-          >
-            <LabelList
-              position="top"
-              offset={12}
-              className="fill-foreground"
-              fontSize={12}
+          content={
+            <ChartTooltipContent
+              indicator="dot"
+              itemFormatter={(value) => `${value} ${getTargetEnergyUnit()}`}
             />
-          </Line>
-        ))}
+          }
+          labelFormatter={(value) => new Date(value).toLocaleString()}
+        ></ChartTooltip>
+        {labels.map((label, index) => {
+          const color = `var(--color-data${index + 1})`;
+          return (
+            <Line
+              key={label}
+              dataKey={`data${index + 1}`}
+              type="natural"
+              stroke={color}
+              strokeWidth={2}
+              dot={{
+                fill: color,
+              }}
+              activeDot={{
+                r: 6,
+              }}
+            >
+              <LabelList
+                position="top"
+                fill={color}
+                offset={10}
+                formatter={(value: any) => `${value} ${getTargetEnergyUnit()}`}
+              />
+            </Line>
+          );
+        })}
         <ChartLegend content={<ChartLegendContent />} />
       </LineChart>
     </ChartContainer>

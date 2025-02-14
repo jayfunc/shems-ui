@@ -1,5 +1,5 @@
 import { Label, Pie, PieChart } from "recharts";
-import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "./ui/chart";
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "./chart-patched";
 
 /**
  * @param dataValues Data only, if you want to override the input data for Pie, please use data instead
@@ -54,7 +54,7 @@ export default function EnergyPieChart({
 			className="mx-auto max-h-[250px] [&_.recharts-pie-label-text]:fill-foreground"
 		>
 			<PieChart>
-				<ChartTooltip content={<ChartTooltipContent hideLabel />} />
+				<ChartTooltip content={<ChartTooltipContent hideLabel itemFormatter={(value) => `${value} hours`} />} />
 				<Pie
 					data={data === undefined && dataValues !== undefined ? cfgKeys.map((key, index) => {
 						return {
@@ -87,36 +87,36 @@ export default function EnergyPieChart({
 					}}
 				>
 					{
-						showCenterArea ?
-							<Label
-								content={({ viewBox }) => {
-									if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-										return (
-											<text
+						showCenterArea &&
+						<Label
+							content={({ viewBox }) => {
+								if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+									return (
+										<text
+											x={viewBox.cx}
+											y={viewBox.cy}
+											textAnchor="middle"
+											dominantBaseline="middle"
+										>
+											<tspan
 												x={viewBox.cx}
 												y={viewBox.cy}
-												textAnchor="middle"
-												dominantBaseline="middle"
+												className="fill-foreground text-3xl font-bold"
 											>
-												<tspan
-													x={viewBox.cx}
-													y={viewBox.cy}
-													className="fill-foreground text-3xl font-bold"
-												>
-													{centerTitle}
-												</tspan>
-												<tspan
-													x={viewBox.cx}
-													y={(viewBox.cy || 0) + 24}
-													className="fill-muted-foreground"
-												>
-													{centerSubtitle}
-												</tspan>
-											</text>
-										);
-									}
-								}}
-							/> : null
+												{centerTitle}
+											</tspan>
+											<tspan
+												x={viewBox.cx}
+												y={(viewBox.cy || 0) + 24}
+												className="fill-muted-foreground"
+											>
+												{centerSubtitle}
+											</tspan>
+										</text>
+									);
+								}
+							}}
+						/>
 					}
 				</Pie>
 			</PieChart>

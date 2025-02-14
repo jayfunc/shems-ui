@@ -12,7 +12,7 @@ export default class MainGridAcct extends Base {
     onPeakPowerUsage: number,
     midPeakPowerUsage: number,
     offPeakPowerUsage: number,
-    simulationTime: string,
+    simulationTime: Date,
   ) {
     super(id, simulationTime);
     this.houseId = houseId;

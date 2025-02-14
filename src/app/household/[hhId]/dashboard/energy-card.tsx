@@ -20,7 +20,7 @@ export default function EnergyCard({
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{subtitle}</div>
-          {delta === undefined ? null : (
+          {delta !== undefined && (
             <p className="text-xs text-muted-foreground">
               {delta >= 0 ? "+" : ""}
               {delta} {getTargetEnergyUnit()} from last hour

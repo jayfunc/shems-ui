@@ -34,7 +34,7 @@ export default class Appl extends Base {
     name: string,
     applianceType: ApplianceType,
     priority: AppliancePriority,
-    simulationTime: string,
+    simulationTime: Date,
   ) {
     super(id, simulationTime);
     this.houseId = houseId;

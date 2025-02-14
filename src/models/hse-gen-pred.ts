@@ -13,7 +13,7 @@ export default class HseGenPred extends Base {
     householdType: number,
     dateTime: Date,
     data: number,
-    simulationTime: string,
+    simulationTime: Date,
   ) {
     super(id, simulationTime);
     this.householdType = householdType;

@@ -48,18 +48,21 @@ export default function MainGridUsageChart({
         <CardDescription>Last 24 hours usage</CardDescription>
       </CardHeader>
       <CardContent>
-        {mainGridAcct !== undefined ?
+        {mainGridAcct !== undefined &&
           <EnergyPieChart
             cfgKeys={cfgKeys}
             cfgLabels={cfgLabels}
             dataKey="hours"
-            dataValues={[mainGridAcct?.onPeakPowerUsage, mainGridAcct?.midPeakPowerUsage, mainGridAcct?.offPeakPowerUsage]}
-            centerTitle={`${formatEnergy((mainGridAcct?.onPeakPowerUsage ?? 0) +
-              (mainGridAcct?.midPeakPowerUsage ?? 0) +
-              (mainGridAcct?.offPeakPowerUsage ?? 0))}`}
+            dataValues={[
+              formatEnergy(mainGridAcct.onPeakPowerUsage) ?? 0,
+              formatEnergy(mainGridAcct.midPeakPowerUsage) ?? 0,
+              formatEnergy(mainGridAcct.offPeakPowerUsage) ?? 0
+            ]}
+            centerTitle={`${formatEnergy((mainGridAcct.onPeakPowerUsage) +
+              (mainGridAcct.midPeakPowerUsage) +
+              (mainGridAcct.offPeakPowerUsage))}`}
             centerSubtitle={getTargetEnergyUnit()}
-          /> :
-          null}
+          />}
       </CardContent>
     </Card>
   );

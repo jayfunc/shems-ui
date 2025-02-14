@@ -16,7 +16,7 @@ export default function Detail({ applId }: { applId: number }) {
     });
   }, []);
 
-  return appl ? (
+  return appl && (
     <Card className="lg:col-span-full">
       <div className="flex flex-row place-items-center ">
         <CardHeader>
@@ -32,5 +32,5 @@ export default function Detail({ applId }: { applId: number }) {
         </CardHeader>
       </div>
     </Card>
-  ) : null;
+  );
 }

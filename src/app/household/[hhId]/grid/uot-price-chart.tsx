@@ -18,6 +18,15 @@ const cfgLabels = ["On-peak", "Mid-peak", "Off-peak"];
 
 interface InputDataProp { hours: number, section: string, fill: string };
 
+function fillZero(value: number): string {
+  return `${value < 10 ? 0 : ''}${value}`;
+}
+
+function formatTimeDuration(start: number, lasting: number): string {
+  const end = start + lasting;
+  return `• ${fillZero(start)}-${fillZero(end)}`;
+}
+
 function generateChartData(cfgKeys: string[], cfgLabels: string[], cfg?: MainGridCfg): InputDataProp[] {
   const combinedData: InputDataProp[] = [];
 
@@ -52,7 +61,7 @@ function generateChartData(cfgKeys: string[], cfgLabels: string[], cfg?: MainGri
       if (count > 0) {
         combinedData.push({
           hours: count,
-          section: `${prevSection} ${startHour} - ${startHour + count}`,
+          section: `${prevSection} ${formatTimeDuration(startHour, count)}`,
           fill: prevFill,
         });
       }
@@ -66,7 +75,7 @@ function generateChartData(cfgKeys: string[], cfgLabels: string[], cfg?: MainGri
   if (count > 0) {
     combinedData.push({
       hours: count,
-      section: `${prevSection} ${startHour} - ${startHour + count}`,
+      section: `${prevSection} ${formatTimeDuration(startHour, count)}`,
       fill: prevFill,
     });
   }

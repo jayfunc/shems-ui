@@ -21,7 +21,7 @@ export default class HseCnsmp extends Base {
     powerStorageConsumeAmount: number,
     solarPanelConsumeAmount: number,
     dateTime: Date,
-    simulationTime: string,
+    simulationTime: Date,
   ) {
     super(id, simulationTime);
     this.houseId = houseId;

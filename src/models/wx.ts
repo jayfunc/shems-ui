@@ -31,7 +31,7 @@ export default class Wx extends Base {
     precipIntensity: number,
     dewPoint: number,
     precipProbability: number,
-    simulationTime: string,
+    simulationTime: Date,
   ) {
     super(id, simulationTime);
     this.weatherTime = weatherTime;

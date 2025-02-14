@@ -7,7 +7,6 @@ import {
 } from "@/constants/constants";
 import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
-import { ChartConfig } from "@/components/ui/chart";
 
 export default function Trading() {
   const hhId = parseInt(

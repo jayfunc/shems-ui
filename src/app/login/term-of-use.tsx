@@ -9,15 +9,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import Link from "next/link";
 
 export function TermOfUseButton() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" className="underline p-0">
+        <Link href="" className="underline">
           Term of Use
-        </Button>
+        </Link>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>

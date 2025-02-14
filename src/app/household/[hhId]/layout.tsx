@@ -46,11 +46,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <AppSidebar menuItems={menuItems} />
         <SidebarInset>
           <AppTopbar />
-          <Suspense fallback={<Placeholder />}>
-            <div className="relative p-4 lg:px-24">
+          <div className="relative p-4 lg:px-24">
+            <Suspense fallback={<Placeholder />}>
               {children}
-            </div>
-          </Suspense>
+            </Suspense>
+          </div>
         </SidebarInset>
       </SidebarProvider>
     </motion.div>

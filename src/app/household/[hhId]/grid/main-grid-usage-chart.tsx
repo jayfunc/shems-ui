@@ -11,7 +11,7 @@ import {
 import {
   autoRefreshInterval,
 } from "@/constants/constants";
-import formatEnergy, { getTargetEnergyUnit } from "@/extensions/energy";
+import energyUnitConverter from "@/extensions/energy-unit-converter";
 import MainGridAcct from "@/models/main-grid-acct";
 import ApiService from "@/services/api";
 import { useEffect, useState } from "react";
@@ -45,7 +45,9 @@ export default function MainGridUsageChart({
     <Card>
       <CardHeader>
         <CardTitle>Main grid energy usage</CardTitle>
-        <CardDescription>Last 24 hours usage</CardDescription>
+        <CardDescription>
+          Energy usage by periods up to now
+        </CardDescription>
       </CardHeader>
       <CardContent>
         {mainGridAcct !== undefined &&
@@ -54,14 +56,12 @@ export default function MainGridUsageChart({
             cfgLabels={cfgLabels}
             dataKey="hours"
             dataValues={[
-              formatEnergy(mainGridAcct.onPeakPowerUsage) ?? 0,
-              formatEnergy(mainGridAcct.midPeakPowerUsage) ?? 0,
-              formatEnergy(mainGridAcct.offPeakPowerUsage) ?? 0
+              energyUnitConverter.format(mainGridAcct.onPeakPowerUsage) ?? 0,
+              energyUnitConverter.format(mainGridAcct.midPeakPowerUsage) ?? 0,
+              energyUnitConverter.format(mainGridAcct.offPeakPowerUsage) ?? 0
             ]}
-            centerTitle={`${formatEnergy((mainGridAcct.onPeakPowerUsage) +
-              (mainGridAcct.midPeakPowerUsage) +
-              (mainGridAcct.offPeakPowerUsage))}`}
-            centerSubtitle={getTargetEnergyUnit()}
+            centerSubtitle={energyUnitConverter.getTargetUnit()}
+            itemFormatter={(value) => `${value} ${energyUnitConverter.getTargetUnit()}`}
           />}
       </CardContent>
     </Card>

@@ -114,6 +114,7 @@ export default function UotPriceChart() {
           cfgLabels={cfgLabels}
           dataKey="hours"
           data={generateChartData(cfgKeys, cfgLabels, mainGridCfg)}
+          itemFormatter={(value) => `${value} hours`}
         />
       </CardContent>
     </Card>

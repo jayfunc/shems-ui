@@ -18,9 +18,11 @@ import Hse, { HouseholdType } from "@/models/hse";
 import EnergyCard from "./energy-card";
 import { insertSpaces, toTitleCase } from "@/extensions/string";
 import { motion } from "motion/react";
-import formatEnergy, { getTargetEnergyUnit } from "@/extensions/energy";
+import formatEnergy from "@/extensions/energy-unit-converter";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { EnergyLineChart } from "@/components/line-chart";
+import { Placeholder } from "@/components/placeholder";
+import energyUnitConverter from "@/extensions/energy-unit-converter";
 
 export default function Dashboard() {
   // Simulation time
@@ -62,39 +64,39 @@ export default function Dashboard() {
 
       // House energy consumption
       ApiService.getHseCnsmp(hhId).then((ret) => {
-        setHseCnsmp(ret.data.slice(-chartMaxPoints));
+        setHseCnsmp(ret.data);
+        // Calculate delta
+        if (ret.data.length > 1) {
+          const last = ret.data[ret.data.length - 1]?.data;
+          const secondLast = ret.data[ret.data.length - 2]?.data;
+          if (last !== undefined && secondLast !== undefined) {
+            setHseCnsmpDelta(last - secondLast);
+          }
+        }
       });
-
-      // Calculate delta
-      if (hseCnsmp.length > 1) {
-        setHseCnsmpDelta(
-          hseCnsmp[hseCnsmp.length - 1].data -
-          hseCnsmp[hseCnsmp.length - 2].data,
-        );
-      }
 
       // House energy consumption prediction
-      ApiService.getHseCnsmpPred(hhId).then((ret) => {
-        setHseCnsmpPred(ret.data);
-      });
+      // ApiService.getHseCnsmpPred(hhId).then((ret) => {
+      //   setHseCnsmpPred(ret.data);
+      // });
 
       // House energy generation
       ApiService.getHseGen(hhId).then((ret) => {
         setHseGen(ret.data);
+        // Calculate delta
+        if (ret.data.length > 1) {
+          const last = ret.data.at(-1)?.data;
+          const secondLast = ret.data.at(-2)?.data;
+          if (last !== undefined && secondLast !== undefined) {
+            setHseGenDelta(last - secondLast);
+          }
+        }
       });
-
-      // Calculate delta
-      if (hseGen.length > 1) {
-        setHseGenDelta(
-          hseGen[hseGen.length - 1].data -
-          hseGen[hseGen.length - 2].data,
-        );
-      }
 
       // House energy generation prediction
-      ApiService.getHseGenPred(hhId).then((ret) => {
-        setHseGenPred(ret.data);
-      });
+      // ApiService.getHseGenPred(hhId).then((ret) => {
+      //   setHseGenPred(ret.data);
+      // });
 
       // Local energy storage
       ApiService.getLocStor(hhId).then((ret) => {
@@ -112,23 +114,25 @@ export default function Dashboard() {
   }, []);
 
   return (
-    hseGen.length > 0 && hseCnsmp.length > 0 && locStor !== undefined && currentHouse !== undefined && currentHouse !== undefined && (
+    hseGen !== undefined && hseCnsmp !== undefined &&
+      hseGen.length > 0 && hseCnsmp.length > 0 &&
+      locStor !== undefined && currentHouse !== undefined ? (
       <motion.div className="grid grid-cols-4 gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         <EnergyCard
           title="Solar energy"
           subtitle={
-            `${formatEnergy(hseGen.at(hseGen.length - 1)!.data)} ${getTargetEnergyUnit()}`
+            `${energyUnitConverter.format(hseGen.at(-1)?.data) ?? '-'} ${energyUnitConverter.getTargetUnit()}`
           }
-          delta={formatEnergy(hseGenDelta)}
+          delta={energyUnitConverter.format(hseGenDelta) ?? '-'}
           icon={<Sun className="h-full w-full text-muted-foreground" />}
         />
 
         <EnergyCard
           title="House consumption"
           subtitle={
-            `${formatEnergy(hseCnsmp.at(hseCnsmp.length - 1)!.data)} ${getTargetEnergyUnit()}`
+            `${energyUnitConverter.format(hseCnsmp[hseCnsmp.length - 1].data) ?? '-'} ${energyUnitConverter.getTargetUnit()}`
           }
-          delta={formatEnergy(hseCnsmpDelta)}
+          delta={energyUnitConverter.format(hseCnsmpDelta) ?? '-'}
           icon={<Home className="h-full w-full text-muted-foreground" />}
         />
 
@@ -173,6 +177,6 @@ export default function Dashboard() {
         </Card> */}
 
       </motion.div>
-    )
+    ) : <Placeholder />
   );
 }

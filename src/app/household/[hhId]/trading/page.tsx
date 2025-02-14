@@ -26,8 +26,9 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import CmtyGridAcct from "@/models/cmty-grid-acct";
 import { motion } from "motion/react";
-import formatEnergy, { getTargetEnergyUnit } from "@/extensions/energy";
+import React from "react";
 import WorldMap from "@/components/ui/world-map";
+import energyUnitConverter from "@/extensions/energy-unit-converter";
 
 const trades = [
   {
@@ -65,15 +66,15 @@ export default function Trading() {
 
   useEffect(() => {
     const fetchData = async () => {
-      ApiService.getCmtyGridAcct(hhId).then((res) => {
+      await ApiService.getCmtyGridAcct(hhId).then((res) => {
         setCmtyGridAcct(res.data);
       });
     };
 
     fetchData();
 
-    const interval = setInterval(() => {
-      fetchData();
+    const interval = setInterval(async () => {
+      await fetchData();
     }, autoRefreshInterval);
 
     return () => clearInterval(interval);
@@ -121,7 +122,20 @@ export default function Trading() {
         </CardContent>
       </Card>
 
-      <Card className="col-span-full">
+      <Card className="col-span-1">
+        <CardHeader>
+          <CardTitle>Energy balance</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-row gap-2">
+          <Zap />
+          {energyUnitConverter.format(cmtyGridAcct?.totalSurplusPowerAmount) ?? '-'} {energyUnitConverter.getTargetUnit()} Available
+          <Badge variant="secondary">
+            {energyUnitConverter.format(cmtyGridAcct?.powerFrozenAmount) ?? '-'} {energyUnitConverter.getTargetUnit()} Pending
+          </Badge>
+        </CardContent>
+      </Card>
+
+      <Card className="col-span-1">
         <CardHeader>
           <CardDescription>Community account</CardDescription>
           <CardTitle className="grid flex flex-row place-items-center gap-2 pt-2">
@@ -135,9 +149,9 @@ export default function Trading() {
             <div className="flex-1" />
             <Zap />
             <div className="flex flex-col gap-2 pl-2">
-              {formatEnergy(cmtyGridAcct?.totalSurplusPowerAmount)} {getTargetEnergyUnit()}
+              {energyUnitConverter.format(cmtyGridAcct?.totalSurplusPowerAmount)} {energyUnitConverter.getTargetUnit()}
               <Badge variant="secondary">
-                {formatEnergy(cmtyGridAcct?.powerFrozenAmount)} {getTargetEnergyUnit()} Pending
+                {energyUnitConverter.format(cmtyGridAcct?.powerFrozenAmount)} {energyUnitConverter.getTargetUnit()} Pending
               </Badge>
             </div>
             <div className="flex-1" />

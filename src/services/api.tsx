@@ -1,3 +1,5 @@
+"use client";
+
 import Hse from "@/models/hse";
 import Appl from "../models/appl";
 import HseCnsmp from "../models/hse-cnsmp";
@@ -12,6 +14,7 @@ import SimCfg from "@/models/sim-cfg";
 import HseCnsmpPred from "@/models/hse-cnsmp-pred";
 import HseGenPred from "@/models/hse-gen-pred";
 import Wx from "@/models/wx";
+import { useToast } from "@/hooks/use-toast";
 
 const baseUri: string = "http://localhost:8080/api";
 const gridUri: string = `${baseUri}/grid`;

@@ -21,6 +21,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   username: z.coerce.number().min(1).max(50),
@@ -29,6 +30,7 @@ const formSchema = z.object({
 
 export default function Page() {
   const router = useRouter();
+  const toast = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -40,8 +42,7 @@ export default function Page() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     ApiService.getHse(values.username).then((ret) => {
-      console.log(ret);
-      if (ret !== null) {
+      if (ret !== undefined) {
         if (ret.data === null) {
           form.setError("username", {
             type: "manual",
@@ -56,6 +57,12 @@ export default function Page() {
           message: "Network error",
         });
       }
+    }).catch((err) => {
+      toast.toast({
+        variant: "destructive",
+        title: "Error",
+        description: err.message,
+      })
     });
   }
 

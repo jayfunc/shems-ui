@@ -15,8 +15,8 @@ export default function EnergyPieChart({
 	data,
 	dataKey,
 	dataValues,
-	centerTitle = '',
 	centerSubtitle = '',
+	itemFormatter,
 }: {
 	lightPieChartBaseColor?: string,
 	darkPieChartBaseColor?: string,
@@ -26,9 +26,9 @@ export default function EnergyPieChart({
 	cfgLabels: string[],
 	data?: unknown[],
 	dataKey: string,
-	dataValues?: number[] | string[],
-	centerTitle?: string,
+	dataValues?: number[],
 	centerSubtitle?: string,
+	itemFormatter: (value: string) => string,
 }) {
 	const chartConfig: ChartConfig = {};
 
@@ -46,7 +46,7 @@ export default function EnergyPieChart({
 		};
 	});
 
-	const showCenterArea = centerTitle !== '' || centerSubtitle !== '';
+	const showCenterArea = centerSubtitle !== '';
 
 	return (
 		<ChartContainer
@@ -54,7 +54,7 @@ export default function EnergyPieChart({
 			className="mx-auto max-h-[250px] [&_.recharts-pie-label-text]:fill-foreground"
 		>
 			<PieChart>
-				<ChartTooltip content={<ChartTooltipContent hideLabel itemFormatter={(value) => `${value} hours`} />} />
+				<ChartTooltip content={<ChartTooltipContent hideLabel itemFormatter={itemFormatter} />} />
 				<Pie
 					data={data === undefined && dataValues !== undefined ? cfgKeys.map((key, index) => {
 						return {
@@ -103,7 +103,7 @@ export default function EnergyPieChart({
 												y={viewBox.cy}
 												className="fill-foreground text-3xl font-bold"
 											>
-												{centerTitle}
+												{dataValues?.reduce((acc, cur) => acc + cur, 0)}
 											</tspan>
 											<tspan
 												x={viewBox.cx}

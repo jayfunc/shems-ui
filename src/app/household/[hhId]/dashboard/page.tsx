@@ -58,12 +58,12 @@ export default function Dashboard() {
 
     const fetchData = async () => {
       // Simulation time
-      ApiService.getSimCfg().then((res) => {
+      await ApiService.getSimCfg().then((res) => {
         setTime(res.data.simulationTime);
       });
 
       // House energy consumption
-      ApiService.getHseCnsmp(hhId).then((ret) => {
+      await ApiService.getHseCnsmp(hhId).then((ret) => {
         setHseCnsmp(ret.data);
         // Calculate delta
         if (ret.data.length > 1) {
@@ -81,7 +81,7 @@ export default function Dashboard() {
       // });
 
       // House energy generation
-      ApiService.getHseGen(hhId).then((ret) => {
+      await ApiService.getHseGen(hhId).then((ret) => {
         setHseGen(ret.data);
         // Calculate delta
         if (ret.data.length > 1) {
@@ -99,74 +99,71 @@ export default function Dashboard() {
       // });
 
       // Local energy storage
-      ApiService.getLocStor(hhId).then((ret) => {
+      await ApiService.getLocStor(hhId).then((ret) => {
         setLocStor(ret.data);
       });
     };
 
     fetchData();
 
-    const interval = setInterval(() => {
-      fetchData();
+    const interval = setInterval(async () => {
+      await fetchData();
     }, autoRefreshInterval);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    hseGen !== undefined && hseCnsmp !== undefined &&
-      hseGen.length > 0 && hseCnsmp.length > 0 &&
-      locStor !== undefined && currentHouse !== undefined ? (
-      <motion.div className="grid grid-cols-4 gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <EnergyCard
-          title="Solar energy"
-          subtitle={
-            `${energyUnitConverter.format(hseGen.at(-1)?.data) ?? '-'} ${energyUnitConverter.getTargetUnit()}`
-          }
-          delta={energyUnitConverter.format(hseGenDelta) ?? '-'}
-          icon={<Sun className="h-full w-full text-muted-foreground" />}
-        />
+    <motion.div className="grid grid-cols-4 gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <EnergyCard
+        title="Solar energy"
+        subtitle={
+          `${energyUnitConverter.format(hseGen.at(-1)?.data) ?? '-'} ${energyUnitConverter.getTargetUnit()}`
+        }
+        delta={energyUnitConverter.format(hseGenDelta) ?? '-'}
+        icon={<Sun className="h-full w-full text-muted-foreground" />}
+      />
 
-        <EnergyCard
-          title="House consumption"
-          subtitle={
-            `${energyUnitConverter.format(hseCnsmp[hseCnsmp.length - 1].data) ?? '-'} ${energyUnitConverter.getTargetUnit()}`
-          }
-          delta={energyUnitConverter.format(hseCnsmpDelta) ?? '-'}
-          icon={<Home className="h-full w-full text-muted-foreground" />}
-        />
+      <EnergyCard
+        title="House consumption"
+        subtitle={
+          `${energyUnitConverter.format(hseCnsmp.at(-1)?.data) ?? '-'} ${energyUnitConverter.getTargetUnit()}`
+        }
+        delta={energyUnitConverter.format(hseCnsmpDelta) ?? '-'}
+        icon={<Home className="h-full w-full text-muted-foreground" />}
+      />
 
-        <EnergyCard
-          title="Battery storage"
-          subtitle={
-            `${Math.floor((locStor.currentPowerAmount / locStor.capacity) * 100)}%`
-          }
-          icon={
-            <div className="relative">
-              <BatteryCharging className="h-full w-full text-muted-foreground" />
-            </div>
-          }
-        />
+      <EnergyCard
+        title="Battery storage"
+        subtitle={
+          `${locStor === undefined ? '-' : Math.floor((locStor.currentPowerAmount / locStor.capacity) * 100)}%`
+        }
+        icon={
+          <div className="relative">
+            <BatteryCharging className="h-full w-full text-muted-foreground" />
+          </div>
+        }
+      />
 
-        <EnergyCard
-          title={`${currentHouse.householdName}'s house - ${toTitleCase(insertSpaces(HouseholdType[currentHouse.householdType ?? 0]))}`}
-          subtitle={`${currentHouse.area} ft²`}
-          icon={<Info className="h-full w-full text-muted-foreground" />}
-        />
+      <EnergyCard
+        title={`${currentHouse?.householdName ?? '-'}'s house - ${toTitleCase(insertSpaces(HouseholdType[currentHouse?.householdType ?? 0]))}`}
+        subtitle={`${currentHouse?.area ?? '-'} ft²`}
+        icon={<Info className="h-full w-full text-muted-foreground" />}
+      />
 
-        <Card className="col-span-full">
-          <CardHeader>
-            <CardTitle>House overall energy</CardTitle>
-            <CardDescription>{`${chartMaxPoints}-hour energy real-time consumption and generation level`}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {time !== undefined && <EnergyLineChart simulationTime={time} data={[hseCnsmp, hseGen]} labels={["Consumption", "Generation"]} colors={[1, 2]} />}
-          </CardContent>
-        </Card>
+      <Card className="col-span-full">
+        <CardHeader>
+          <CardTitle>House overall energy</CardTitle>
+          <CardDescription>{`${chartMaxPoints}-hour energy real-time consumption and generation level`}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {time !== undefined && <EnergyLineChart simulationTime={time} data={[hseCnsmp, hseGen]} labels={["Consumption", "Generation"]} colors={[1, 2]} />}
+        </CardContent>
+      </Card>
 
 
-        {/* TODO: 预测数据未准备好 */}
-        {/* <Card className="col-span-full">
+      {/* TODO: 预测数据未准备好 */}
+      {/* <Card className="col-span-full">
           <CardHeader>
             <CardTitle>House generation energy</CardTitle>
             <CardDescription>{`${chartMaxPoints}-hour energy generation with forcast level`}</CardDescription>
@@ -176,7 +173,6 @@ export default function Dashboard() {
           </CardContent>
         </Card> */}
 
-      </motion.div>
-    ) : <Placeholder />
+    </motion.div>
   );
 }

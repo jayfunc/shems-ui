@@ -60,8 +60,6 @@ export function EnergyLineChart({ simulationTime, data, labels, colors }: { simu
   // Make sure outputData has at most chartMaxPoints
   outputData = outputData.slice(-chartMaxPoints);
 
-  console.log(outputData);
-
   const isDataEmpty = outputData.every((element) => !element.data1 && !element.data2);
 
   return (

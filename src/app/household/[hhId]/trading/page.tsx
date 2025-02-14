@@ -29,6 +29,8 @@ import { motion } from "motion/react";
 import React from "react";
 import WorldMap from "@/components/ui/world-map";
 import energyUnitConverter from "@/extensions/energy-unit-converter";
+import moneyUnitConverter from "@/extensions/money-unit-converter";
+import { Separator } from "@/components/ui/separator";
 
 const trades = [
   {
@@ -81,7 +83,7 @@ export default function Trading() {
   }, []);
 
   return (
-    <motion.div className="grid grid-cols-2 gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+    cmtyGridAcct !== undefined && <motion.div className="grid grid-cols-2 gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <Card className="col-span-full">
         <CardHeader>
           <CardTitle>Energy map</CardTitle>
@@ -127,37 +129,39 @@ export default function Trading() {
           <CardTitle>Energy balance</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-row gap-2">
-          <Zap />
-          {energyUnitConverter.format(cmtyGridAcct?.totalSurplusPowerAmount) ?? '-'} {energyUnitConverter.getTargetUnit()} Available
+          {energyUnitConverter.format(cmtyGridAcct.totalSurplusPowerAmount) ?? '-'} {energyUnitConverter.getTargetUnit()} Available
           <Badge variant="secondary">
-            {energyUnitConverter.format(cmtyGridAcct?.powerFrozenAmount) ?? '-'} {energyUnitConverter.getTargetUnit()} Pending
+            {energyUnitConverter.format(cmtyGridAcct.powerFrozenAmount) ?? '-'} {energyUnitConverter.getTargetUnit()} Pending
           </Badge>
+          <div>
+            <div className="space-y-1">
+              <h4 className="text-sm font-medium leading-none">Radix Primitives</h4>
+              <p className="text-sm text-muted-foreground">
+                An open-source UI component library.
+              </p>
+            </div>
+            <Separator className="my-4" />
+            <div className="flex h-5 items-center space-x-4 text-sm">
+              <div>Blog</div>
+              <Separator orientation="vertical" />
+              <div>Docs</div>
+              <Separator orientation="vertical" />
+              <div>Source</div>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
       <Card className="col-span-1">
         <CardHeader>
-          <CardDescription>Community account</CardDescription>
-          <CardTitle className="grid flex flex-row place-items-center gap-2 pt-2">
-            <Coins />
-            <div className="flex flex-col gap-2 pl-2">
-              ${cmtyGridAcct?.balance} CAD
-              <Badge variant="secondary">
-                ${cmtyGridAcct?.frozenPaidBalance} CAD Pending
-              </Badge>
-            </div>
-            <div className="flex-1" />
-            <Zap />
-            <div className="flex flex-col gap-2 pl-2">
-              {energyUnitConverter.format(cmtyGridAcct?.totalSurplusPowerAmount)} {energyUnitConverter.getTargetUnit()}
-              <Badge variant="secondary">
-                {energyUnitConverter.format(cmtyGridAcct?.powerFrozenAmount)} {energyUnitConverter.getTargetUnit()} Pending
-              </Badge>
-            </div>
-            <div className="flex-1" />
-          </CardTitle>
+          <CardTitle>Fund balance</CardTitle>
         </CardHeader>
-        <CardContent></CardContent>
+        <CardContent>
+          $ {moneyUnitConverter.format(cmtyGridAcct.balance) ?? '-'} CAD
+          <Badge variant="secondary">
+            $ {moneyUnitConverter.format(cmtyGridAcct.frozenPaidBalance) ?? '-'} CAD Pending
+          </Badge>
+        </CardContent>
       </Card>
 
       <Card className="col-span-full">

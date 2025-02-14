@@ -8,9 +8,9 @@ enum EnergyUnit {
 const sourceEnergyUnit = EnergyUnit.Wh;
 const targetEnergyUnit = EnergyUnit.kWh;
 
-export default function formatEnergy(value?: number): number {
+export default function formatEnergy(value?: number): number | undefined {
 	if (!value) {
-		return 0;
+		return undefined;
 	}
 	return parseFloat((value / (targetEnergyUnit / sourceEnergyUnit)).toFixed(fractionDigits));
 }

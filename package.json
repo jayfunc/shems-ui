@@ -11,6 +11,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@hookform/resolvers": "^4.0.0",
     "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-dropdown-menu": "^2.1.6",
     "@radix-ui/react-label": "^2.1.2",
@@ -36,6 +37,7 @@
     "react": "^19.0.0",
     "react-awesome-reveal": "^4.3.1",
     "react-dom": "^19.0.0",
+    "react-hook-form": "^7.54.2",
     "react-timer-hook": "^3.0.8",
     "recharts": "^2.15.1",
     "shems-ui": "file:",
@@ -43,7 +45,8 @@
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.173.0",
     "three-globe": "^2.41.12",
-    "use-local-storage": "^3.0.0"
+    "use-local-storage": "^3.0.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

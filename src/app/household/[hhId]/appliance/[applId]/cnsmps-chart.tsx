@@ -25,11 +25,7 @@ export function CnsmpsChart({ applId }: { applId: number }) {
   useEffect(() => {
     const fetchData = async () => {
       ApiService.getApplCnsmp(applId).then((ret) => {
-        data.push(ret.data);
-        if (data.length >= chartMaxPoints) {
-          data.shift();
-        }
-        setData([...data]);
+        setData(ret.data.slice(Math.max(0, ret.data.length - chartMaxPoints)));
       });
     };
 

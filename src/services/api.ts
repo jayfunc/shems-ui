@@ -38,7 +38,7 @@ export default class ApiService {
 
   static async getApplCnsmp(
     applianceId: number,
-  ): Promise<ResponseData<ApplCnsmp>> {
+  ): Promise<ResponseData<ApplCnsmp[]>> {
     const response = await fetch(`${applUri}/cnsmp?applianceId=${applianceId}`);
     const data = await response.json();
     return data;
@@ -70,13 +70,13 @@ export default class ApiService {
 
   // Hse
 
-  static async getHseCnsmp(houseId: number): Promise<ResponseData<HseCnsmp>> {
+  static async getHseCnsmp(houseId: number): Promise<ResponseData<HseCnsmp[]>> {
     const response = await fetch(`${hseUri}/cnsmp?houseId=${houseId}`);
     const data = await response.json();
     return data;
   }
 
-  static async getHseGen(houseId: number): Promise<ResponseData<HseGen>> {
+  static async getHseGen(houseId: number): Promise<ResponseData<HseGen[]>> {
     const response = await fetch(`${hseUri}/gen?houseId=${houseId}`);
     const data = await response.json();
     return data;
@@ -84,7 +84,7 @@ export default class ApiService {
 
   static async getHseCnsmpPred(
     householdType: number,
-  ): Promise<ResponseData<HseCnsmpPred>> {
+  ): Promise<ResponseData<HseCnsmpPred[]>> {
     const response = await fetch(
       `${hseUri}/cnsmp/pred?householdType=${householdType}`,
     );
@@ -94,7 +94,7 @@ export default class ApiService {
 
   static async getHseGenPred(
     householdType: number,
-  ): Promise<ResponseData<HseGenPred>> {
+  ): Promise<ResponseData<HseGenPred[]>> {
     const response = await fetch(
       `${hseUri}/gen/pred?householdType=${householdType}`,
     );

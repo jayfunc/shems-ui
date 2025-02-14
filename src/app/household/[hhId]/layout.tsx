@@ -3,9 +3,7 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppTopbar } from "@/components/app-topbar";
 import { Placeholder } from "@/components/placeholder";
-import { Button } from "@/components/ui/button";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { Toaster } from "@/components/ui/toaster";
 import { routing } from "@/constants/constants";
 import { Home, CircuitBoard, ChartCandlestick, UtilityPole } from "lucide-react";
 import { motion } from "motion/react";
@@ -52,7 +50,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="relative p-4 lg:px-24">
               {children}
             </div>
-            <Toaster />
           </Suspense>
         </SidebarInset>
       </SidebarProvider>

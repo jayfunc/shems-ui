@@ -54,12 +54,9 @@ export default function Dashboard() {
     const fetchData = async () => {
       // House energy consumption
       ApiService.getHseCnsmp(hhId).then((ret) => {
-        hseCnsmp.push(ret.data);
-        if (hseCnsmp.length >= chartMaxPoints) {
-          hseCnsmp.shift();
-        }
-        setHseCnsmp([...hseCnsmp]);
+        setHseCnsmp(ret.data.slice(Math.max(0, ret.data.length - chartMaxPoints)));
 
+        // Calculate delta
         if (hseCnsmp.length > 1) {
           setHseCnsmpDelta(
             hseCnsmp[hseCnsmp.length - 1].data -
@@ -70,21 +67,16 @@ export default function Dashboard() {
 
       // House energy consumption prediction
       ApiService.getHseCnsmpPred(hhId).then((ret) => {
-        hseCnsmpPred.push(ret.data);
-        if (hseCnsmpPred.length >= chartMaxPoints) {
-          hseCnsmpPred.shift();
-        }
-        setHseCnsmpPred([...hseCnsmpPred]);
+        setHseCnsmpPred(ret.data.slice(Math.max(0, ret.data.length - chartMaxPoints)));
       });
 
       // House energy generation
       ApiService.getHseGen(hhId).then((ret) => {
-        hseGen.push(ret.data);
-        if (hseGen.length >= chartMaxPoints) {
-          hseGen.shift();
-        }
-        setHseGen([...hseGen]);
+        setHseGen(ret.data.slice(Math.max(0, ret.data.length - chartMaxPoints)));
 
+        console.log(hseGen.length);
+
+        // Calculate delta
         if (hseGen.length > 1) {
           setHseGenDelta(
             hseGen[hseGen.length - 1].data -
@@ -95,11 +87,7 @@ export default function Dashboard() {
 
       // House energy generation prediction
       ApiService.getHseGenPred(hhId).then((ret) => {
-        hseGenPred.push(ret.data);
-        if (hseGenPred.length >= chartMaxPoints) {
-          hseGenPred.shift();
-        }
-        setHseGenPred([...hseGenPred]);
+        setHseGenPred(ret.data.slice(Math.max(0, ret.data.length - chartMaxPoints)));
       });
 
       // Local energy storage

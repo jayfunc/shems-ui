@@ -4,8 +4,8 @@ import formatEnergy, { getTargetEnergyUnit } from "../extensions/energy";
 import { CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts";
 import React from "react";
 
-interface InputDataProps { dateTime: Date, data: number };
-interface OutputDataProps { dateTime: Date, data1: number, data2: number };
+interface InputDataProps { dateTime?: Date, data?: number };
+interface OutputDataProps { dateTime?: Date, data1?: number, data2?: number };
 
 function combineDates(data1: InputDataProps[], data2: InputDataProps[]): OutputDataProps[] {
   let data: OutputDataProps[] = [];
@@ -33,7 +33,7 @@ function handleSingleData(data: InputDataProps[]) {
     return {
       dateTime: element.dateTime,
       data1: element.data,
-      data2: 0,
+      data2: undefined,
     } satisfies OutputDataProps;
   });
 }
@@ -45,6 +45,16 @@ export function EnergyLineChart({ data, labels, colors }: { data: InputDataProps
   } else {
     outputData = combineDates(data[0], data[1]);
   }
+
+  // outputData 如果不满 chartMaxPoints 长度则在前端补全
+  for (let i = 0; i < chartMaxPoints - outputData.length; i++) {
+    outputData.unshift({
+      dateTime: undefined,
+      data1: undefined,
+      data2: undefined,
+    });
+  }
+
   return (
     <ChartContainer
       config={labels.reduce((acc, label, index) => {
@@ -60,9 +70,10 @@ export function EnergyLineChart({ data, labels, colors }: { data: InputDataProps
         accessibilityLayer
         data={outputData}
         margin={{
-          top: 20,
+          top: 40,
           left: 40,
           right: 40,
+          bottom: 40,
         }}
       >
         <CartesianGrid vertical={false} />
@@ -71,7 +82,9 @@ export function EnergyLineChart({ data, labels, colors }: { data: InputDataProps
           tickLine={false}
           tickMargin={10}
           axisLine={false}
-          tickFormatter={(value) => new Date(value).toLocaleTimeString()}
+          tickFormatter={(value) => {
+            return value === '' ? '' : new Date(value).toLocaleTimeString();
+          }}
         />
         <ChartTooltip
           cursor={false}

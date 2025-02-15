@@ -8,9 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import MainGridCfg from "@/models/main-grid-cfg";
-import { useEffect, useState } from "react";
-import ApiService from "@/services/api";
-import { autoRefreshInterval, hoursInDay } from "@/constants/constants";
+import { hoursInDay } from "@/constants/constants";
 import EnergyPieChart from "@/components/pie-chart";
 
 const cfgKeys = ["onPeak", "midPeak", "offPeak"];
@@ -83,27 +81,10 @@ function generateChartData(cfgKeys: string[], cfgLabels: string[], cfg?: MainGri
   return combinedData;
 }
 
-export default function UotPriceChart() {
-  const [mainGridCfg, setMainGridCfg] = useState<MainGridCfg>();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      ApiService.getMainGridCfg().then((res) => {
-        setMainGridCfg(res.data);
-      });
-    };
-
-    fetchData();
-
-    const interval = setInterval(() => {
-      fetchData();
-    }, autoRefreshInterval);
-
-    return () => clearInterval(interval);
-  }, []);
+export default function UotPriceChart({ mainGridCfg }: { mainGridCfg?: MainGridCfg }) {
 
   return (
-    <Card>
+    <Card className="col-span-full">
       <CardHeader>
         <CardTitle>Electricity time-of-use price periods</CardTitle>
         <CardDescription>Current time-of-use price periods</CardDescription>

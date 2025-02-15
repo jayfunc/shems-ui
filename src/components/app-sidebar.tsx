@@ -1,4 +1,4 @@
-import { LogOut, LucideProps } from "lucide-react";
+import { LucideProps } from "lucide-react";
 
 import {
   Sidebar,
@@ -14,13 +14,14 @@ import {
 import Link from "next/link";
 import { Label } from "./ui/label";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
-import { redirect } from "next/navigation";
-import { routing } from "@/constants/constants";
+import { NavUser } from "./nav-user";
+import Hse from "@/models/hse";
 
 export function AppSidebar({
   menuItems,
   mainRouting,
   selectedRouting,
+  hse,
 }: {
   menuItems: {
     title: string;
@@ -31,11 +32,8 @@ export function AppSidebar({
   }[];
   mainRouting: string;
   selectedRouting: string;
+  hse?: Hse;
 }) {
-  function logOut() {
-    redirect(`/${routing.login}`);
-  }
-
   return (
     <Sidebar>
       <SidebarHeader className="h-16 shrink-0 gap-2 border-b px-4 place-items-center flex flex-row">
@@ -60,14 +58,7 @@ export function AppSidebar({
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton onClick={logOut}>
-              <LogOut />
-              Log out
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <NavUser hse={hse} />
       </SidebarFooter>
     </Sidebar>
   );

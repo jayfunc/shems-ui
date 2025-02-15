@@ -131,35 +131,35 @@ export default function Trading() {
         <CardContent>
           <div className="flex h-5 items-center space-x-4 text-sm">
             <div>
-              {energyUnitConverter.format(cmtyGridAcct.totalSurplusPowerAmount) ?? '-'} {energyUnitConverter.getTargetUnit()} in your account
+              {energyUnitConverter.formatInStringWithUnit(cmtyGridAcct.totalSurplusPowerAmount)} in your account
             </div>
             <Separator orientation="vertical" />
             <div>
-              {energyUnitConverter.format(cmtyGridAcct.powerFrozenAmount) ?? '-'} {energyUnitConverter.getTargetUnit()} frozen
+              {energyUnitConverter.formatInStringWithUnit(cmtyGridAcct.powerFrozenAmount)} frozen
             </div>
           </div>
           <Separator className="my-4" />
           <div className="flex h-5 items-center space-x-4 text-sm text-muted-foreground">
             <div>
-              {energyUnitConverter.format(Number(cmtyGridAcct.powerSoldAmount)) ?? '-'} {energyUnitConverter.getTargetUnit()} sold
+              {energyUnitConverter.formatInStringWithUnit(Number(cmtyGridAcct.powerSoldAmount))} sold
             </div>
             <Separator orientation="vertical" />
             <div>
-              {energyUnitConverter.format(cmtyGridAcct.availableForSalePowerAmount) ?? '-'} {energyUnitConverter.getTargetUnit()} available for sale
+              {energyUnitConverter.formatInStringWithUnit(cmtyGridAcct.availableForSalePowerAmount)} available for sale
             </div>
           </div>
           <div className="my-4" />
           <div className="flex h-5 items-center space-x-4 text-sm text-muted-foreground">
             <div>
-              {energyUnitConverter.format(Number(cmtyGridAcct.totalBoughtPowerAmount)) ?? '-'} {energyUnitConverter.getTargetUnit()} bought
+              {energyUnitConverter.formatInStringWithUnit(Number(cmtyGridAcct.totalBoughtPowerAmount))} bought
             </div>
             <Separator orientation="vertical" />
             <div>
-              {energyUnitConverter.format(Number(cmtyGridAcct.availableForUsePowerAmount)) ?? '-'} {energyUnitConverter.getTargetUnit()} available for use
+              {energyUnitConverter.formatInStringWithUnit(Number(cmtyGridAcct.availableForUsePowerAmount))} available for use
             </div>
             <Separator orientation="vertical" />
             <div>
-              {energyUnitConverter.format(Number(cmtyGridAcct.totalUsedPowerAmount)) ?? '-'} {energyUnitConverter.getTargetUnit()} used
+              {energyUnitConverter.formatInStringWithUnit(Number(cmtyGridAcct.totalUsedPowerAmount))} used
             </div>
           </div>
         </CardContent>
@@ -172,23 +172,23 @@ export default function Trading() {
         <CardContent>
           <div className="flex h-5 items-center space-x-4 text-sm">
             <div>
-              $ {moneyUnitConverter.format(cmtyGridAcct.balance) ?? '-'} CAD in your account
+              $ {moneyUnitConverter.formatInString(cmtyGridAcct.balance)} CAD in your account
             </div>
             <Separator orientation="vertical" />
             <div>
-              $ {moneyUnitConverter.format(cmtyGridAcct.frozenPaidBalance) ?? '-'} CAD frozen
+              $ {moneyUnitConverter.formatInString(cmtyGridAcct.frozenPaidBalance)} CAD frozen
             </div>
           </div>
           <Separator className="my-4" />
           <div className="flex h-5 items-center space-x-4 text-sm text-muted-foreground">
             <div>
-              {energyUnitConverter.format(Number(cmtyGridAcct.balanceEarned)) ?? '-'} {energyUnitConverter.getTargetUnit()} earned
+              {energyUnitConverter.formatInStringWithUnit(Number(cmtyGridAcct.balanceEarned))} earned
             </div>
           </div>
           <div className="my-4" />
           <div className="flex h-5 items-center space-x-4 text-sm text-muted-foreground">
             <div>
-              {energyUnitConverter.format(cmtyGridAcct.balancePaid) ?? '-'} {energyUnitConverter.getTargetUnit()} paid
+              {energyUnitConverter.formatInStringWithUnit(cmtyGridAcct.balancePaid)} paid
             </div>
           </div>
         </CardContent>

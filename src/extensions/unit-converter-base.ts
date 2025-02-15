@@ -20,11 +20,23 @@ export default class UnitConverter {
 	}
 
 	format(value?: number): number | undefined {
-		if (!value) {
+		// Check if value is null or undefined
+		if (value == null || Number.isNaN(value)) {
 			return undefined;
 		}
-		console.log(value);
 		return parseFloat((value / (this.targetUnitValue / this.sourceUnitValue)).toFixed(fractionDigits));
+	}
+
+	formatInNumber(value?: number): number {
+		return this.format(value) ?? 0;
+	}
+
+	formatInString(value?: number): string {
+		return `${this.format(value) ?? '-'}`;
+	}
+
+	formatInStringWithUnit(value?: number): string {
+		return `${this.formatInString(value)} ${this.getTargetUnit()}`;
 	}
 
 	getTargetUnit(): string {

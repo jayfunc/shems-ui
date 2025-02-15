@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { toTitleCase } from "@/extensions/string";
 import { Label } from "./ui/label";
 import { SidebarTrigger } from "./ui/sidebar";
-import { Clock, CloudFog, Thermometer } from "lucide-react";
+import { Clock, Thermometer } from "lucide-react";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Button } from "./ui/button";
 import {
@@ -20,6 +19,7 @@ import { Separator } from "./ui/separator";
 import ApiService from "@/services/api";
 import { autoRefreshInterval } from "@/constants/constants";
 import { motion } from "motion/react";
+import formatText from "@/extensions/string";
 
 export function AppTopbar() {
   const separatorSign = ">";
@@ -32,7 +32,7 @@ export function AppTopbar() {
     .split("/")
     .forEach((value, index) => {
       if (value !== "") {
-        labels.push(toTitleCase(value.replace("-", " ")));
+        labels.push(formatText(value.replace("-", " ")));
         labels.push(separatorSign);
 
         curPathname += "/" + value;
@@ -64,14 +64,13 @@ export function AppTopbar() {
   useEffect(() => {
     const fetchData = async () => {
       // Get simulation time
-      ApiService.getSimCfg().then((res) => {
+      await ApiService.getSimCfg().then((res) => {
         setTime(res.data.simulationTime);
       });
 
-      // TODO: Get weather
-      // ApiService.getWx().then((res) => {
-      //   setTemp(res.data.temperature);
-      // });
+      await ApiService.getWx().then((res) => {
+        setTemp(res.data.temperature);
+      });
     };
 
     fetchData();
@@ -122,7 +121,7 @@ export function AppTopbar() {
         >
           <Thermometer />
         </Button>
-        {showWeather && <Label className="m-1.5">{`${temp ?? '-20 °C'}`}</Label>}
+        {showWeather && <Label className="m-1.5">{`${temp?.toFixed(0) ?? '-'} °C`}</Label>}
       </motion.div>
 
       <Separator orientation="vertical" className="h-4" />

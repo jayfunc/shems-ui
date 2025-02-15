@@ -71,6 +71,18 @@ export default class ApiService {
     return data;
   }
 
+  static async postMainGridCfgNormalSignal(): Promise<ResponseData<boolean>> {
+    const response = await fetch(`${gridUri}/main/cfg/normal_signal`);
+    const data = await response.json();
+    return data;
+  }
+
+  static async postMainGridCfgPeakShaveSignal(): Promise<ResponseData<boolean>> {
+    const response = await fetch(`${gridUri}/main/cfg/peak_shave_signal`);
+    const data = await response.json();
+    return data;
+  }
+
   // Hse
 
   static async getHseCnsmp(houseId: number): Promise<ResponseData<HseCnsmp[]>> {

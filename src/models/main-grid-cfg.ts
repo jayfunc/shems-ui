@@ -1,19 +1,18 @@
 import Base from "./base";
 
 export enum MainGridCfgStatus {
-  Normal = 1,
-  PowerOutage = 0,
+  Normal = 0,
+  PowerOutage = 1,
 }
 
 export enum MainGridCfgSignal {
   Normal = 0,
-  PeakClippingSignal = 1,
-  ValleyFillSignal = 2,
+  PeakShaveSignal = 1,
 }
 
 export default class MainGridCfg extends Base {
-  status: MainGridCfgStatus; // 1: normal, 0: power outage
-  signal: MainGridCfgSignal; // 0: normal, 1: Peak Clipping Signal, 2: Valley Fill Signal
+  status: MainGridCfgStatus;
+  signal: MainGridCfgSignal;
   onPeakPrice: number;
   midPeakPrice: number;
   offPeakPrice: number;

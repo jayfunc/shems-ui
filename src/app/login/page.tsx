@@ -10,10 +10,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { routing } from "@/constants/constants";
+import { adminPassword, adminUsername, routing, userPassword } from "@/constants/constants";
 import ApiService from "@/services/api";
-import { PrivacyPolicyButton } from "../login/privacy-policy";
-import { TermOfUseButton } from "../login/term-of-use";
+import PrivacyPolicyText from "../login/privacy-policy";
 import AuroraGradient from "@/animations/aurora-gradient";
 import { motion } from "motion/react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -22,10 +21,13 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import ScrollableDialog from "@/components/scrollable-dialog";
+import Link from "next/link";
+import TermOfServiceText from "./term-of-service";
 
 const formSchema = z.object({
-  username: z.coerce.number().min(1).max(50),
-  pwd: z.string().min(8).max(50),
+  username: z.string().min(1).max(10),
+  pwd: z.string().min(1).max(20),
 });
 
 export default function Page() {
@@ -38,32 +40,55 @@ export default function Page() {
       username: undefined,
       pwd: undefined,
     },
-  })
+  });
+
+  function showErrorUsernameMsg() {
+    form.setError("username", {
+      type: "manual",
+      message: "Username not found",
+    });
+  }
+
+  function showErrorPwdMsg() {
+    form.setError("pwd", {
+      type: "manual",
+      message: "Incorrect password",
+    });
+  }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    ApiService.getHse(values.username).then((ret) => {
-      if (ret !== undefined) {
-        if (ret.data === null) {
-          form.setError("username", {
-            type: "manual",
-            message: "Username not found",
-          });
-        } else {
-          router.push(`${routing.household}/${values.username}`);
-        }
+    if (values.username === adminUsername) {
+      if (values.pwd === adminPassword) {
+        router.push(routing.admin);
       } else {
-        form.setError("root", {
-          type: "manual",
-          message: "Network error",
-        });
+        showErrorPwdMsg();
       }
-    }).catch((err) => {
-      toast.toast({
-        variant: "destructive",
-        title: "Error",
-        description: err.message,
-      })
-    });
+    } else if (isNaN(Number(values.username))) {
+      showErrorUsernameMsg();
+    } else if (values.pwd !== userPassword) {
+      showErrorPwdMsg();
+    } else {
+      ApiService.getHse(parseInt(values.username)).then((ret) => {
+        if (ret !== undefined) {
+          if (ret.data === null) {
+            showErrorUsernameMsg();
+          } else {
+            router.push(`${routing.household}/${values.username}`);
+          }
+        } else {
+          form.setError("root", {
+            type: "manual",
+            message: "Network error",
+          });
+        }
+      }).catch((err) => {
+        toast.toast({
+          variant: "destructive",
+          title: "Error",
+          description: err.message,
+        })
+      });
+    }
   }
 
   return (
@@ -105,8 +130,30 @@ export default function Page() {
                 />
                 <Button type="submit" className="mt-4">Submit</Button>
                 <Label className="text-muted-foreground">
-                  By clicking log in, you agree to our <TermOfUseButton /> and{" "}
-                  <PrivacyPolicyButton />.
+                  By clicking log in, you agree to our <ScrollableDialog
+                    trigger={
+                      <Link href="" className="underline">
+                        Term of Service
+                      </Link>
+                    }
+                    title="Term of Service"
+                    desc="Please read our terms of service before using our services."
+                    content={
+                      TermOfServiceText()
+                    }
+                  /> and{" "}
+                  <ScrollableDialog
+                    trigger={
+                      <Link href="" className="underline">
+                        Privacy Policy
+                      </Link>
+                    }
+                    title="Privacy policy"
+                    desc="Please read our privacy policy before sharing your information."
+                    content={
+                      PrivacyPolicyText()
+                    }
+                  />.
                 </Label>
               </form>
             </Form>

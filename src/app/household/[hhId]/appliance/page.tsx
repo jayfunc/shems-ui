@@ -18,7 +18,6 @@ import Appl, {
   ApplianceStatus,
   ApplianceType,
 } from "../../../../models/appl";
-import { insertSpaces, toTitleCase } from "@/extensions/string";
 import {
   Refrigerator,
   Microwave,
@@ -36,6 +35,7 @@ import { Badge } from "@/components/ui/badge";
 import { autoRefreshInterval, routing } from "@/constants/constants";
 import { motion } from "motion/react";
 import { usePathname } from "next/navigation";
+import formatText from "@/extensions/string";
 
 function ApplianceIcon({ applianceType }: { applianceType: ApplianceType }) {
   switch (applianceType) {
@@ -81,7 +81,7 @@ function ApplianceGrid({
           <div key={key}>
             <CardHeader className="pl-0">
               <CardTitle>
-                {toTitleCase(insertSpaces(groupEnum[parseInt(key)]) ?? '-')}
+                {formatText(groupEnum[parseInt(key)])}
               </CardTitle>
             </CardHeader>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -91,15 +91,15 @@ function ApplianceGrid({
                     <CardHeader>
                       <CardTitle className="flex flex-row items-center gap-4">
                         <ApplianceIcon applianceType={item.applianceType} />
-                        {item.name}
+                        {formatText(item.name)}
                         <div className="flex-1" />
                         <Badge variant={item.status === ApplianceStatus.On ? 'default' : 'outline'}>
-                          {toTitleCase(insertSpaces(ApplianceStatus[item.status]) ?? '-')}
+                          {formatText(ApplianceStatus[item.status])}
                         </Badge>
                       </CardTitle>
                       <CardDescription>
                         <Badge variant="outline" className="mt-2">
-                          {toTitleCase(insertSpaces(AppliancePriority[item.priority]) ?? '-')}
+                          {formatText(AppliancePriority[item.priority])}
                         </Badge>
                       </CardDescription>
                     </CardHeader>
@@ -148,41 +148,38 @@ export default function Page() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <Tabs defaultValue="type">
-        <div
-          className="sticky top-16 backdrop-blur flex flex-row place-items-center pt-4"
-          style={{ zIndex: 998 }}
-        >
+        <div className="flex flex-row place-items-center gap-4 sticky top-16 backdrop-blur pt-4 z-[998]">
           <div className="flex-1" />
-          <div className="flex flex-row place-items-center gap-4">
-            <Label>Group by</Label>
-            <TabsList>
-              <TabsTrigger value="type">Type</TabsTrigger>
-              <TabsTrigger value="priority">Priority</TabsTrigger>
-              <TabsTrigger value="status">Status</TabsTrigger>
-            </TabsList>
-          </div>
+          <Label>Group by</Label>
+          <TabsList>
+            <TabsTrigger value="type">Type</TabsTrigger>
+            <TabsTrigger value="priority">Priority</TabsTrigger>
+            <TabsTrigger value="status">Status</TabsTrigger>
+          </TabsList>
         </div>
-        <TabsContent value="type">
-          <ApplianceGrid
-            appliancesByGroup={Object.groupBy(
-              data,
-              (item) => item.applianceType,
-            )}
-            groupEnum={ApplianceType}
-          />
-        </TabsContent>
-        <TabsContent value="priority">
-          <ApplianceGrid
-            appliancesByGroup={Object.groupBy(data, (item) => item.priority)}
-            groupEnum={AppliancePriority}
-          />
-        </TabsContent>
-        <TabsContent value="status">
-          <ApplianceGrid
-            appliancesByGroup={Object.groupBy(data, (item) => item.status)}
-            groupEnum={ApplianceStatus}
-          />
-        </TabsContent>
+        <div className="-mt-8">
+          <TabsContent value="type">
+            <ApplianceGrid
+              appliancesByGroup={Object.groupBy(
+                data,
+                (item) => item.applianceType,
+              )}
+              groupEnum={ApplianceType}
+            />
+          </TabsContent>
+          <TabsContent value="priority">
+            <ApplianceGrid
+              appliancesByGroup={Object.groupBy(data, (item) => item.priority)}
+              groupEnum={AppliancePriority}
+            />
+          </TabsContent>
+          <TabsContent value="status">
+            <ApplianceGrid
+              appliancesByGroup={Object.groupBy(data, (item) => item.status)}
+              groupEnum={ApplianceStatus}
+            />
+          </TabsContent>
+        </div>
       </Tabs>
     </motion.div>
   );

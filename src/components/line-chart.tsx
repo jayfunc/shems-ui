@@ -6,11 +6,11 @@ import { Unlink } from "lucide-react";
 import { Label } from "./ui/label";
 import energyUnitConverter from "../extensions/energy-unit-converter";
 
-interface InputDataProps { dateTime?: Date, data?: number };
-interface OutputDataProps { dateTime?: Date, data1?: number, data2?: number };
+export interface InputLineChartDataProps { dateTime?: Date, data?: number };
+interface OutputLineChartDataProps { dateTime?: Date, data1?: number, data2?: number };
 
-function combineDates(data1?: InputDataProps[], data2?: InputDataProps[]): OutputDataProps[] {
-  let data: OutputDataProps[] = [];
+function combineDates(data1?: InputLineChartDataProps[], data2?: InputLineChartDataProps[]): OutputLineChartDataProps[] {
+  let data: OutputLineChartDataProps[] = [];
   new Set(
     data1
       ?.map((val) => val.dateTime)
@@ -30,18 +30,17 @@ function combineDates(data1?: InputDataProps[], data2?: InputDataProps[]): Outpu
   return data;
 }
 
-function handleSingleData(data?: InputDataProps[]) {
+function handleSingleData(data?: InputLineChartDataProps[]) {
   return data?.map((element) => {
     return {
       dateTime: element.dateTime,
       data1: element.data,
-      data2: undefined,
-    } satisfies OutputDataProps;
+    } satisfies OutputLineChartDataProps;
   }) ?? [];
 }
 
-export function EnergyLineChart({ data, labels, colors }: { data: InputDataProps[][], labels: string[], colors?: number[] }) {
-  let outputData: OutputDataProps[] = [];
+export function EnergyLineChart({ data, labels, colors }: { data: InputLineChartDataProps[][], labels: string[], colors?: number[] }) {
+  let outputData: OutputLineChartDataProps[] = [];
   if (data.length === 1) {
     outputData = handleSingleData(data[0]);
   } else {
@@ -57,7 +56,7 @@ export function EnergyLineChart({ data, labels, colors }: { data: InputDataProps
   // Make sure outputData has at most chartMaxPoints
   outputData = outputData.slice(-chartMaxPoints);
 
-  const isDataEmpty = outputData.every((element) => !element.data1 && !element.data2);
+  const isDataEmpty = outputData.every((element) => element.data1 == null && element.data2 == null);
 
   return (
     <div className="relative">
@@ -69,7 +68,7 @@ export function EnergyLineChart({ data, labels, colors }: { data: InputDataProps
           };
           return acc;
         }, {} as ChartConfig)}
-        className="max-h-[35vh] w-full"
+        className="max-h-[45vh] w-full"
       >
         <LineChart
           accessibilityLayer

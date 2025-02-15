@@ -1,6 +1,7 @@
 import Base from "./base";
 
 export enum HouseholdType {
+  Admin = 0,
   ExtraLarge = 1,
   Large = 2,
   Medium = 3,

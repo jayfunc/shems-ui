@@ -1,35 +1,41 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import energyUnitConverter from "@/extensions/energy-unit-converter";
+import React from "react";
 
 export default function EnergyCard({
   title,
   subtitle,
-  delta,
+  desc,
   icon,
+  actionArea,
+  status,
 }: {
   title: string;
   subtitle: string;
-  delta?: number | string;
+  desc?: string | React.ReactNode;
   icon: React.ReactNode;
+  actionArea?: React.ReactNode;
+  status?: React.ReactNode;
 }) {
   return (
-    <Card className="flex flex-row items-center col-span-2">
-      <div>
-        <CardHeader className="flex flex-row space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        </CardHeader>
-        <CardContent>
+    <Card className="col-span-2">
+      <CardHeader>
+        <CardTitle className="flex flex-row items-center">
+          <div className="mr-4">{icon}</div>
+          {title}
+          <div className="flex-1" />
+          {status}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-row items-end">
+        <div className="flex flex-col">
           <div className="text-2xl font-bold">{subtitle}</div>
-          {delta !== undefined && (
-            <p className="text-xs text-muted-foreground">
-              {typeof delta === 'number' && delta >= 0 ? "+" : ""}
-              {delta} {energyUnitConverter.getTargetUnit()} from last hour
-            </p>
-          )}
-        </CardContent>
-      </div>
-      <div className="flex-1" />
-      <div className="h-16 w-16 mr-4">{icon}</div>
+          <div className="text-sm text-muted-foreground">
+            {desc}
+          </div>
+        </div>
+        <div className="flex-1" />
+        {actionArea}
+      </CardContent>
     </Card>
   );
 }

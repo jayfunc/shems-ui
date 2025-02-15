@@ -5,8 +5,14 @@ import Base from "./base";
  */
 export default class HseCnsmp extends Base {
   houseId: bigint;
+  /**
+   * Total consumption
+   */
   data: number;
   mainGridConsumeAmount: number;
+  mainGridOnPeakConsumeAmount: number;
+  mainGridMidPeakConsumeAmount: number;
+  mainGridOffPeakConsumeAmount: number;
   communityGridConsumeAmount: number;
   powerStorageConsumeAmount: number;
   solarPanelConsumeAmount: number;
@@ -17,6 +23,9 @@ export default class HseCnsmp extends Base {
     houseId: bigint,
     data: number,
     mainGridConsumeAmount: number,
+    mainGridOnPeakConsumeAmount: number,
+    mainGridMidPeakConsumeAmount: number,
+    mainGridOffPeakConsumeAmount: number,
     communityGridConsumeAmount: number,
     powerStorageConsumeAmount: number,
     solarPanelConsumeAmount: number,
@@ -28,6 +37,9 @@ export default class HseCnsmp extends Base {
     this.data = data;
     this.mainGridConsumeAmount = mainGridConsumeAmount;
     this.communityGridConsumeAmount = communityGridConsumeAmount;
+    this.mainGridOnPeakConsumeAmount = mainGridOnPeakConsumeAmount;
+    this.mainGridMidPeakConsumeAmount = mainGridMidPeakConsumeAmount;
+    this.mainGridOffPeakConsumeAmount = mainGridOffPeakConsumeAmount;
     this.powerStorageConsumeAmount = powerStorageConsumeAmount;
     this.solarPanelConsumeAmount = solarPanelConsumeAmount;
     this.dateTime = dateTime;

@@ -1,6 +1,6 @@
 "use client";
 
-import { Battery, BatteryCharging, Home, Info, Sun } from "lucide-react";
+import { Battery, BatteryCharging, Home, Info, PlugZap, Sun, Unplug } from "lucide-react";
 import { useEffect, useState } from "react";
 import HseCnsmp from "@/models/hse-cnsmp";
 import ApiService from "@/services/api";
@@ -16,23 +16,34 @@ import HseGenPred from "@/models/hse-gen-pred";
 import LocStor from "@/models/loc-stor";
 import Hse, { HouseholdType } from "@/models/hse";
 import EnergyCard from "./energy-card";
-import { insertSpaces, toTitleCase } from "@/extensions/string";
 import { motion } from "motion/react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { EnergyLineChart } from "@/components/line-chart";
 import energyUnitConverter from "@/extensions/energy-unit-converter";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import formatText from "@/extensions/string";
+import MainGridUsageChart from "./main-grid-usage-chart";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Label } from "@/components/ui/label";
+import ScrollableDrawer from "@/components/scrollable-drawer";
+
+function formatDeltaDesc(delta?: number): string {
+  return `${(delta !== undefined && !Number.isNaN(delta) && delta >= 0) ? "+" : ""}${energyUnitConverter.formatInStringWithUnit(delta)} from last hour`;
+}
 
 export default function Dashboard() {
 
   // House energy consumption (appliances)
   const [hseCnsmp, setHseCnsmp] = useState<HseCnsmp[]>([]);
   const [hseCnsmpPred, setHseCnsmpPred] = useState<HseCnsmpPred[]>([]);
-  const [hseCnsmpDelta, setHseCnsmpDelta] = useState<number>(0);
+  const [hseCnsmpDelta, setHseCnsmpDelta] = useState<number>();
 
   // House energy generation (solar)
   const [hseGen, setHseGen] = useState<HseGen[]>([]);
   const [hseGenPred, setHseGenPred] = useState<HseGenPred[]>([]);
-  const [hseGenDelta, setHseGenDelta] = useState<number>(0);
+  const [hseGenDelta, setHseGenDelta] = useState<number>();
 
   // Local energy storage (battery)
   const [locStor, setLocStor] = useState<LocStor>();
@@ -60,9 +71,14 @@ export default function Dashboard() {
         if (ret.data.length > 1) {
           const last = ret.data[ret.data.length - 1]?.data;
           const secondLast = ret.data[ret.data.length - 2]?.data;
-          if (last !== undefined && secondLast !== undefined) {
+          console.log(last, secondLast);
+          if (last != null && secondLast != null) {
             setHseCnsmpDelta(last - secondLast);
+          } else {
+            setHseCnsmpDelta(Number.NaN);
           }
+        } else {
+          setHseCnsmpDelta(Number.NaN);
         }
       });
 
@@ -78,16 +94,20 @@ export default function Dashboard() {
         if (ret.data.length > 1) {
           const last = ret.data.at(-1)?.data;
           const secondLast = ret.data.at(-2)?.data;
-          if (last !== undefined && secondLast !== undefined) {
+          if (last != null && secondLast != null) {
             setHseGenDelta(last - secondLast);
+          } else {
+            setHseGenDelta(Number.NaN);
           }
+        } else {
+          setHseGenDelta(Number.NaN);
         }
       });
 
       // House energy generation prediction
-      // ApiService.getHseGenPred(hhId).then((ret) => {
-      //   setHseGenPred(ret.data);
-      // });
+      await ApiService.getHseGenPred(hhId).then((ret) => {
+        setHseGenPred(ret.data);
+      });
 
       // Local energy storage
       await ApiService.getLocStor(hhId).then((ret) => {
@@ -107,64 +127,96 @@ export default function Dashboard() {
   return (
     <motion.div className="grid grid-cols-4 gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <EnergyCard
-        title="Solar energy"
+        title="Current generation"
         subtitle={
-          `${energyUnitConverter.format(hseGen.at(-1)?.data) ?? '-'} ${energyUnitConverter.getTargetUnit()}`
+          `${energyUnitConverter.formatInStringWithUnit(hseGen.at(-1)?.data)}`
         }
-        delta={energyUnitConverter.format(hseGenDelta) ?? '-'}
-        icon={<Sun className="h-full w-full text-muted-foreground" />}
+        desc={formatDeltaDesc(hseGenDelta)}
+        icon={<Sun className="text-muted-foreground" />}
       />
 
       <EnergyCard
-        title="House consumption"
+        title="Current consumption"
         subtitle={
-          `${energyUnitConverter.format(hseCnsmp.at(-1)?.data) ?? '-'} ${energyUnitConverter.getTargetUnit()}`
+          `${energyUnitConverter.formatInStringWithUnit(hseCnsmp.at(-1)?.data)}`
         }
-        delta={energyUnitConverter.format(hseCnsmpDelta) ?? '-'}
-        icon={<Home className="h-full w-full text-muted-foreground" />}
+        desc={formatDeltaDesc(hseCnsmpDelta)}
+        icon={<Home className="text-muted-foreground" />}
       />
 
       <EnergyCard
         title="Battery storage"
         subtitle={
-          `${locStor === undefined ? '-' : Math.floor((locStor.currentPowerAmount / locStor.capacity) * 100)}%`
+          `${locStor?.currentPowerAmountPercentage ?? '-'} %`
         }
-        icon={
-          <div className="relative">
-            <Battery className="h-full w-full text-muted-foreground" />
-            {locStor !== undefined && <div className={`${'absolute top-6 left-[0.67rem] h-[1rem] w-['}${(locStor.currentPowerAmount / locStor.capacity) * 2}${'rem] rounded-sm bg-muted-foreground'}`} />}
-          </div>
+        desc={`${energyUnitConverter.formatInStringWithUnit(locStor?.currentPowerAmount)} /
+        ${energyUnitConverter.formatInStringWithUnit(locStor?.capacity)}`}
+        icon={<Battery className="text-muted-foreground" />}
+        actionArea={
+          <ScrollableDrawer
+            title="Battery properties detail"
+            content={
+              <div className="flex flex-col gap-2 p-6">
+                <div className="flex flex-row gap-2">
+                  <PlugZap />
+                  <div className="font-bold">Charging power</div>
+                  <div className="flex-1" />
+                  <div>{energyUnitConverter.formatInStringWithUnit(locStor?.powerInput)}</div>
+                </div>
+                <div className="flex flex-row gap-2">
+                  <Unplug />
+                  <div className="font-bold">Discharging power</div>
+                  <div className="flex-1" />
+                  <div>{energyUnitConverter.formatInStringWithUnit(locStor?.powerOutput)}</div>
+                </div>
+              </div>
+            } />
         }
       />
 
-      <EnergyCard
-        title={`${currentHouse?.householdName ?? '-'}'s house - ${toTitleCase(insertSpaces(HouseholdType[currentHouse?.householdType ?? 0]) ?? '-')}`}
-        subtitle={`${currentHouse?.area ?? '-'} ft²`}
-        icon={<Info className="h-full w-full text-muted-foreground" />}
-      />
+      <MainGridUsageChart hhId={hhId} />
 
       <Card className="col-span-full">
-        <CardHeader>
-          <CardTitle>House overall energy</CardTitle>
-          <CardDescription>{`${chartMaxPoints}-hour energy real-time consumption and generation level`}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <EnergyLineChart data={[hseCnsmp, hseGen]} labels={["Consumption", "Generation"]} colors={[1, 2]} />
-        </CardContent>
+        <Tabs defaultValue="gen-cnsmp">
+          <div className="flex flex-row items-center mt-6 mr-6">
+            <div className="flex-1" />
+            <TabsList>
+              <TabsTrigger value="gen-cnsmp">Generation w/ consumption</TabsTrigger>
+              <TabsTrigger value="gen-forcast">Generation w/ forcast</TabsTrigger>
+              <TabsTrigger value="cnsmp-forcast">Consumption w/ forcast</TabsTrigger>
+            </TabsList>
+          </div>
+          <div className="-mt-16">
+            <TabsContent value="gen-cnsmp">
+              <CardHeader>
+                <CardTitle>House overall energy</CardTitle>
+                <CardDescription>{`${chartMaxPoints}-hour energy real-time consumption and generation level`}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <EnergyLineChart data={[hseCnsmp, hseGen]} labels={["Consumption", "Generation"]} colors={[1, 2]} />
+              </CardContent>
+            </TabsContent>
+            <TabsContent value="gen-forcast">
+              <CardHeader>
+                <CardTitle>House generation energy</CardTitle>
+                <CardDescription>{`${chartMaxPoints}-hour energy generation with forcast level`}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <EnergyLineChart data={[hseGen, hseGenPred]} labels={["Generation", "Generation forcast"]} colors={[2, 3]} />
+              </CardContent>
+            </TabsContent>
+            <TabsContent value="cnsmp-forcast">
+              <CardHeader>
+                <CardTitle>House consumption energy</CardTitle>
+                <CardDescription>{`${chartMaxPoints}-hour energy consumption with forcast level`}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <EnergyLineChart data={[hseCnsmp, hseCnsmpPred]} labels={["Consumption", "Consumption forcast"]} colors={[1, 4]} />
+              </CardContent>
+            </TabsContent>
+          </div>
+        </Tabs>
       </Card>
-
-
-      {/* TODO: 预测数据未准备好 */}
-      {/* <Card className="col-span-full">
-          <CardHeader>
-            <CardTitle>House generation energy</CardTitle>
-            <CardDescription>{`${chartMaxPoints}-hour energy generation with forcast level`}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <EnergyLineChart data={[hseGen, hseGenPred]} labels={["Generation", "Generation forcast"]} colors={[2, 3]} />
-          </CardContent>
-        </Card> */}
-
     </motion.div>
   );
 }

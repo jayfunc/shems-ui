@@ -23,6 +23,7 @@ export default class UnitConverter {
 		if (!value) {
 			return undefined;
 		}
+		console.log(value);
 		return parseFloat((value / (this.targetUnitValue / this.sourceUnitValue)).toFixed(fractionDigits));
 	}
 

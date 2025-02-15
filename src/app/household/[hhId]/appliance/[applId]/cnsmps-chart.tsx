@@ -3,7 +3,7 @@
 import ApiService from "@/services/api";
 import ApplCnsmp from "@/models/appl-cnsmp";
 import { useEffect, useState } from "react";
-import { autoRefreshInterval, chartMaxPoints } from "@/constants/constants";
+import { autoRefreshInterval } from "@/constants/constants";
 import {
   Card,
   CardHeader,
@@ -19,19 +19,19 @@ export function CnsmpsChart({ applId }: { applId: number }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      ApiService.getSimCfg().then((res) => {
+      await ApiService.getSimCfg().then((res) => {
         setTime(new Date(res.data.simulationTime));
       });
 
-      ApiService.getApplCnsmp(applId).then((ret) => {
+      await ApiService.getApplCnsmp(applId).then((ret) => {
         setData(ret.data);
       });
     };
 
     fetchData();
 
-    const interval = setInterval(() => {
-      fetchData();
+    const interval = setInterval(async () => {
+      await fetchData();
     }, autoRefreshInterval);
 
     return () => clearInterval(interval);
@@ -45,7 +45,7 @@ export function CnsmpsChart({ applId }: { applId: number }) {
         <CardDescription>Energy consumption by hours</CardDescription>
       </CardHeader>
       <CardContent>
-        <EnergyLineChart simulationTime={time} data={[data]} labels={["Consumption"]} />
+        <EnergyLineChart data={[data]} labels={["Consumption"]} />
       </CardContent>
     </Card>
   );

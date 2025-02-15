@@ -9,20 +9,20 @@ import energyUnitConverter from "../extensions/energy-unit-converter";
 interface InputDataProps { dateTime?: Date, data?: number };
 interface OutputDataProps { dateTime?: Date, data1?: number, data2?: number };
 
-function combineDates(data1: InputDataProps[], data2: InputDataProps[]): OutputDataProps[] {
+function combineDates(data1?: InputDataProps[], data2?: InputDataProps[]): OutputDataProps[] {
   let data: OutputDataProps[] = [];
   new Set(
     data1
-      .map((val) => val.dateTime)
-      .concat(data2.map((val) => val.dateTime))
+      ?.map((val) => val.dateTime)
+      .concat(data2?.map((val) => val.dateTime))
       .toSorted()
       .reverse(),
   ).forEach((dateTime) => {
     data.push({
       dateTime: dateTime,
-      data1: energyUnitConverter.format(data1.find((element) => element.dateTime === dateTime)
+      data1: energyUnitConverter.format(data1?.find((element) => element.dateTime === dateTime)
         ?.data),
-      data2: energyUnitConverter.format(data2.find((element) => element.dateTime === dateTime)
+      data2: energyUnitConverter.format(data2?.find((element) => element.dateTime === dateTime)
         ?.data),
     });
   });
@@ -30,17 +30,17 @@ function combineDates(data1: InputDataProps[], data2: InputDataProps[]): OutputD
   return data;
 }
 
-function handleSingleData(data: InputDataProps[]) {
-  return data.map((element) => {
+function handleSingleData(data?: InputDataProps[]) {
+  return data?.map((element) => {
     return {
       dateTime: element.dateTime,
       data1: element.data,
       data2: undefined,
     } satisfies OutputDataProps;
-  });
+  }) ?? [];
 }
 
-export function EnergyLineChart({ simulationTime, data, labels, colors }: { simulationTime: Date, data: InputDataProps[][], labels: string[], colors?: number[] }) {
+export function EnergyLineChart({ data, labels, colors }: { data: InputDataProps[][], labels: string[], colors?: number[] }) {
   let outputData: OutputDataProps[] = [];
   if (data.length === 1) {
     outputData = handleSingleData(data[0]);
@@ -49,12 +49,9 @@ export function EnergyLineChart({ simulationTime, data, labels, colors }: { simu
   }
 
   // outputData 如果不满 chartMaxPoints 长度则在前端补全
-  for (let i = 0; i < chartMaxPoints - outputData.length; i++) {
-    outputData.unshift({
-      dateTime: undefined,
-      data1: undefined,
-      data2: undefined,
-    });
+  const count = chartMaxPoints - outputData.length;
+  if (count > 0) {
+    outputData = [...Array(count).fill({}), ...outputData];
   }
 
   // Make sure outputData has at most chartMaxPoints

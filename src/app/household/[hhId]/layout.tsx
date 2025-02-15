@@ -16,26 +16,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     0,
     curPathname.indexOf("/", `/${routing.household}/`.length),
   );
+  const selectedRouting = curPathname.replace(hhPathname, "").split("/")[1];
 
   const menuItems = [
     {
       title: "Dashboard",
-      url: `${hhPathname}/${routing.dashboard}`,
+      subRouting: routing.dashboard,
       icon: Home,
     },
     {
       title: "Appliance",
-      url: `${hhPathname}/${routing.appliance}`,
+      subRouting: routing.appliance,
       icon: CircuitBoard,
     },
     {
       title: "Grid",
-      url: `${hhPathname}/${routing.grid}`,
+      subRouting: routing.grid,
       icon: UtilityPole,
     },
     {
       title: "Trading",
-      url: `${hhPathname}/${routing.trading}`,
+      subRouting: routing.trading,
       icon: ChartCandlestick,
     },
   ];
@@ -43,7 +44,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <SidebarProvider>
-        <AppSidebar menuItems={menuItems} />
+        <AppSidebar mainRouting={hhPathname} selectedRouting={selectedRouting} menuItems={menuItems} />
         <SidebarInset>
           <AppTopbar />
           <div className="relative p-4 lg:px-24">

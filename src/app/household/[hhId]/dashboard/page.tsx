@@ -1,6 +1,6 @@
 "use client";
 
-import { BatteryCharging, Home, Info, Sun } from "lucide-react";
+import { Battery, BatteryCharging, Home, Info, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import HseCnsmp from "@/models/hse-cnsmp";
 import ApiService from "@/services/api";
@@ -18,15 +18,11 @@ import Hse, { HouseholdType } from "@/models/hse";
 import EnergyCard from "./energy-card";
 import { insertSpaces, toTitleCase } from "@/extensions/string";
 import { motion } from "motion/react";
-import formatEnergy from "@/extensions/energy-unit-converter";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { EnergyLineChart } from "@/components/line-chart";
-import { Placeholder } from "@/components/placeholder";
 import energyUnitConverter from "@/extensions/energy-unit-converter";
 
 export default function Dashboard() {
-  // Simulation time
-  const [time, setTime] = useState<Date>();
 
   // House energy consumption (appliances)
   const [hseCnsmp, setHseCnsmp] = useState<HseCnsmp[]>([]);
@@ -57,11 +53,6 @@ export default function Dashboard() {
     });
 
     const fetchData = async () => {
-      // Simulation time
-      await ApiService.getSimCfg().then((res) => {
-        setTime(res.data.simulationTime);
-      });
-
       // House energy consumption
       await ApiService.getHseCnsmp(hhId).then((ret) => {
         setHseCnsmp(ret.data);
@@ -140,13 +131,14 @@ export default function Dashboard() {
         }
         icon={
           <div className="relative">
-            <BatteryCharging className="h-full w-full text-muted-foreground" />
+            <Battery className="h-full w-full text-muted-foreground" />
+            {locStor !== undefined && <div className={`${'absolute top-6 left-[0.67rem] h-[1rem] w-['}${(locStor.currentPowerAmount / locStor.capacity) * 2}${'rem] rounded-sm bg-muted-foreground'}`} />}
           </div>
         }
       />
 
       <EnergyCard
-        title={`${currentHouse?.householdName ?? '-'}'s house - ${toTitleCase(insertSpaces(HouseholdType[currentHouse?.householdType ?? 0]))}`}
+        title={`${currentHouse?.householdName ?? '-'}'s house - ${toTitleCase(insertSpaces(HouseholdType[currentHouse?.householdType ?? 0]) ?? '-')}`}
         subtitle={`${currentHouse?.area ?? '-'} ft²`}
         icon={<Info className="h-full w-full text-muted-foreground" />}
       />
@@ -157,7 +149,7 @@ export default function Dashboard() {
           <CardDescription>{`${chartMaxPoints}-hour energy real-time consumption and generation level`}</CardDescription>
         </CardHeader>
         <CardContent>
-          {time !== undefined && <EnergyLineChart simulationTime={time} data={[hseCnsmp, hseGen]} labels={["Consumption", "Generation"]} colors={[1, 2]} />}
+          <EnergyLineChart data={[hseCnsmp, hseGen]} labels={["Consumption", "Generation"]} colors={[1, 2]} />
         </CardContent>
       </Card>
 

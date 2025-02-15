@@ -19,14 +19,18 @@ import { routing } from "@/constants/constants";
 
 export function AppSidebar({
   menuItems,
+  mainRouting,
+  selectedRouting,
 }: {
   menuItems: {
     title: string;
-    url: string;
+    subRouting: string;
     icon: ForwardRefExoticComponent<
       Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
     >;
   }[];
+  mainRouting: string;
+  selectedRouting: string;
 }) {
   function logOut() {
     redirect(`/${routing.login}`);
@@ -43,8 +47,8 @@ export function AppSidebar({
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url}>
+                  <SidebarMenuButton variant={selectedRouting === item.subRouting ? 'outline' : 'default'} asChild>
+                    <Link href={`${mainRouting}/${item.subRouting}`}>
                       <item.icon />
                       {item.title}
                     </Link>

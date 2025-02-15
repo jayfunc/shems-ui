@@ -1,9 +1,10 @@
 import Base from "./base";
 
 export enum HouseholdType {
-  BigFamily = 2,
-  SignalFamily = 1,
-  SmallFamily = 0,
+  ExtraLarge = 1,
+  Large = 2,
+  Medium = 3,
+  Small = 4,
 }
 
 /**

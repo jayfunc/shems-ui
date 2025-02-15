@@ -15,6 +15,7 @@ import ApiService from "../../../../services/api";
 import { useEffect, useState } from "react";
 import Appl, {
   AppliancePriority,
+  ApplianceStatus,
   ApplianceType,
 } from "../../../../models/appl";
 import { insertSpaces, toTitleCase } from "@/extensions/string";
@@ -32,8 +33,9 @@ import {
   ShowerHead,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { routing } from "@/constants/constants";
+import { autoRefreshInterval, routing } from "@/constants/constants";
 import { motion } from "motion/react";
+import { usePathname } from "next/navigation";
 
 function ApplianceIcon({ applianceType }: { applianceType: ApplianceType }) {
   switch (applianceType) {
@@ -69,7 +71,7 @@ function ApplianceGrid({
   groupEnum,
 }: {
   appliancesByGroup: Partial<Record<number, Appl[]>>;
-  groupEnum: typeof ApplianceType | typeof AppliancePriority;
+  groupEnum: typeof ApplianceType | typeof AppliancePriority | typeof ApplianceStatus;
 }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -79,28 +81,28 @@ function ApplianceGrid({
           <div key={key}>
             <CardHeader className="pl-0">
               <CardTitle>
-                {toTitleCase(insertSpaces(groupEnum[parseInt(key)]))}
+                {toTitleCase(insertSpaces(groupEnum[parseInt(key)]) ?? '-')}
               </CardTitle>
             </CardHeader>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {appliancesByGroup[parseInt(key)]?.map((item: Appl) => (
                 <motion.div layoutId={`appl-${item.id}`} key={item.id}>
                   <Card>
-                    <div className="flex flex-row place-items-center ">
-                      <div className="ml-6">
+                    <CardHeader>
+                      <CardTitle className="flex flex-row items-center gap-4">
                         <ApplianceIcon applianceType={item.applianceType} />
-                      </div>
-                      <CardHeader>
-                        <CardTitle>{item.name}</CardTitle>
-                        <CardDescription>
-                          <Badge variant="outline" className="mr-2">
-                            {toTitleCase(
-                              insertSpaces(AppliancePriority[item.priority]),
-                            )}
-                          </Badge>
-                        </CardDescription>
-                      </CardHeader>
-                    </div>
+                        {item.name}
+                        <div className="flex-1" />
+                        <Badge variant={item.status === ApplianceStatus.On ? 'default' : 'outline'}>
+                          {toTitleCase(insertSpaces(ApplianceStatus[item.status]) ?? '-')}
+                        </Badge>
+                      </CardTitle>
+                      <CardDescription>
+                        <Badge variant="outline" className="mt-2">
+                          {toTitleCase(insertSpaces(AppliancePriority[item.priority]) ?? '-')}
+                        </Badge>
+                      </CardDescription>
+                    </CardHeader>
                     <CardContent className="flex flex-row">
                       <div className="flex-1" />
                       <Link href={`${routing.appliance}/${item.id}`}>
@@ -118,12 +120,29 @@ function ApplianceGrid({
 }
 
 export default function Page() {
+  const hhId = parseInt(
+    usePathname()
+      .replace(routing.household, "")
+      .replace(routing.trading, "")
+      .replaceAll("/", ""),
+  );
+
   const [data, setData] = useState<Appl[]>([]);
 
   useEffect(() => {
-    ApiService.getAllAppls(1).then((data) => {
-      setData(data.data);
-    });
+    const fetchData = async () => {
+      await ApiService.getAllAppls(hhId).then((res) => {
+        setData(res.data);
+      });
+    }
+
+    fetchData();
+
+    const interval = setInterval(async () => {
+      await fetchData();
+    }, autoRefreshInterval);
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -139,6 +158,7 @@ export default function Page() {
             <TabsList>
               <TabsTrigger value="type">Type</TabsTrigger>
               <TabsTrigger value="priority">Priority</TabsTrigger>
+              <TabsTrigger value="status">Status</TabsTrigger>
             </TabsList>
           </div>
         </div>
@@ -155,6 +175,12 @@ export default function Page() {
           <ApplianceGrid
             appliancesByGroup={Object.groupBy(data, (item) => item.priority)}
             groupEnum={AppliancePriority}
+          />
+        </TabsContent>
+        <TabsContent value="status">
+          <ApplianceGrid
+            appliancesByGroup={Object.groupBy(data, (item) => item.status)}
+            groupEnum={ApplianceStatus}
           />
         </TabsContent>
       </Tabs>

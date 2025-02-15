@@ -128,25 +128,38 @@ export default function Trading() {
         <CardHeader>
           <CardTitle>Energy balance</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-row gap-2">
-          {energyUnitConverter.format(cmtyGridAcct.totalSurplusPowerAmount) ?? '-'} {energyUnitConverter.getTargetUnit()} Available
-          <Badge variant="secondary">
-            {energyUnitConverter.format(cmtyGridAcct.powerFrozenAmount) ?? '-'} {energyUnitConverter.getTargetUnit()} Pending
-          </Badge>
-          <div>
-            <div className="space-y-1">
-              <h4 className="text-sm font-medium leading-none">Radix Primitives</h4>
-              <p className="text-sm text-muted-foreground">
-                An open-source UI component library.
-              </p>
+        <CardContent>
+          <div className="flex h-5 items-center space-x-4 text-sm">
+            <div>
+              {energyUnitConverter.format(cmtyGridAcct.totalSurplusPowerAmount) ?? '-'} {energyUnitConverter.getTargetUnit()} in your account
             </div>
-            <Separator className="my-4" />
-            <div className="flex h-5 items-center space-x-4 text-sm">
-              <div>Blog</div>
-              <Separator orientation="vertical" />
-              <div>Docs</div>
-              <Separator orientation="vertical" />
-              <div>Source</div>
+            <Separator orientation="vertical" />
+            <div>
+              {energyUnitConverter.format(cmtyGridAcct.powerFrozenAmount) ?? '-'} {energyUnitConverter.getTargetUnit()} frozen
+            </div>
+          </div>
+          <Separator className="my-4" />
+          <div className="flex h-5 items-center space-x-4 text-sm text-muted-foreground">
+            <div>
+              {energyUnitConverter.format(Number(cmtyGridAcct.powerSoldAmount)) ?? '-'} {energyUnitConverter.getTargetUnit()} sold
+            </div>
+            <Separator orientation="vertical" />
+            <div>
+              {energyUnitConverter.format(cmtyGridAcct.availableForSalePowerAmount) ?? '-'} {energyUnitConverter.getTargetUnit()} available for sale
+            </div>
+          </div>
+          <div className="my-4" />
+          <div className="flex h-5 items-center space-x-4 text-sm text-muted-foreground">
+            <div>
+              {energyUnitConverter.format(Number(cmtyGridAcct.totalBoughtPowerAmount)) ?? '-'} {energyUnitConverter.getTargetUnit()} bought
+            </div>
+            <Separator orientation="vertical" />
+            <div>
+              {energyUnitConverter.format(Number(cmtyGridAcct.availableForUsePowerAmount)) ?? '-'} {energyUnitConverter.getTargetUnit()} available for use
+            </div>
+            <Separator orientation="vertical" />
+            <div>
+              {energyUnitConverter.format(Number(cmtyGridAcct.totalUsedPowerAmount)) ?? '-'} {energyUnitConverter.getTargetUnit()} used
             </div>
           </div>
         </CardContent>
@@ -157,10 +170,27 @@ export default function Trading() {
           <CardTitle>Fund balance</CardTitle>
         </CardHeader>
         <CardContent>
-          $ {moneyUnitConverter.format(cmtyGridAcct.balance) ?? '-'} CAD
-          <Badge variant="secondary">
-            $ {moneyUnitConverter.format(cmtyGridAcct.frozenPaidBalance) ?? '-'} CAD Pending
-          </Badge>
+          <div className="flex h-5 items-center space-x-4 text-sm">
+            <div>
+              $ {moneyUnitConverter.format(cmtyGridAcct.balance) ?? '-'} CAD in your account
+            </div>
+            <Separator orientation="vertical" />
+            <div>
+              $ {moneyUnitConverter.format(cmtyGridAcct.frozenPaidBalance) ?? '-'} CAD frozen
+            </div>
+          </div>
+          <Separator className="my-4" />
+          <div className="flex h-5 items-center space-x-4 text-sm text-muted-foreground">
+            <div>
+              {energyUnitConverter.format(Number(cmtyGridAcct.balanceEarned)) ?? '-'} {energyUnitConverter.getTargetUnit()} earned
+            </div>
+          </div>
+          <div className="my-4" />
+          <div className="flex h-5 items-center space-x-4 text-sm text-muted-foreground">
+            <div>
+              {energyUnitConverter.format(cmtyGridAcct.balancePaid) ?? '-'} {energyUnitConverter.getTargetUnit()} paid
+            </div>
+          </div>
         </CardContent>
       </Card>
 

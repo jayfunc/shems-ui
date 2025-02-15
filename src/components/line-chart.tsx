@@ -118,7 +118,7 @@ export function EnergyLineChart({ data, labels, colors }: { data: InputDataProps
                   position="top"
                   fill={color}
                   offset={10}
-                  formatter={(value: any) => `${value} ${energyUnitConverter.getTargetUnit()}`}
+                  formatter={(value: string | number) => `${value} ${energyUnitConverter.getTargetUnit()}`}
                 />
               </Line>
             );

@@ -1,6 +1,6 @@
 "use client";
 
-import { Battery, BatteryCharging, Home, Info, PlugZap, Sun, Unplug } from "lucide-react";
+import { Battery, Home, PlugZap, Sun, Unplug } from "lucide-react";
 import { useEffect, useState } from "react";
 import HseCnsmp from "@/models/hse-cnsmp";
 import ApiService from "@/services/api";
@@ -14,20 +14,15 @@ import HseCnsmpPred from "@/models/hse-cnsmp-pred";
 import HseGen from "@/models/hse-gen";
 import HseGenPred from "@/models/hse-gen-pred";
 import LocStor from "@/models/loc-stor";
-import Hse, { HouseholdType } from "@/models/hse";
 import EnergyCard from "./energy-card";
 import { motion } from "motion/react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { EnergyLineChart } from "@/components/line-chart";
 import energyUnitConverter from "@/extensions/energy-unit-converter";
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import formatText from "@/extensions/string";
 import MainGridUsageChart from "./main-grid-usage-chart";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Label } from "@/components/ui/label";
 import ScrollableDrawer from "@/components/scrollable-drawer";
+import { AxisChart, AxisChartType, InputAxisChartDataProps } from "@/components/axis-chart";
+import { Label } from "@/components/ui/label";
 
 function formatDeltaDesc(delta?: number): string {
   return `${(delta !== undefined && !Number.isNaN(delta) && delta >= 0) ? "+" : ""}${energyUnitConverter.formatInStringWithUnit(delta)} from last hour`;
@@ -35,10 +30,13 @@ function formatDeltaDesc(delta?: number): string {
 
 export default function Dashboard() {
 
-  // House energy consumption (appliances)
+  // House energy consumption
   const [hseCnsmp, setHseCnsmp] = useState<HseCnsmp[]>([]);
   const [hseCnsmpPred, setHseCnsmpPred] = useState<HseCnsmpPred[]>([]);
   const [hseCnsmpDelta, setHseCnsmpDelta] = useState<number>();
+
+  const [batteryCnsmp, setBatteryCnsmp] = useState<InputAxisChartDataProps[]>([]);
+  const [solarCnsmp, setSolarCnsmp] = useState<InputAxisChartDataProps[]>([]);
 
   // House energy generation (solar)
   const [hseGen, setHseGen] = useState<HseGen[]>([]);
@@ -48,9 +46,6 @@ export default function Dashboard() {
   // Local energy storage (battery)
   const [locStor, setLocStor] = useState<LocStor>();
 
-  // Current house
-  const [currentHouse, setCurrentHouse] = useState<Hse>();
-
   const hhId = parseInt(
     usePathname()
       .replace(routing.household, "")
@@ -59,19 +54,26 @@ export default function Dashboard() {
   );
 
   useEffect(() => {
-    ApiService.getHse(hhId).then((ret) => {
-      setCurrentHouse(ret.data);
-    });
-
     const fetchData = async () => {
       // House energy consumption
       await ApiService.getHseCnsmp(hhId).then((ret) => {
         setHseCnsmp(ret.data);
+        setBatteryCnsmp(ret.data.map((element) => {
+          return {
+            dateTime: element.dateTime,
+            data: element.powerStorageConsumeAmount,
+          };
+        }));
+        setSolarCnsmp(ret.data.map((element) => {
+          return {
+            dateTime: element.dateTime,
+            data: element.solarPanelConsumeAmount,
+          };
+        }));
         // Calculate delta
         if (ret.data.length > 1) {
           const last = ret.data[ret.data.length - 1]?.data;
           const secondLast = ret.data[ret.data.length - 2]?.data;
-          console.log(last, secondLast);
           if (last != null && secondLast != null) {
             setHseCnsmpDelta(last - secondLast);
           } else {
@@ -83,9 +85,9 @@ export default function Dashboard() {
       });
 
       // House energy consumption prediction
-      // ApiService.getHseCnsmpPred(hhId).then((ret) => {
-      //   setHseCnsmpPred(ret.data);
-      // });
+      await ApiService.getHseCnsmpPred(hhId).then((ret) => {
+        setHseCnsmpPred(ret.data);
+      });
 
       // House energy generation
       await ApiService.getHseGen(hhId).then((ret) => {
@@ -127,16 +129,26 @@ export default function Dashboard() {
   return (
     <motion.div className="grid grid-cols-4 gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <EnergyCard
-        title="Current generation"
+        title="Solar generation"
         subtitle={
           `${energyUnitConverter.formatInStringWithUnit(hseGen.at(-1)?.data)}`
         }
         desc={formatDeltaDesc(hseGenDelta)}
         icon={<Sun className="text-muted-foreground" />}
+        actionArea={
+          <ScrollableDrawer
+            stretchToWidth={true}
+            title="Solar panel usage"
+            content={
+              <div className="flex flex-col gap-2 p-6">
+                <AxisChart data={[solarCnsmp]} labels={["Solar usage"]} colors={[1]} chartType={AxisChartType.Line} />
+              </div>
+            } />
+        }
       />
 
       <EnergyCard
-        title="Current consumption"
+        title="House consumption"
         subtitle={
           `${energyUnitConverter.formatInStringWithUnit(hseCnsmp.at(-1)?.data)}`
         }
@@ -154,7 +166,8 @@ export default function Dashboard() {
         icon={<Battery className="text-muted-foreground" />}
         actionArea={
           <ScrollableDrawer
-            title="Battery properties detail"
+            stretchToWidth={true}
+            title="Battery usage and properties detail"
             content={
               <div className="flex flex-col gap-2 p-6">
                 <div className="flex flex-row gap-2">
@@ -169,6 +182,7 @@ export default function Dashboard() {
                   <div className="flex-1" />
                   <div>{energyUnitConverter.formatInStringWithUnit(locStor?.powerOutput)}</div>
                 </div>
+                <AxisChart data={[batteryCnsmp]} labels={["Battery usage"]} colors={[1]} chartType={AxisChartType.Line} />
               </div>
             } />
         }
@@ -193,7 +207,7 @@ export default function Dashboard() {
                 <CardDescription>{`${chartMaxPoints}-hour energy real-time consumption and generation level`}</CardDescription>
               </CardHeader>
               <CardContent>
-                <EnergyLineChart data={[hseCnsmp, hseGen]} labels={["Consumption", "Generation"]} colors={[1, 2]} />
+                <AxisChart data={[hseCnsmp, hseGen]} labels={["Consumption", "Generation"]} colors={[1, 2]} chartType={AxisChartType.Line} />
               </CardContent>
             </TabsContent>
             <TabsContent value="gen-forcast">
@@ -202,7 +216,7 @@ export default function Dashboard() {
                 <CardDescription>{`${chartMaxPoints}-hour energy generation with forcast level`}</CardDescription>
               </CardHeader>
               <CardContent>
-                <EnergyLineChart data={[hseGen, hseGenPred]} labels={["Generation", "Generation forcast"]} colors={[2, 3]} />
+                <AxisChart data={[hseGen, hseGenPred]} labels={["Generation", "Generation forcast"]} colors={[2, 3]} chartType={AxisChartType.Line} />
               </CardContent>
             </TabsContent>
             <TabsContent value="cnsmp-forcast">
@@ -211,12 +225,13 @@ export default function Dashboard() {
                 <CardDescription>{`${chartMaxPoints}-hour energy consumption with forcast level`}</CardDescription>
               </CardHeader>
               <CardContent>
-                <EnergyLineChart data={[hseCnsmp, hseCnsmpPred]} labels={["Consumption", "Consumption forcast"]} colors={[1, 4]} />
+                <AxisChart data={[hseCnsmp, hseCnsmpPred]} labels={["Consumption", "Consumption forcast"]} colors={[1, 4]} chartType={AxisChartType.Line} />
               </CardContent>
             </TabsContent>
           </div>
         </Tabs>
       </Card>
+      
     </motion.div>
   );
 }

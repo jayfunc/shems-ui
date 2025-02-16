@@ -45,8 +45,9 @@ export function NavUser({
 }) {
 	const { isMobile } = useSidebar()
 
-	const avatarFallback = hse?.householdName.at(0);
+	const avatarFallback = formatText(hse?.householdName.at(0) ?? '-');
 	const householdType = hse !== undefined ? formatText(HouseholdType[hse.householdType]) : '-';
+	const householdName = formatText(hse?.householdName ?? '-');
 
 	return (
 		<SidebarMenu>
@@ -61,7 +62,7 @@ export function NavUser({
 								<AvatarFallback className="rounded-lg">{avatarFallback}</AvatarFallback>
 							</Avatar>
 							<div className="grid flex-1 text-left text-sm leading-tight">
-								<span className="truncate font-semibold">{hse?.householdName}</span>
+								<span className="truncate font-semibold">{householdName}</span>
 								<span className="truncate text-xs">{householdType}</span>
 							</div>
 							<ChevronsUpDown className="ml-auto size-4" />
@@ -79,7 +80,7 @@ export function NavUser({
 									<AvatarFallback className="rounded-lg">{avatarFallback}</AvatarFallback>
 								</Avatar>
 								<div className="grid flex-1 text-left text-sm leading-tight">
-									<span className="truncate font-semibold">{hse?.householdName}</span>
+									<span className="truncate font-semibold">{householdName}</span>
 									<span className="truncate text-xs">{`${hse?.area ?? '-'} ft²`}</span>
 								</div>
 							</div>

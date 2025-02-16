@@ -1,13 +1,19 @@
 import UnitConverter from "./unit-converter-base";
 
 enum MoneyUnit {
-	Cent = 1,
-	Dollar = 100,
+	c = 1,
+	$ = 100,
 }
 
-const moneyUnitConverter = new UnitConverter({
-	Cent: MoneyUnit.Cent,
-	Dollar: MoneyUnit.Dollar,
-}, MoneyUnit.Cent, MoneyUnit.Dollar);
+class MoneyUnitConverter extends UnitConverter {
+	override formatInStringWithUnit(value?: number): string {
+		return `${this.getTargetUnit()} ${this.formatInString(value)} CAD`;
+	}
+}
+
+const moneyUnitConverter = new MoneyUnitConverter({
+	c: MoneyUnit.c,
+	$: MoneyUnit.$,
+}, MoneyUnit.c, MoneyUnit.$);
 
 export default moneyUnitConverter;

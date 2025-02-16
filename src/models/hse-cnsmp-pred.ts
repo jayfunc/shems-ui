@@ -6,6 +6,10 @@ import Base from "./base";
 export default class HseCnsmpPred extends Base {
   householdType: number;
   dateTime: Date;
+  /**
+   * Total power consumption
+   */
+  data: number;
   furnace1: number;
   furnace2: number;
   dishwasher: number;
@@ -24,6 +28,7 @@ export default class HseCnsmpPred extends Base {
     id: bigint,
     householdType: number,
     dateTime: Date,
+    data: number,
     furnace1: number,
     furnace2: number,
     dishwasher: number,
@@ -42,6 +47,7 @@ export default class HseCnsmpPred extends Base {
     super(id, simulationTime);
     this.householdType = householdType;
     this.dateTime = dateTime;
+    this.data = data;
     this.furnace1 = furnace1;
     this.furnace2 = furnace2;
     this.dishwasher = dishwasher;

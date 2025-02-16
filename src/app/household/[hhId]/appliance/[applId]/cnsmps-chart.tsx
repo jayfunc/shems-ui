@@ -11,7 +11,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { EnergyLineChart } from "@/components/line-chart";
+import { AxisChart, AxisChartType } from "@/components/axis-chart";
 
 export function CnsmpsChart({ applId }: { applId: number }) {
   const [data, setData] = useState<ApplCnsmp[]>([]);
@@ -45,7 +45,7 @@ export function CnsmpsChart({ applId }: { applId: number }) {
         <CardDescription>Energy consumption by hours</CardDescription>
       </CardHeader>
       <CardContent>
-        <EnergyLineChart data={[data]} labels={["Consumption"]} />
+        <AxisChart data={[data]} labels={["Consumption"]} chartType={AxisChartType.Line} />
       </CardContent>
     </Card>
   );

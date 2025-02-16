@@ -6,7 +6,11 @@ enum EnergyUnit {
 	MWh = 1000000,
 }
 
-const energyUnitConverter = new UnitConverter({
+class EnergyUnitConverter extends UnitConverter {
+
+}
+
+const energyUnitConverter = new EnergyUnitConverter({
 	Wh: EnergyUnit.Wh,
 	kWh: EnergyUnit.kWh,
 	MWh: EnergyUnit.MWh

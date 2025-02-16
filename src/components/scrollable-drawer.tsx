@@ -14,7 +14,7 @@ export default function CenterDrawer({
 	title: string;
 	desc?: string;
 	content: React.ReactNode;
-	stretchToWidth: boolean;
+	stretchToWidth?: boolean;
 }) {
 	return (
 		<Drawer>
@@ -24,7 +24,7 @@ export default function CenterDrawer({
 						More
 					</Button>}
 			</DrawerTrigger>
-			<DrawerContent className={stretchToWidth === true ? '' : 'left-1/3 right-1/3'}>
+			<DrawerContent className={stretchToWidth ? '' : 'left-1/3 right-1/3'}>
 				<DrawerHeader>
 					<DrawerTitle>{title}</DrawerTitle>
 					<DrawerDescription>

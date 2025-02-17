@@ -186,7 +186,7 @@ export default function Dashboard() {
       <EnergyCard
         title="Battery storage"
         subtitle={
-          `${locStor === undefined ? '-' : `${locStor.currentPowerAmount / locStor.capacity * 100}`} %`
+          `${locStor === undefined ? '-' : `${Math.floor(locStor.currentPowerAmount / locStor.capacity * 100)}`} %`
         }
         desc={`${energyUnitConverter.formatInStringWithUnit(locStor?.currentPowerAmount)} /
         ${energyUnitConverter.formatInStringWithUnit(locStor?.capacity)}`}

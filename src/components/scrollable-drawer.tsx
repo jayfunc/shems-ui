@@ -34,11 +34,6 @@ export default function CenterDrawer({
 				<ScrollArea>
 					{content}
 				</ScrollArea>
-				<DrawerFooter>
-					<DrawerClose>
-						<Button className="w-full" variant="secondary">Close</Button>
-					</DrawerClose>
-				</DrawerFooter>
 			</DrawerContent>
 		</Drawer>
 	);

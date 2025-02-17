@@ -37,22 +37,22 @@ export default function Trading() {
 
       await ApiService.getHseCnsmp(hhId).then((ret) => {
         setMainGridCnsmp(ret.data.map((cnsmp: hseCnsmp) => ({
-          dateTime: cnsmp.dateTime,
+          dateTime: cnsmp.consumeTime,
           data: cnsmp.mainGridConsumeAmount
         } satisfies InputAxisChartDataProps)));
 
         setOnPeakCnsmp(ret.data.map((cnsmp: hseCnsmp) => ({
-          dateTime: cnsmp.dateTime,
+          dateTime: cnsmp.consumeTime,
           data: cnsmp.mainGridOnPeakConsumeAmount
         } satisfies InputAxisChartDataProps)));
 
         setMidPeakCnsmp(ret.data.map((cnsmp: hseCnsmp) => ({
-          dateTime: cnsmp.dateTime,
+          dateTime: cnsmp.consumeTime,
           data: cnsmp.mainGridMidPeakConsumeAmount
         } satisfies InputAxisChartDataProps)));
 
         setOffPeakCnsmp(ret.data.map((cnsmp: hseCnsmp) => ({
-          dateTime: cnsmp.dateTime,
+          dateTime: cnsmp.consumeTime,
           data: cnsmp.mainGridOffPeakConsumeAmount
         } satisfies InputAxisChartDataProps)));
       });

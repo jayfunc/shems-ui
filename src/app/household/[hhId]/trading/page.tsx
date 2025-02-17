@@ -62,14 +62,10 @@ export default function Trading() {
         setCmtyGridAcct(res.data);
       });
 
-      await ApiService.getAllHses().then((res) => {
-        setHses(res.data);
-      });
-
       await ApiService.getHseCnsmp(hhId).then((res) => {
         setCmtyCnsmp(res.data.map((element) => {
           return {
-            dateTime: element.dateTime,
+            dateTime: element.consumeTime,
             data: element.communityGridConsumeAmount,
           };
         }));
@@ -87,6 +83,10 @@ export default function Trading() {
         setSellOrders(res.data);
       });
     };
+
+    ApiService.getAllHses().then((res) => {
+      setHses(res.data);
+    });
 
     fetchData();
 

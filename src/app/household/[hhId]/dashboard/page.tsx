@@ -2,7 +2,6 @@
 
 import { Battery, Home, PlugZap, Sun, Unplug } from "lucide-react";
 import { useEffect, useState } from "react";
-import HseCnsmp from "@/models/hse-cnsmp";
 import ApiService from "@/services/api";
 import { usePathname } from "next/navigation";
 import {
@@ -10,9 +9,6 @@ import {
   chartMaxPoints,
   routing,
 } from "@/constants/constants";
-import HseCnsmpPred from "@/models/hse-cnsmp-pred";
-import HseGen from "@/models/hse-gen";
-import HseGenPred from "@/models/hse-gen-pred";
 import LocStor from "@/models/loc-stor";
 import EnergyCard from "./energy-card";
 import { motion } from "motion/react";
@@ -22,7 +18,6 @@ import MainGridUsageChart from "./main-grid-usage-chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ScrollableDrawer from "@/components/scrollable-drawer";
 import { AxisChart, AxisChartType, InputAxisChartDataProps } from "@/components/axis-chart";
-import { Label } from "@/components/ui/label";
 
 function formatDeltaDesc(delta?: number): string {
   return `${(delta !== undefined && !Number.isNaN(delta) && delta >= 0) ? "+" : ""}${energyUnitConverter.formatInStringWithUnit(delta)} from last hour`;
@@ -31,16 +26,16 @@ function formatDeltaDesc(delta?: number): string {
 export default function Dashboard() {
 
   // House energy consumption
-  const [hseCnsmp, setHseCnsmp] = useState<HseCnsmp[]>([]);
-  const [hseCnsmpPred, setHseCnsmpPred] = useState<HseCnsmpPred[]>([]);
+  const [hseCnsmp, setHseCnsmp] = useState<InputAxisChartDataProps[]>([]);
+  const [hseCnsmpPred, setHseCnsmpPred] = useState<InputAxisChartDataProps[]>([]);
   const [hseCnsmpDelta, setHseCnsmpDelta] = useState<number>();
 
   const [batteryCnsmp, setBatteryCnsmp] = useState<InputAxisChartDataProps[]>([]);
   const [solarCnsmp, setSolarCnsmp] = useState<InputAxisChartDataProps[]>([]);
 
   // House energy generation (solar)
-  const [hseGen, setHseGen] = useState<HseGen[]>([]);
-  const [hseGenPred, setHseGenPred] = useState<HseGenPred[]>([]);
+  const [hseGen, setHseGen] = useState<InputAxisChartDataProps[]>([]);
+  const [hseGenPred, setHseGenPred] = useState<InputAxisChartDataProps[]>([]);
   const [hseGenDelta, setHseGenDelta] = useState<number>();
 
   // Local energy storage (battery)
@@ -57,23 +52,28 @@ export default function Dashboard() {
     const fetchData = async () => {
       // House energy consumption
       await ApiService.getHseCnsmp(hhId).then((ret) => {
-        setHseCnsmp(ret.data);
+        setHseCnsmp(ret.data.map((element) => {
+          return {
+            dateTime: element.consumeTime,
+            data: element.totalConsumeAmount,
+          };
+        }));
         setBatteryCnsmp(ret.data.map((element) => {
           return {
-            dateTime: element.dateTime,
+            dateTime: element.consumeTime,
             data: element.powerStorageConsumeAmount,
           };
         }));
         setSolarCnsmp(ret.data.map((element) => {
           return {
-            dateTime: element.dateTime,
+            dateTime: element.consumeTime,
             data: element.solarPanelConsumeAmount,
           };
         }));
         // Calculate delta
         if (ret.data.length > 1) {
-          const last = ret.data[ret.data.length - 1]?.data;
-          const secondLast = ret.data[ret.data.length - 2]?.data;
+          const last = ret.data[ret.data.length - 1]?.totalConsumeAmount;
+          const secondLast = ret.data[ret.data.length - 2]?.totalConsumeAmount;
           if (last != null && secondLast != null) {
             setHseCnsmpDelta(last - secondLast);
           } else {
@@ -86,16 +86,38 @@ export default function Dashboard() {
 
       // House energy consumption prediction
       await ApiService.getHseCnsmpPred(hhId).then((ret) => {
-        setHseCnsmpPred(ret.data);
+        setHseCnsmpPred(ret.data.map((item) => {
+          return {
+            data: item.computer +
+              item.dishwasher +
+              item.electricRange1 +
+              item.electricRange2 +
+              item.fridge1 +
+              item.fridge2 +
+              item.furnace1 +
+              item.furnace2 +
+              item.television +
+              item.washerAndDryerSet +
+              item.waterHeater +
+              item.wineCellar +
+              item.airConditioner,
+            dateTime: item.predictTime,
+          }
+        }));
       });
 
       // House energy generation
       await ApiService.getHseGen(hhId).then((ret) => {
-        setHseGen(ret.data);
+        setHseGen(ret.data.map((item) => {
+          return {
+            data: item.powerAmount,
+            dateTime: item.generateTime,
+          };
+        }));
         // Calculate delta
         if (ret.data.length > 1) {
-          const last = ret.data.at(-1)?.data;
-          const secondLast = ret.data.at(-2)?.data;
+          const last = ret.data.at(-1)?.powerAmount;
+          const secondLast = ret.data.at(-2)?.powerAmount;
           if (last != null && secondLast != null) {
             setHseGenDelta(last - secondLast);
           } else {
@@ -108,7 +130,12 @@ export default function Dashboard() {
 
       // House energy generation prediction
       await ApiService.getHseGenPred(hhId).then((ret) => {
-        setHseGenPred(ret.data);
+        setHseGenPred(ret.data.map((item) => {
+          return {
+            data: item.solar,
+            dateTime: item.predictTime,
+          }
+        }));
       });
 
       // Local energy storage
@@ -159,7 +186,7 @@ export default function Dashboard() {
       <EnergyCard
         title="Battery storage"
         subtitle={
-          `${locStor?.currentPowerAmountPercentage ?? '-'} %`
+          `${locStor === undefined ? '-' : `${locStor.currentPowerAmount / locStor.capacity * 100}`} %`
         }
         desc={`${energyUnitConverter.formatInStringWithUnit(locStor?.currentPowerAmount)} /
         ${energyUnitConverter.formatInStringWithUnit(locStor?.capacity)}`}
@@ -231,7 +258,7 @@ export default function Dashboard() {
           </div>
         </Tabs>
       </Card>
-      
+
     </motion.div>
   );
 }

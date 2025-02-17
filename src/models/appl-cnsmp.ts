@@ -7,23 +7,23 @@ export default class ApplCnsmp extends Base {
   houseId: bigint;
   powerConsumeId: bigint;
   applianceId: bigint; // 0 represents power storage
-  data: number;
-  dateTime: Date;
+  consumeAmount: number;
+  consumeTime: Date;
 
   constructor(
     id: bigint,
     houseId: bigint,
     powerConsumeId: bigint,
     applianceId: bigint,
-    data: number,
-    dateTime: Date,
+    consumeAmount: number,
+    consumeTime: Date,
     simulationTime: Date,
   ) {
     super(id, simulationTime);
     this.houseId = houseId;
     this.powerConsumeId = powerConsumeId;
     this.applianceId = applianceId;
-    this.data = data;
-    this.dateTime = dateTime;
+    this.consumeAmount = consumeAmount;
+    this.consumeTime = consumeTime;
   }
 }

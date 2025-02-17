@@ -50,7 +50,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     ApiService.getHse(hhId).then((ret) => {
       setHse(ret.data);
     });
-  });
+  }, []);
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>

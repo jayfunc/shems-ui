@@ -5,19 +5,19 @@ import Base from "./base";
  */
 export default class HseGen extends Base {
   houseId: bigint;
-  data: number;
-  dateTime: Date;
+  powerAmount: number;
+  generateTime: Date;
 
   constructor(
     id: bigint,
     houseId: bigint,
-    data: number,
-    dateTime: Date,
+    powerAmount: number,
+    generateTime: Date,
     simulationTime: Date,
   ) {
     super(id, simulationTime);
     this.houseId = houseId;
-    this.data = data;
-    this.dateTime = dateTime;
+    this.powerAmount = powerAmount;
+    this.generateTime = generateTime;
   }
 }

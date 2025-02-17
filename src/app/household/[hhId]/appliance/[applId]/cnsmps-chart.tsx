@@ -11,20 +11,20 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { AxisChart, AxisChartType } from "@/components/axis-chart";
+import { AxisChart, AxisChartType, InputAxisChartDataProps } from "@/components/axis-chart";
 
 export function CnsmpsChart({ applId }: { applId: number }) {
-  const [data, setData] = useState<ApplCnsmp[]>([]);
-  const [time, setTime] = useState<Date>();
+  const [applCnsmp, setData] = useState<InputAxisChartDataProps[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      await ApiService.getSimCfg().then((res) => {
-        setTime(new Date(res.data.simulationTime));
-      });
-
       await ApiService.getApplCnsmp(applId).then((ret) => {
-        setData(ret.data);
+        setData(ret.data.map((item) => {
+          return {
+            data: item.consumeAmount,
+            dateTime: item.consumeTime,
+          }
+        }));
       });
     };
 
@@ -38,14 +38,13 @@ export function CnsmpsChart({ applId }: { applId: number }) {
   }, []);
 
   return (
-    time !== undefined &&
     <Card className="lg:col-span-full">
       <CardHeader>
         <CardTitle>Energy consumption</CardTitle>
         <CardDescription>Energy consumption by hours</CardDescription>
       </CardHeader>
       <CardContent>
-        <AxisChart data={[data]} labels={["Consumption"]} chartType={AxisChartType.Line} />
+        <AxisChart data={[applCnsmp]} labels={["Consumption"]} chartType={AxisChartType.Line} />
       </CardContent>
     </Card>
   );

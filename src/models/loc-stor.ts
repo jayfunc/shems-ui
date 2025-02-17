@@ -7,7 +7,6 @@ export default class LocStor extends Base {
   houseId: bigint;
   currentPowerAmount: number; // unit: Wh
   capacity: number; // unit: Wh
-  currentPowerAmountPercentage: number; // unit: %
   powerInput: number; // unit: W
   powerOutput: number; // unit: W
 
@@ -16,7 +15,6 @@ export default class LocStor extends Base {
     houseId: bigint,
     currentPowerAmount: number,
     capacity: number,
-    currentPowerAmountPercentage: number,
     powerInput: number,
     powerOutput: number,
     simulationTime: Date,
@@ -25,7 +23,6 @@ export default class LocStor extends Base {
     this.houseId = houseId;
     this.currentPowerAmount = currentPowerAmount;
     this.capacity = capacity;
-    this.currentPowerAmountPercentage = currentPowerAmountPercentage;
     this.powerInput = powerInput;
     this.powerOutput = powerOutput;
   }

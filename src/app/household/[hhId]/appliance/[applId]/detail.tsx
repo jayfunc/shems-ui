@@ -13,7 +13,7 @@ export default function Detail({ applId }: { applId: number }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      ApiService.getAppl(applId).then((res) => {
+      await ApiService.getAppl(applId).then((res) => {
         setAppl(res.data);
       });
     };

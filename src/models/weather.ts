@@ -3,7 +3,7 @@ import Base from "./base";
 /**
  * Weather Model
  */
-export default class Wx extends Base {
+export default class Weather extends Base {
   weatherTime: Date;
   temperature: number;
   humidity: number;

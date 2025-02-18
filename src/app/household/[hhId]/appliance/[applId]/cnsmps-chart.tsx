@@ -1,9 +1,7 @@
 "use client";
 
-import ApiService from "@/services/api";
+import ApiUriBuilder from "@/services/api";
 import ApplCnsmp from "@/models/appl-cnsmp";
-import { useEffect, useState } from "react";
-import { autoRefreshInterval } from "@/constants/constants";
 import {
   Card,
   CardHeader,
@@ -11,31 +9,14 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { AxisChart, AxisChartType, InputAxisChartDataProps } from "@/components/axis-chart";
+import {
+  AxisChart,
+  AxisChartType,
+} from "@/components/axis-chart";
+import useSWR from "swr";
 
 export function CnsmpsChart({ applId }: { applId: number }) {
-  const [applCnsmp, setData] = useState<InputAxisChartDataProps[]>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      await ApiService.getApplCnsmp(applId).then((ret) => {
-        setData(ret.data.map((item) => {
-          return {
-            data: item.consumeAmount,
-            dateTime: item.consumeTime,
-          }
-        }));
-      });
-    };
-
-    fetchData();
-
-    const interval = setInterval(async () => {
-      await fetchData();
-    }, autoRefreshInterval);
-
-    return () => clearInterval(interval);
-  }, []);
+  const { data } = useSWR<ApplCnsmp[]>(`${ApiUriBuilder.buildGetApplCnsmpUri(applId)}`);
 
   return (
     <Card className="lg:col-span-full">
@@ -44,7 +25,16 @@ export function CnsmpsChart({ applId }: { applId: number }) {
         <CardDescription>Energy consumption by hours</CardDescription>
       </CardHeader>
       <CardContent>
-        <AxisChart data={[applCnsmp]} labels={["Consumption"]} chartType={AxisChartType.Line} />
+        <AxisChart
+          data={[data?.map((item) => {
+            return {
+              data: item.consumeAmount,
+              dateTime: item.consumeTime,
+            };
+          }) ?? []]}
+          labels={["Consumption"]}
+          chartType={AxisChartType.Line}
+        />
       </CardContent>
     </Card>
   );

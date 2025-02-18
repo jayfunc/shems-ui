@@ -3,7 +3,7 @@ import Base from "./base";
 /**
  * House Power Generation
  */
-export default class HseGen extends Base {
+export default class HouseGen extends Base {
   houseId: bigint;
   powerAmount: number;
   generateTime: Date;

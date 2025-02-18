@@ -25,14 +25,16 @@ const boundary = {
 const height = 800;
 const width = 728;
 
-const WorldMap = memo(function WorldMap({
+const WorldMap = function WorldMap({
   dots = [],
   lineColor = "#0ea5e9",
 }: MapProps) {
   const svgRef = useRef<SVGSVGElement>(null);
-  const map = useMemo(() => new DottedMap({
-    width: 100, grid: "diagonal", countries: ['TB1', 'TB2', 'TB3', 'TB4']
-  }), []);
+  const map = new DottedMap({
+    width: 100,
+    grid: "diagonal",
+    countries: ["TB1", "TB2", "TB3", "TB4"],
+  });
 
   // Used for testing if projectPoint is working correctly
   // dots.forEach((dot) => {
@@ -50,22 +52,29 @@ const WorldMap = memo(function WorldMap({
 
   const { theme } = useTheme();
 
-  const svgMap = useMemo(() => map.getSVG({
+  const svgMap = map.getSVG({
     radius: 0.22,
     color: theme === "dark" ? "#FFFFFF40" : "#00000040",
     shape: "circle",
     backgroundColor: theme === "dark" ? "black" : "white",
-  }), [map, theme]);
+  });
 
-  const projectPoint = useMemo(() => (lat: number, lng: number) => {
-    const x = (lng - boundary.lng.min) / (boundary.lng.max - boundary.lng.min) * width;
-    const y = (boundary.lat.max - lat) / (boundary.lat.max - boundary.lat.min) * height;
-    return { x, y };
-  }, []);
+  const projectPoint = useMemo(
+    () => (lat: number, lng: number) => {
+      const x =
+        ((lng - boundary.lng.min) / (boundary.lng.max - boundary.lng.min)) *
+        width;
+      const y =
+        ((boundary.lat.max - lat) / (boundary.lat.max - boundary.lat.min)) *
+        height;
+      return { x, y };
+    },
+    [],
+  );
 
   const createCurvedPath = (
     start: { x: number; y: number },
-    end: { x: number; y: number }
+    end: { x: number; y: number },
   ) => {
     const midX = (start.x + end.x) / 2;
     const midY = Math.min(start.y, end.y) - 50;
@@ -198,6 +207,6 @@ const WorldMap = memo(function WorldMap({
       </svg>
     </div>
   );
-});
+};
 
 export default WorldMap;

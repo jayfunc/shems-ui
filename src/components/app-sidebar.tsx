@@ -15,13 +15,13 @@ import Link from "next/link";
 import { Label } from "./ui/label";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 import { NavUser } from "./nav-user";
-import Hse from "@/models/hse";
+import House from "@/models/house";
 
 export function AppSidebar({
   menuItems,
   mainRouting,
   selectedRouting,
-  hse,
+  house,
 }: {
   menuItems: {
     title: string;
@@ -32,7 +32,7 @@ export function AppSidebar({
   }[];
   mainRouting: string;
   selectedRouting: string;
-  hse?: Hse;
+  house?: House;
 }) {
   return (
     <Sidebar>
@@ -45,7 +45,14 @@ export function AppSidebar({
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton variant={selectedRouting === item.subRouting ? 'outline' : 'default'} asChild>
+                  <SidebarMenuButton
+                    variant={
+                      selectedRouting === item.subRouting
+                        ? "outline"
+                        : "default"
+                    }
+                    asChild
+                  >
                     <Link href={`${mainRouting}/${item.subRouting}`}>
                       <item.icon />
                       {item.title}
@@ -58,7 +65,7 @@ export function AppSidebar({
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <NavUser hse={hse} />
+        <NavUser house={house} />
       </SidebarFooter>
     </Sidebar>
   );

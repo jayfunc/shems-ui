@@ -3,7 +3,7 @@ import Base from "./base";
 /**
  * House Power Consumption Model
  */
-export default class HseCnsmp extends Base {
+export default class HouseCnsmp extends Base {
   houseId: bigint;
   totalConsumeAmount: number;
   mainGridConsumeAmount: number;

@@ -2,45 +2,42 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { autoRefreshInterval } from "@/constants/constants";
 import formatText from "@/extensions/string";
-import Appl, { AppliancePriority, ApplianceStatus, ApplianceType } from "@/models/appl";
-import ApiService from "@/services/api";
-import { useState, useEffect } from "react";
+import Appl, {
+  AppliancePriority,
+  ApplianceStatus,
+  ApplianceType,
+} from "@/models/appl";
+import ApiUriBuilder from "@/services/api";
+import useSWR from "swr";
 
 export default function Detail({ applId }: { applId: number }) {
-  const [appl, setAppl] = useState<Appl>();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      await ApiService.getAppl(applId).then((res) => {
-        setAppl(res.data);
-      });
-    };
-
-    fetchData();
-
-    const interval = setInterval(async () => {
-      await fetchData();
-    }, autoRefreshInterval);
-
-    return () => clearInterval(interval);
-  }, []);
+  const {data} = useSWR<Appl>(ApiUriBuilder.buildGetApplUri(applId));
 
   return (
     <Card className="lg:col-span-full">
       <CardHeader>
         <CardTitle className="flex flex-row items-center">
-          {formatText(appl?.name ?? '-')}
+          {formatText(data?.name ?? "-")}
           <Badge variant="outline" className="ml-2">
-            {formatText(appl === undefined ? '-' : ApplianceType[appl.applianceType])}
+            {formatText(
+              data === undefined ? "-" : ApplianceType[data.applianceType],
+            )}
           </Badge>
           <Badge variant="outline" className="ml-2">
-            {formatText(appl === undefined ? '-' : AppliancePriority[appl.priority])}
+            {formatText(
+              data === undefined ? "-" : AppliancePriority[data.priority],
+            )}
           </Badge>
           <div className="flex-1" />
-          <Badge variant={appl?.status === ApplianceStatus.On ? 'default' : 'outline'}>
-            {formatText(appl === undefined ? '-' : ApplianceStatus[appl.status])}
+          <Badge
+            variant={
+              data?.status === ApplianceStatus.On ? "default" : "outline"
+            }
+          >
+            {formatText(
+              data === undefined ? "-" : ApplianceStatus[data.status],
+            )}
           </Badge>
         </CardTitle>
       </CardHeader>

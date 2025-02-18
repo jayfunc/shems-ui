@@ -32,7 +32,7 @@ export default class OrderMatch {
     simulationTime: Date,
     deleted: number,
     createdAt: Date,
-    updatedAt: Date
+    updatedAt: Date,
   ) {
     this.id = id;
     this.orderNo = orderNo;

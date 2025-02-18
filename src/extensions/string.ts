@@ -18,5 +18,5 @@ function replaceUnderlines(str?: string): string | undefined {
 }
 
 export default function formatText(value: string): string {
-  return toTitleCase(insertSpaces(replaceUnderlines(value)) ?? '-');
+  return toTitleCase(insertSpaces(replaceUnderlines(value)) ?? "-");
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { Label } from "./ui/label";
 import { SidebarTrigger } from "./ui/sidebar";
@@ -16,10 +16,12 @@ import {
   BreadcrumbSeparator,
 } from "./ui/breadcrumb";
 import { Separator } from "./ui/separator";
-import ApiService from "@/services/api";
-import { autoRefreshInterval } from "@/constants/constants";
+import ApiUriBuilder from "@/services/api";
 import { motion } from "motion/react";
 import formatText from "@/extensions/string";
+import useSWR from "swr";
+import SimCfg from "@/models/sim-cfg";
+import Weather from "@/models/weather";
 
 export function AppTopbar() {
   const separatorSign = ">";
@@ -55,32 +57,11 @@ export function AppTopbar() {
   pathnames.shift();
   pathnames.shift();
 
-  const [time, setTime] = useState<Date>();
   const [showTime, setShowTime] = useState<boolean>(true);
-
   const [showWeather, setShowWeather] = useState<boolean>(true);
-  const [temp, setTemp] = useState<number>();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      // Get simulation time
-      await ApiService.getSimCfg().then((res) => {
-        setTime(res.data.simulationTime);
-      });
-
-      await ApiService.getWx().then((res) => {
-        setTemp(res.data.temperature);
-      });
-    };
-
-    fetchData();
-
-    const interval = setInterval(() => {
-      fetchData();
-    }, autoRefreshInterval);
-
-    return () => clearInterval(interval);
-  }, []);
+  const { data: simCfg } = useSWR<SimCfg>(ApiUriBuilder.buildGetSimCfgUri());
+  const { data: weather } = useSWR<Weather>(ApiUriBuilder.buildGetWeatherUri());
 
   return (
     <div className="sticky top-0 backdrop-blur realtive h-16 border-b items-center flex gap-2 px-4 z-10">
@@ -121,7 +102,9 @@ export function AppTopbar() {
         >
           <Thermometer />
         </Button>
-        {showWeather && <Label className="m-1.5">{`${temp?.toFixed(0) ?? '-'} °C`}</Label>}
+        {showWeather && (
+          <Label className="m-1.5">{`${weather?.temperature?.toFixed(0) ?? "-"} °C`}</Label>
+        )}
       </motion.div>
 
       <Separator orientation="vertical" className="h-4" />
@@ -134,7 +117,9 @@ export function AppTopbar() {
         >
           <Clock />
         </Button>
-        {showTime && time !== undefined && <Label className="m-1.5">{new Date(time).toLocaleString()}</Label>}
+        {showTime && simCfg !== undefined && (
+          <Label className="m-1.5">{new Date(simCfg.simulationTime).toLocaleString()}</Label>
+        )}
       </motion.div>
 
       <Separator orientation="vertical" className="h-4" />

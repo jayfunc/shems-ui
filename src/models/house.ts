@@ -11,7 +11,7 @@ export enum HouseholdType {
 /**
  * House Model
  */
-export default class Hse extends Base {
+export default class House extends Base {
   area?: number; // unit: sqft
   latitude: number;
   longitude: number;

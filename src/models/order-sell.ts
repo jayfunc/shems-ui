@@ -29,8 +29,8 @@ export default class OrderSell {
     deleted: number,
     createdAt: Date,
     updatedAt: Date,
-		completeTime?: Date,
-    cancelTime?: Date
+    completeTime?: Date,
+    cancelTime?: Date,
   ) {
     this.id = id;
     this.orderNo = orderNo;

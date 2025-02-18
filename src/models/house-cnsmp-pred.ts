@@ -3,7 +3,7 @@ import Base from "./base";
 /**
  * House Power Consumption Prediction Model
  */
-export default class HseCnsmpPred extends Base {
+export default class HouseCnsmpPred extends Base {
   householdType: number;
   predictTime: Date;
   furnace1: number;

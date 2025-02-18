@@ -5,12 +5,19 @@ import { AppTopbar } from "@/components/app-topbar";
 import { Placeholder } from "@/components/placeholder";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { routing } from "@/constants/constants";
-import Hse from "@/models/hse";
-import ApiService from "@/services/api";
-import { Home, CircuitBoard, ChartCandlestick, UtilityPole } from "lucide-react";
+import House from "@/models/house";
+import ApiUriBuilder from "@/services/api";
+import {
+  Home,
+  CircuitBoard,
+  ChartCandlestick,
+  UtilityPole,
+  Settings2,
+} from "lucide-react";
 import { motion } from "motion/react";
 import { usePathname } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import useSWR from "swr";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const curPathname = usePathname();
@@ -18,7 +25,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     0,
     curPathname.indexOf("/", `/${routing.household}/`.length),
   );
-  const hhId = parseInt(hhPathname.split("/").at(-1) ?? '');
+  const hhId = parseInt(hhPathname.split("/").at(-1) ?? "");
   const selectedRouting = curPathname.replace(hhPathname, "").split("/")[1];
 
   const menuItems = [
@@ -42,26 +49,28 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       subRouting: routing.trading,
       icon: ChartCandlestick,
     },
+    // {
+    //   title: "Settings",
+    //   subRouting: routing.settings,
+    //   icon: Settings2,
+    // },
   ];
 
-  const [hse, setHse] = useState<Hse>();
-
-  useEffect(() => {
-    ApiService.getHse(hhId).then((ret) => {
-      setHse(ret.data);
-    });
-  }, []);
+  const { data: house } = useSWR<House>(ApiUriBuilder.buildGetHouseUri(hhId));
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <SidebarProvider>
-        <AppSidebar mainRouting={hhPathname} selectedRouting={selectedRouting} menuItems={menuItems} hse={hse} />
+        <AppSidebar
+          mainRouting={hhPathname}
+          selectedRouting={selectedRouting}
+          menuItems={menuItems}
+          house={house}
+        />
         <SidebarInset>
           <AppTopbar />
           <div className="relative p-4 lg:px-24">
-            <Suspense fallback={<Placeholder />}>
-              {children}
-            </Suspense>
+            <Suspense fallback={<Placeholder />}>{children}</Suspense>
           </div>
         </SidebarInset>
       </SidebarProvider>

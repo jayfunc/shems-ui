@@ -3,7 +3,7 @@ import Base from "./base";
 /**
  * House Power Generation Prediction Model
  */
-export default class HseGenPred extends Base {
+export default class HouseGenPred extends Base {
   householdType: number;
   predictTime: Date;
   solar: number;

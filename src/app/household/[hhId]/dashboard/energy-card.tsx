@@ -29,9 +29,7 @@ export default function EnergyCard({
       <CardContent className="flex flex-row items-end">
         <div className="flex flex-col">
           <div className="text-2xl font-bold">{subtitle}</div>
-          <div className="text-sm text-muted-foreground">
-            {desc}
-          </div>
+          <div className="text-sm text-muted-foreground">{desc}</div>
         </div>
         <div className="flex-1" />
         {actionArea}

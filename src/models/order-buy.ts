@@ -36,7 +36,7 @@ export default class OrderBuy {
     deleted: number,
     createdAt: Date,
     updatedAt: Date,
-		completeTime?: Date,
+    completeTime?: Date,
     cancelTime?: Date,
   ) {
     this.id = id;

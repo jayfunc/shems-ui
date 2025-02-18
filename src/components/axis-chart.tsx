@@ -1,9 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/chart-patched";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/chart-patched";
 import { chartMaxPoints } from "@/constants/constants";
-import { Area, AreaChart, CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  LabelList,
+  Line,
+  LineChart,
+  XAxis,
+} from "recharts";
 import React from "react";
-import { Unlink } from "lucide-react";
+import { LoaderCircle, Unlink } from "lucide-react";
 import { Label } from "./ui/label";
 import energyUnitConverter from "../extensions/energy-unit-converter";
 
@@ -13,38 +28,40 @@ export enum AxisChartType {
   Bar,
 }
 
-export interface InputAxisChartDataProps { dateTime?: Date, data?: number };
-interface OutputAxisChartDataProps { dateTime?: Date, [key: string]: any };
+export interface InputAxisChartDataProps {
+  dateTime?: Date;
+  data?: number;
+}
+interface OutputAxisChartDataProps {
+  dateTime?: Date;
+  [key: string]: any;
+}
 
-function combineDates(...dataArrays: InputAxisChartDataProps[][]): OutputAxisChartDataProps[] {
-  let data: OutputAxisChartDataProps[] = [];
+function convertToOutputData(
+  ...dataArrays: InputAxisChartDataProps[][]
+): OutputAxisChartDataProps[] {
+  const data: OutputAxisChartDataProps[] = [];
   const allDates = new Set(
-    dataArrays.flatMap(dataArray => dataArray.map(val => val.dateTime))
-      .toSorted()
-      .reverse()
+    dataArrays
+      .flatMap((dataArray) => dataArray.map((val) => val.dateTime))
+      .toSorted(),
   );
 
   allDates.forEach((dateTime) => {
-    const combinedData: OutputAxisChartDataProps = { dateTime: dateTime, data1: undefined, data2: undefined };
+    const combinedData: OutputAxisChartDataProps = {
+      dateTime: dateTime,
+      data1: undefined,
+      data2: undefined,
+    };
     dataArrays.forEach((dataArray, index) => {
       combinedData[`data${index + 1}`] = energyUnitConverter.format(
-        dataArray.find((element) => element.dateTime === dateTime)?.data
+        dataArray.find((element) => element.dateTime === dateTime)?.data,
       );
     });
     data.push(combinedData);
   });
 
-  data = data.slice(0, chartMaxPoints).reverse();
   return data;
-}
-
-function handleSingleData(data?: InputAxisChartDataProps[]) {
-  return data?.map((element) => {
-    return {
-      dateTime: element.dateTime,
-      data1: element.data,
-    } satisfies OutputAxisChartDataProps;
-  }) ?? [];
 }
 
 function getChartConfig(labels: string[], colors?: number[]): ChartConfig {
@@ -57,53 +74,59 @@ function getChartConfig(labels: string[], colors?: number[]): ChartConfig {
   }, {} as ChartConfig);
 }
 
-export function convertToOutputData(data: InputAxisChartDataProps[][]): OutputAxisChartDataProps[] {
-  let outputData: OutputAxisChartDataProps[] = [];
-  if (data.length === 1) {
-    outputData = handleSingleData(data[0]);
-  } else {
-    outputData = combineDates(...data);
-  }
-
-  // outputData 如果不满 chartMaxPoints 长度则在前端补全
-  const count = chartMaxPoints - outputData.length;
-  if (count > 0) {
-    outputData = [...Array(count).fill({}), ...outputData];
-  }
-
-  // Make sure outputData has at most chartMaxPoints
-  outputData = outputData.slice(-chartMaxPoints);
-
-  return outputData;
-
-}
-
 export function AxisChart({
-  data, chartType, labels, colors
+  data,
+  chartType,
+  labels,
+  colors,
+  isLoading,
 }: {
-  data: InputAxisChartDataProps[][],
-  chartType: AxisChartType,
-  labels: string[],
-  colors?: number[]
+  data?: InputAxisChartDataProps[][];
+  chartType: AxisChartType;
+  labels: string[];
+  colors?: number[];
+  isLoading?: boolean;
 }) {
-  const outputData = convertToOutputData(data);
-  const isDataEmpty = outputData.every((element) => element.data1 == null && element.data2 == null);
+  const outputData = convertToOutputData(...(data ?? []));
+  const isDataEmpty = isLoading !== true && outputData.every(
+    (element) => element.data1 == null && element.data2 == null,
+  );
 
   return (
     <div className="relative">
-      {chartType === AxisChartType.Line && <EnergyLineChart outputData={outputData} labels={labels} colors={colors} />}
-      {chartType === AxisChartType.Area && <EnergyAreaChart outputData={outputData} labels={labels} />}
-      {isDataEmpty &&
+      {chartType === AxisChartType.Line && (
+        <EnergyLineChart
+          outputData={outputData}
+          labels={labels}
+          colors={colors}
+        />
+      )}
+      {chartType === AxisChartType.Area && (
+        <EnergyAreaChart outputData={outputData} labels={labels} />
+      )}
+      {isDataEmpty && (
         <div className="flex flex-col gap-2 items-center justify-center w-full h-full text-muted-foreground absolute top-0">
           <Unlink />
           <Label className="text-center">No data available</Label>
-        </div>}
+        </div>
+      )}
+      {isLoading && (
+        <div className="flex flex-col gap-2 items-center justify-center w-full h-full text-muted-foreground absolute top-0">
+          <LoaderCircle className="animate-spin" />
+          <Label className="text-center">Loading...</Label>
+        </div>)}
     </div>
   );
 }
 
-function EnergyLineChart({ outputData, labels, colors }: {
-  outputData: OutputAxisChartDataProps[], labels: string[], colors?: number[]
+function EnergyLineChart({
+  outputData,
+  labels,
+  colors,
+}: {
+  outputData: OutputAxisChartDataProps[];
+  labels: string[];
+  colors?: number[];
 }) {
   return (
     <ChartContainer
@@ -125,14 +148,18 @@ function EnergyLineChart({ outputData, labels, colors }: {
           tickLine={false}
           tickMargin={10}
           axisLine={false}
-          tickFormatter={(value) => value === '' ? '' : new Date(value).toLocaleTimeString()}
+          tickFormatter={(value) =>
+            value === "" ? "" : new Date(value).toLocaleTimeString()
+          }
         />
         <ChartTooltip
           cursor={false}
           content={
             <ChartTooltipContent
               indicator="dot"
-              itemFormatter={(value) => `${value} ${energyUnitConverter.getTargetUnit()}`}
+              itemFormatter={(value) =>
+                `${value} ${energyUnitConverter.getTargetUnit()}`
+              }
             />
           }
           labelFormatter={(value) => new Date(value).toLocaleString()}
@@ -144,7 +171,7 @@ function EnergyLineChart({ outputData, labels, colors }: {
             <Line
               key={label}
               dataKey={`data${index + 1}`}
-              type="natural"
+              type="linear"
               stroke={color}
               strokeWidth={2}
               dot={{
@@ -158,7 +185,9 @@ function EnergyLineChart({ outputData, labels, colors }: {
                 position="top"
                 fill={color}
                 offset={10}
-                formatter={(value: string | number) => `${value} ${energyUnitConverter.getTargetUnit()}`}
+                formatter={(value: string | number) =>
+                  `${value} ${energyUnitConverter.getTargetUnit()}`
+                }
               />
             </Line>
           );
@@ -168,8 +197,14 @@ function EnergyLineChart({ outputData, labels, colors }: {
   );
 }
 
-function EnergyAreaChart({ outputData, labels, colors }: {
-  outputData: OutputAxisChartDataProps[], labels: string[], colors?: number[]
+function EnergyAreaChart({
+  outputData,
+  labels,
+  colors,
+}: {
+  outputData: OutputAxisChartDataProps[];
+  labels: string[];
+  colors?: number[];
 }) {
   return (
     <ChartContainer
@@ -191,14 +226,18 @@ function EnergyAreaChart({ outputData, labels, colors }: {
           tickLine={false}
           tickMargin={10}
           axisLine={false}
-          tickFormatter={(value) => value === '' ? '' : new Date(value).toLocaleTimeString()}
+          tickFormatter={(value) =>
+            value === "" ? "" : new Date(value).toLocaleTimeString()
+          }
         />
         <ChartTooltip
           cursor={false}
           content={
             <ChartTooltipContent
               indicator="dot"
-              itemFormatter={(value) => `${value} ${energyUnitConverter.getTargetUnit()}`}
+              itemFormatter={(value) =>
+                `${value} ${energyUnitConverter.getTargetUnit()}`
+              }
             />
           }
           labelFormatter={(value) => new Date(value).toLocaleString()}
@@ -209,7 +248,7 @@ function EnergyAreaChart({ outputData, labels, colors }: {
             <Area
               key={label}
               dataKey={`data${index + 1}`}
-              type="natural"
+              type="linear"
               stroke={color}
               strokeWidth={2}
               dot={{
@@ -223,7 +262,9 @@ function EnergyAreaChart({ outputData, labels, colors }: {
                 position="top"
                 fill={color}
                 offset={10}
-                formatter={(value: string | number) => `${value} ${energyUnitConverter.getTargetUnit()}`}
+                formatter={(value: string | number) =>
+                  `${value} ${energyUnitConverter.getTargetUnit()}`
+                }
               />
             </Area>
           );

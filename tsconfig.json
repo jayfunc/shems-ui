@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     "src/pages/404.txs",
     "src/pages/404.js"
-, "src/lib/dotted-map/with-countries.js", "src/lib/dotted-map/without-countries.js"  ],
+, "src/lib/dotted-map-backup/with-countries.js", "src/lib/dotted-map-backup/without-countries.js"  ],
   "exclude": ["node_modules"]
 }

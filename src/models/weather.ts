@@ -3,7 +3,7 @@ import Base from "./base";
 /**
  * Weather Model
  */
-export default class Wx extends Base {
+export default class Weather extends Base {
   weatherTime: Date;
   temperature: number;
   humidity: number;
@@ -31,7 +31,7 @@ export default class Wx extends Base {
     precipIntensity: number,
     dewPoint: number,
     precipProbability: number,
-    simulationTime: string,
+    simulationTime: Date,
   ) {
     super(id, simulationTime);
     this.weatherTime = weatherTime;

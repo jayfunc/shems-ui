@@ -1,8 +1,14 @@
 import Base from "./base";
+
+export enum ApplianceStatus {
+  On = 1,
+  Off = 0,
+}
+
 export enum AppliancePriority {
-  HighPriority,
-  MediumPriority,
-  LowPriority,
+  HighPriority = 0,
+  MediumPriority = 1,
+  LowPriority = 2,
 }
 
 export enum ApplianceType {
@@ -27,6 +33,7 @@ export default class Appl extends Base {
   name: string;
   applianceType: ApplianceType;
   priority: AppliancePriority;
+  status: ApplianceStatus;
 
   constructor(
     id: bigint,
@@ -34,12 +41,14 @@ export default class Appl extends Base {
     name: string,
     applianceType: ApplianceType,
     priority: AppliancePriority,
-    simulationTime: string,
+    status: ApplianceStatus,
+    simulationTime: Date,
   ) {
     super(id, simulationTime);
     this.houseId = houseId;
     this.name = name;
     this.applianceType = applianceType;
     this.priority = priority;
+    this.status = status;
   }
 }

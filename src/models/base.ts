@@ -1,8 +1,8 @@
 export default class Base {
   id: bigint;
-  simulationTime: string;
+  simulationTime: Date;
 
-  constructor(id: bigint, simulationTime: string) {
+  constructor(id: bigint, simulationTime: Date) {
     this.id = id;
     this.simulationTime = simulationTime;
   }

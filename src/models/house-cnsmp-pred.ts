@@ -3,9 +3,9 @@ import Base from "./base";
 /**
  * House Power Consumption Prediction Model
  */
-export default class HseCnsmpPred extends Base {
+export default class HouseCnsmpPred extends Base {
   householdType: number;
-  dateTime: Date;
+  predictTime: Date;
   furnace1: number;
   furnace2: number;
   dishwasher: number;
@@ -23,7 +23,7 @@ export default class HseCnsmpPred extends Base {
   constructor(
     id: bigint,
     householdType: number,
-    dateTime: Date,
+    predictTime: Date,
     furnace1: number,
     furnace2: number,
     dishwasher: number,
@@ -37,11 +37,11 @@ export default class HseCnsmpPred extends Base {
     wineCellar: number,
     waterHeater: number,
     airConditioner: number,
-    simulationTime: string,
+    simulationTime: Date,
   ) {
     super(id, simulationTime);
     this.householdType = householdType;
-    this.dateTime = dateTime;
+    this.predictTime = predictTime;
     this.furnace1 = furnace1;
     this.furnace2 = furnace2;
     this.dishwasher = dishwasher;

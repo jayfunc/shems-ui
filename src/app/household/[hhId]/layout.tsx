@@ -3,14 +3,21 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppTopbar } from "@/components/app-topbar";
 import { Placeholder } from "@/components/placeholder";
-import { Button } from "@/components/ui/button";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { Toaster } from "@/components/ui/toaster";
 import { routing } from "@/constants/constants";
-import { Home, CircuitBoard, ChartCandlestick, UtilityPole } from "lucide-react";
+import House from "@/models/house";
+import ApiUriBuilder from "@/services/api";
+import {
+  Home,
+  CircuitBoard,
+  ChartCandlestick,
+  UtilityPole,
+  Settings2,
+} from "lucide-react";
 import { motion } from "motion/react";
 import { usePathname } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
+import useSWR from "swr";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const curPathname = usePathname();
@@ -18,42 +25,53 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     0,
     curPathname.indexOf("/", `/${routing.household}/`.length),
   );
+  const hhId = parseInt(hhPathname.split("/").at(-1) ?? "");
+  const selectedRouting = curPathname.replace(hhPathname, "").split("/")[1];
 
   const menuItems = [
     {
       title: "Dashboard",
-      url: `${hhPathname}/${routing.dashboard}`,
+      subRouting: routing.dashboard,
       icon: Home,
     },
     {
       title: "Appliance",
-      url: `${hhPathname}/${routing.appliance}`,
+      subRouting: routing.appliance,
       icon: CircuitBoard,
     },
     {
       title: "Grid",
-      url: `${hhPathname}/${routing.grid}`,
+      subRouting: routing.grid,
       icon: UtilityPole,
     },
     {
       title: "Trading",
-      url: `${hhPathname}/${routing.trading}`,
+      subRouting: routing.trading,
       icon: ChartCandlestick,
     },
+    // {
+    //   title: "Settings",
+    //   subRouting: routing.settings,
+    //   icon: Settings2,
+    // },
   ];
+
+  const { data: house } = useSWR<House>(ApiUriBuilder.buildGetHouseUri(hhId));
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <SidebarProvider>
-        <AppSidebar menuItems={menuItems} />
+        <AppSidebar
+          mainRouting={hhPathname}
+          selectedRouting={selectedRouting}
+          menuItems={menuItems}
+          house={house}
+        />
         <SidebarInset>
           <AppTopbar />
-          <Suspense fallback={<Placeholder />}>
-            <div className="relative p-4 lg:px-24">
-              {children}
-            </div>
-            <Toaster />
-          </Suspense>
+          <div className="relative p-4 lg:px-24">
+            <Suspense fallback={<Placeholder />}>{children}</Suspense>
+          </div>
         </SidebarInset>
       </SidebarProvider>
     </motion.div>

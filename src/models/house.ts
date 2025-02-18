@@ -1,15 +1,17 @@
 import Base from "./base";
 
 export enum HouseholdType {
-  BigFamily = 2,
-  SignalFamily = 1,
-  SmallFamily = 0,
+  Admin = 0,
+  ExtraLarge = 1,
+  Large = 2,
+  Medium = 3,
+  Small = 4,
 }
 
 /**
  * House Model
  */
-export default class Hse extends Base {
+export default class House extends Base {
   area?: number; // unit: sqft
   latitude: number;
   longitude: number;
@@ -22,7 +24,7 @@ export default class Hse extends Base {
     longitude: number,
     householdType: HouseholdType,
     householdName: string,
-    simulationTime: string,
+    simulationTime: Date,
     area?: number,
   ) {
     super(id, simulationTime);

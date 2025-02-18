@@ -1,24 +1,87 @@
-# SHEME - UI
+# SHEMS - UI
 
-Front-end for Smart home energy management system - User interface.
+SHEMS - Short for **_Smart Home Energy Management System_**
+
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## My environment
+
+npm: 10.9.2
+node: 22.13.0
+Next.js: 15.1.4
+
+## How to build and run
+
+```bash
+npm run build
+npm run start
+# or
+npm run dev
+```
+
+## Before open the browser
+
+Replace the content in [./node_modules/dotted-map/index.js](./node_modules/dotted-map/index.js) with the content in [./src/components/world-map-patched-file.js](./src/components/world-map-patched-file.js) **_(Only required for the first time)_**
+
+And then you can open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can find admin's username, admin's password and user's password in [./src/constants/constants.ts](./src/constants/constants.ts)
+
+You can disable global toast in the file mentioned above also.
 
 ## Screenshots
 
-### Login
-![Snipaste_2025-02-12_19-29-25](https://github.com/user-attachments/assets/2eb75e55-61d7-42e1-8500-826ce00aacf3)
+### **_For both user and admin_**
 
-### Dashboard
-![Snipaste_2025-02-12_19-31-34](https://github.com/user-attachments/assets/bbc74ee9-240c-440e-a2db-e9288c6f27ed)
+#### Login
 
-### Appliance
-![Snipaste_2025-02-12_19-31-45](https://github.com/user-attachments/assets/dcd019e9-785c-42b8-97ed-3c192e889236)
+![login](./screenshots/login.png)
 
-### Appliance > [Sub appliance]
-![Snipaste_2025-02-12_19-31-54](https://github.com/user-attachments/assets/47b36ceb-c5d0-428d-a59a-6bbe341fe81f)
+#### Login dialog
 
-### Grid
-![Snipaste_2025-02-12_19-32-11](https://github.com/user-attachments/assets/2e57f747-1913-4aa1-8fb2-a9b1ceafeeae)
+![login-dialog](./screenshots/login-dialog.png)
 
-### Trading
-![Snipaste_2025-02-12_19-32-44](https://github.com/user-attachments/assets/a13bbb02-516f-4fb7-b14e-6746d26e6e3d)
-![Snipaste_2025-02-12_19-32-50](https://github.com/user-attachments/assets/30431898-a03e-4696-b95b-d3f67469f5c0)
+---
+
+### **_For user_**
+
+#### Dashboard
+
+![user-dashboard](./screenshots/user-dashboard.png)
+
+#### Dashboard solar drawer
+
+![user-dashboard-solar-drawer](./screenshots/user-dashboard-solar-drawer.png)
+
+#### Dashboard battery drawer
+
+![user-dashboard-battery-drawer](./screenshots/user-dashboard-battery-drawer.png)
+
+#### Dashboard grid drawer
+
+![user-dashboard-grid-drawer](./screenshots/user-dashboard-grid-drawer.png)
+
+#### Appliance
+
+![user-appliance](./screenshots/user-appliance.png)
+
+#### Appliance detail
+
+![user-appliance-item](./screenshots/user-appliance-item.png)
+
+#### Grid
+
+![user-grid](./screenshots/user-grid.png)
+
+#### Trading
+
+![user-trading-map](./screenshots/user-trading-map.png)
+![user-trading-trading](./screenshots/user-trading-trading.png)
+
+---
+
+### **_For admin_**
+
+#### Dashboard
+
+![admin-dashboard](./screenshots/admin-dashboard.png)

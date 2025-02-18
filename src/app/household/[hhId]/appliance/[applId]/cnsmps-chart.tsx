@@ -1,15 +1,7 @@
 "use client";
 
-import { CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import ApiService from "@/services/api";
+import ApiUriBuilder from "@/services/api";
 import ApplCnsmp from "@/models/appl-cnsmp";
-import { useEffect, useState } from "react";
-import { autoRefreshInterval, chartMaxPoints } from "@/constants/constants";
 import {
   Card,
   CardHeader,
@@ -17,30 +9,14 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { EnergyLineChart } from "@/components/line-chart";
+import {
+  AxisChart,
+  AxisChartType,
+} from "@/components/axis-chart";
+import useSWR from "swr";
 
 export function CnsmpsChart({ applId }: { applId: number }) {
-  const [data, setData] = useState<ApplCnsmp[]>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      ApiService.getApplCnsmp(applId).then((ret) => {
-        data.push(ret.data);
-        if (data.length >= chartMaxPoints) {
-          data.shift();
-        }
-        setData([...data]);
-      });
-    };
-
-    fetchData();
-
-    const interval = setInterval(() => {
-      fetchData();
-    }, autoRefreshInterval);
-
-    return () => clearInterval(interval);
-  }, []);
+  const { data } = useSWR<ApplCnsmp[]>(`${ApiUriBuilder.buildGetApplCnsmpUri(applId)}`);
 
   return (
     <Card className="lg:col-span-full">
@@ -49,7 +25,16 @@ export function CnsmpsChart({ applId }: { applId: number }) {
         <CardDescription>Energy consumption by hours</CardDescription>
       </CardHeader>
       <CardContent>
-        <EnergyLineChart data={[data]} labels={["Consumption"]} />
+        <AxisChart
+          data={[data?.map((item) => {
+            return {
+              data: item.consumeAmount,
+              dateTime: item.consumeTime,
+            };
+          }) ?? []]}
+          labels={["Consumption"]}
+          chartType={AxisChartType.Line}
+        />
       </CardContent>
     </Card>
   );

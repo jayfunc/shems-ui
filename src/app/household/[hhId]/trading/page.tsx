@@ -15,43 +15,36 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Coins, Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   autoRefreshInterval,
+  chartMaxPoints,
   routing,
 } from "@/constants/constants";
-import ApiService from "@/services/api";
+import ApiUriBuilder from "@/services/api";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import CmtyGridAcct from "@/models/cmty-grid-acct";
 import { motion } from "motion/react";
-import formatEnergy, { getTargetEnergyUnit } from "@/extensions/energy";
-import WorldMap from "@/components/ui/world-map";
-
-const trades = [
-  {
-    id: 1,
-    neighbor: "House #123",
-    amount: "2.5 kWh",
-    price: "$0.15/kWh",
-    status: "Canceled",
-  },
-  {
-    id: 2,
-    neighbor: "House #456",
-    amount: "1.8 kWh",
-    price: "$0.12/kWh",
-    status: "Completed",
-  },
-  {
-    id: 3,
-    neighbor: "House #789",
-    amount: "3.2 kWh",
-    price: "$0.18/kWh",
-    status: "Pending",
-  },
-];
+import React from "react";
+import WorldMap from "@/components/world-map-patched";
+import energyUnitConverter from "@/extensions/energy-unit-converter";
+import moneyUnitConverter from "@/extensions/money-unit-converter";
+import { Separator } from "@/components/ui/separator";
+import House from "@/models/house";
+import {
+  AxisChart,
+  AxisChartType,
+} from "@/components/axis-chart";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import OrderMatch from "@/models/order-match";
+import OrderBuy, {
+  BuySellOrderStatus as BuySellOrderStatus,
+} from "@/models/order-buy";
+import OrderSell from "@/models/order-sell";
+import formatText from "@/extensions/string";
+import useSWR from "swr";
+import HouseCnsmp from "@/models/house-cnsmp";
 
 export default function Trading() {
   const hhId = parseInt(
@@ -61,131 +54,324 @@ export default function Trading() {
       .replaceAll("/", ""),
   );
 
-  const [cmtyGridAcct, setCmtyGridAcct] = useState<CmtyGridAcct>();
+  const {data: houses} = useSWR<House[]>(ApiUriBuilder.buildGetAllHousesUri());
+
+  const {data: cmtyGridAcct} = useSWR<CmtyGridAcct>(ApiUriBuilder.buildGetCmtyGridAcctUri(hhId));
+  const {data: houseCnsmp} = useSWR<HouseCnsmp[]>(ApiUriBuilder.buildGetHouseCnsmpUri(hhId));
+
+  function mapToCmtyGridCnsmpData() {
+    return houseCnsmp?.map((item) => {
+      return {
+        dateTime: item.consumeTime,
+        data: item.communityGridConsumeAmount,
+      };
+    }) ?? [];
+  }
+
+  const [matchedOrders, setMatchedOrder] = useState<OrderMatch[]>([]);
+  const [buyOrders, setBuyOrders] = useState<OrderBuy[]>([]);
+  const [sellOrders, setSellOrders] = useState<OrderSell[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      ApiService.getCmtyGridAcct(hhId).then((res) => {
-        setCmtyGridAcct(res.data);
+      await ApiUriBuilder.getAllMatchedOrders(hhId).then((res) => {
+        setMatchedOrder(res.data);
+      });
+
+      await ApiUriBuilder.getAllBuyOrders(hhId).then((res) => {
+        setBuyOrders(res.data);
+      });
+
+      await ApiUriBuilder.getAllSellOrders(hhId).then((res) => {
+        setSellOrders(res.data);
       });
     };
 
     fetchData();
 
-    const interval = setInterval(() => {
-      fetchData();
+    const interval = setInterval(async () => {
+      await fetchData();
     }, autoRefreshInterval);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <motion.div className="grid grid-cols-2 gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+    <motion.div
+      className="grid grid-cols-2 gap-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
+      <Card className="col-span-1">
+        <CardHeader>
+          <CardTitle>Energy balance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex h-5 items-center space-x-4 text-sm">
+            <div>
+              {energyUnitConverter.formatInStringWithUnit(
+                cmtyGridAcct?.totalSurplusPowerAmount,
+              )}{" "}
+              in your account
+            </div>
+            <Separator orientation="vertical" />
+            <div>
+              {energyUnitConverter.formatInStringWithUnit(
+                cmtyGridAcct?.powerFrozenAmount,
+              )}{" "}
+              frozen
+            </div>
+          </div>
+          <Separator className="my-4" />
+          <div className="flex h-5 items-center space-x-4 text-sm text-muted-foreground">
+            <div>
+              {energyUnitConverter.formatInStringWithUnit(
+                Number(cmtyGridAcct?.powerSoldAmount),
+              )}{" "}
+              sold
+            </div>
+            <Separator orientation="vertical" />
+            <div>
+              {energyUnitConverter.formatInStringWithUnit(
+                cmtyGridAcct?.availableForSalePowerAmount,
+              )}{" "}
+              available for sale
+            </div>
+          </div>
+          <div className="my-4" />
+          <div className="flex h-5 items-center space-x-4 text-sm text-muted-foreground">
+            <div>
+              {energyUnitConverter.formatInStringWithUnit(
+                Number(cmtyGridAcct?.totalBoughtPowerAmount),
+              )}{" "}
+              bought
+            </div>
+            <Separator orientation="vertical" />
+            <div>
+              {energyUnitConverter.formatInStringWithUnit(
+                Number(cmtyGridAcct?.availableForUsePowerAmount),
+              )}{" "}
+              available for use
+            </div>
+            <Separator orientation="vertical" />
+            <div>
+              {energyUnitConverter.formatInStringWithUnit(
+                Number(cmtyGridAcct?.totalUsedPowerAmount),
+              )}{" "}
+              used
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="col-span-1">
+        <CardHeader>
+          <CardTitle>Fund balance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex h-5 items-center space-x-4 text-sm">
+            <div>
+              {moneyUnitConverter.formatInStringWithUnit(cmtyGridAcct?.balance)}{" "}
+              in your account
+            </div>
+            <Separator orientation="vertical" />
+            <div>
+              {moneyUnitConverter.formatInStringWithUnit(
+                cmtyGridAcct?.frozenPaidBalance,
+              )}{" "}
+              frozen
+            </div>
+          </div>
+          <Separator className="my-4" />
+          <div className="flex h-5 items-center space-x-4 text-sm text-muted-foreground">
+            <div>
+              {moneyUnitConverter.formatInStringWithUnit(
+                Number(cmtyGridAcct?.balanceEarned),
+              )}{" "}
+              earned
+            </div>
+          </div>
+          <div className="my-4" />
+          <div className="flex h-5 items-center space-x-4 text-sm text-muted-foreground">
+            <div>
+              {moneyUnitConverter.formatInStringWithUnit(
+                cmtyGridAcct?.balancePaid,
+              )}{" "}
+              paid
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Tabs defaultValue="match" className="col-span-full">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex flex-row items-center">
+              P2P energy trading
+              <div className="flex-1" />
+              <TabsList>
+                <TabsTrigger value="buy">Buy orders</TabsTrigger>
+                <TabsTrigger value="sell">Sell orders</TabsTrigger>
+                <TabsTrigger value="match">Matched orders</TabsTrigger>
+              </TabsList>
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent>
+            <TabsContent value="buy">
+              <Table className="text-center">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-center">Quantity</TableHead>
+                    <TableHead className="text-center">Limit price</TableHead>
+                    <TableHead className="text-center">
+                      Submitted time
+                    </TableHead>
+                    <TableHead className="text-center">Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {buyOrders.map((order) => (
+                    <TableRow key={order.id}>
+                      <TableCell>{order.quantity}</TableCell>
+                      <TableCell>{order.buyPrice}</TableCell>
+                      <TableCell>{order.orderTime.toLocaleString()}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            order.orderStatus === BuySellOrderStatus.Completed
+                              ? "default"
+                              : order.orderStatus ===
+                                  BuySellOrderStatus.Cancelled
+                                ? "destructive"
+                                : order.orderStatus ===
+                                    BuySellOrderStatus.PartiallyCompleted
+                                  ? "secondary"
+                                  : "outline"
+                          }
+                        >
+                          {formatText(BuySellOrderStatus[order.orderStatus])}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TabsContent>
+
+            <TabsContent value="sell">
+              <Table className="text-center">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-center">Quantity</TableHead>
+                    <TableHead className="text-center">Limit price</TableHead>
+                    <TableHead className="text-center">
+                      Submitted time
+                    </TableHead>
+                    <TableHead className="text-center">Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {sellOrders.map((order) => (
+                    <TableRow key={order.id}>
+                      <TableCell>{order.quantity}</TableCell>
+                      <TableCell>{order.sellPrice}</TableCell>
+                      <TableCell>{order.orderTime.toLocaleString()}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            order.orderStatus === BuySellOrderStatus.Completed
+                              ? "default"
+                              : order.orderStatus ===
+                                  BuySellOrderStatus.Cancelled
+                                ? "destructive"
+                                : "secondary"
+                          }
+                        >
+                          {formatText(BuySellOrderStatus[order.orderStatus])}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TabsContent>
+
+            <TabsContent value="match">
+              <Table className="text-center">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-center">Buyer</TableHead>
+                    <TableHead className="text-center">Seller</TableHead>
+                    <TableHead className="text-center">Quantity</TableHead>
+                    <TableHead className="text-center">Matched price</TableHead>
+                    <TableHead className="text-center">Matched time</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {matchedOrders.map((order) => (
+                    <TableRow key={order.id}>
+                      <TableCell>{order.buyerId}</TableCell>
+                      <TableCell>{order.sellerId}</TableCell>
+                      <TableCell>{order.quantity}</TableCell>
+                      <TableCell>{order.matchPrice}</TableCell>
+                      <TableCell>{order.matchTime.toLocaleString()}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TabsContent>
+          </CardContent>
+        </Card>
+      </Tabs>
+
       <Card className="col-span-full">
         <CardHeader>
           <CardTitle>Energy map</CardTitle>
-          <CardDescription>
-            Energy trading map
-          </CardDescription>
+          <CardDescription>Energy trading map</CardDescription>
         </CardHeader>
         <CardContent>
           <WorldMap
-            dots={[
-              {
-                start: { lat: 34.0522, lng: -118.2437, }, // Los Angeles
-                end: { lat: 64.2008, lng: -149.4937, }, // Alaska (Fairbanks)
-              },
-              {
-                start: { lat: 64.2008, lng: -149.4937 }, // Alaska (Fairbanks)
-                end: { lat: -15.7975, lng: -47.8919 }, // Brazil (Brasília)
-              },
-              {
-                start: { lat: -15.7975, lng: -47.8919 }, // Brazil (Brasília)
-                end: { lat: 51.5074, lng: -0.1278 }, // London
-              },
-              {
-                start: { lat: 51.5074, lng: -0.1278 }, // London
-                end: { lat: 28.6139, lng: 77.209 }, // New Delhi
-              },
-              {
-                start: { lat: 28.6139, lng: 77.209 }, // New Delhi
-                end: { lat: 43.1332, lng: 131.9113 }, // Vladivostok
-              },
-              {
-                start: { lat: 43.1332, lng: 131.9113 }, // Vladivostok
-                end: { lat: 34.0522, lng: -118.2437, }, // Los Angeles
-              },
-            ]}
-            lineColor="#000"
+            dots={matchedOrders
+              .map((order) => {
+                if (
+                  BigInt(hhId) === order.buyerId ||
+                  BigInt(hhId) === order.sellerId
+                ) {
+                  const buyer = houses?.find(
+                    (house) => house.id.toString() === order.buyerId.toString(),
+                  );
+                  const seller = houses?.find(
+                    (house) =>
+                      house.id.toString() === order.sellerId.toString(),
+                  );
+
+                  if (!buyer || !seller) return undefined;
+
+                  return {
+                    start: { lat: seller.latitude, lng: seller.longitude },
+                    end: { lat: buyer.latitude, lng: buyer.longitude },
+                  };
+                }
+                return undefined;
+              })
+              .filter((dot) => dot !== undefined)}
           />
         </CardContent>
       </Card>
 
       <Card className="col-span-full">
         <CardHeader>
-          <CardDescription>Community account</CardDescription>
-          <CardTitle className="grid flex flex-row place-items-center gap-2 pt-2">
-            <Coins />
-            <div className="flex flex-col gap-2 pl-2">
-              ${cmtyGridAcct?.balance} CAD
-              <Badge variant="secondary">
-                ${cmtyGridAcct?.frozenPaidBalance} CAD Pending
-              </Badge>
-            </div>
-            <div className="flex-1" />
-            <Zap />
-            <div className="flex flex-col gap-2 pl-2">
-              {formatEnergy(cmtyGridAcct?.totalSurplusPowerAmount)} {getTargetEnergyUnit()}
-              <Badge variant="secondary">
-                {formatEnergy(cmtyGridAcct?.powerFrozenAmount)} {getTargetEnergyUnit()} Pending
-              </Badge>
-            </div>
-            <div className="flex-1" />
-          </CardTitle>
-        </CardHeader>
-        <CardContent></CardContent>
-      </Card>
-
-      <Card className="col-span-full">
-        <CardHeader>
-          <CardTitle>P2P energy trading</CardTitle>
-          <CardDescription>
-            Current energy trading opportunities and history
-          </CardDescription>
+          <CardTitle>Energy usage in community grid</CardTitle>
+          <CardDescription>{`${chartMaxPoints}-hour energy real-time usage level`}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table className="text-center">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-center">Neighbor</TableHead>
-                <TableHead className="text-center">Amount</TableHead>
-                <TableHead className="text-center">Price</TableHead>
-                <TableHead className="text-center">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {trades.map((trade) => (
-                <TableRow key={trade.id}>
-                  <TableCell>{trade.neighbor}</TableCell>
-                  <TableCell>{trade.amount}</TableCell>
-                  <TableCell>{trade.price}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        trade.status === "Completed"
-                          ? "default"
-                          : trade.status === "Canceled"
-                            ? "secondary"
-                            : "destructive"
-                      }
-                    >
-                      {trade.status}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <AxisChart
+            data={[mapToCmtyGridCnsmpData()]}
+            labels={["Community grid usage"]}
+            colors={[1]}
+            chartType={AxisChartType.Line}
+          />
         </CardContent>
       </Card>
     </motion.div>

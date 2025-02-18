@@ -1,4 +1,4 @@
-import { LogOut, LucideProps } from "lucide-react";
+import { LucideProps } from "lucide-react";
 
 import {
   Sidebar,
@@ -14,24 +14,26 @@ import {
 import Link from "next/link";
 import { Label } from "./ui/label";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
-import { redirect } from "next/navigation";
-import { routing } from "@/constants/constants";
+import { NavUser } from "./nav-user";
+import House from "@/models/house";
 
 export function AppSidebar({
   menuItems,
+  mainRouting,
+  selectedRouting,
+  house,
 }: {
   menuItems: {
     title: string;
-    url: string;
+    subRouting: string;
     icon: ForwardRefExoticComponent<
       Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
     >;
   }[];
+  mainRouting: string;
+  selectedRouting: string;
+  house?: House;
 }) {
-  function logOut() {
-    redirect(`/${routing.login}`);
-  }
-
   return (
     <Sidebar>
       <SidebarHeader className="h-16 shrink-0 gap-2 border-b px-4 place-items-center flex flex-row">
@@ -43,8 +45,15 @@ export function AppSidebar({
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url}>
+                  <SidebarMenuButton
+                    variant={
+                      selectedRouting === item.subRouting
+                        ? "outline"
+                        : "default"
+                    }
+                    asChild
+                  >
+                    <Link href={`${mainRouting}/${item.subRouting}`}>
                       <item.icon />
                       {item.title}
                     </Link>
@@ -56,14 +65,7 @@ export function AppSidebar({
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton onClick={logOut}>
-              <LogOut />
-              Log out
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <NavUser house={house} />
       </SidebarFooter>
     </Sidebar>
   );

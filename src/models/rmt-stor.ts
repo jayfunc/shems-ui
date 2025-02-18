@@ -17,7 +17,7 @@ export default class RmtStor extends Base {
     housePowerGenerateId: bigint,
     powerAmount: number,
     storageTime: Date,
-    simulationTime: string,
+    simulationTime: Date,
   ) {
     super(id, simulationTime);
     this.houseId = houseId;

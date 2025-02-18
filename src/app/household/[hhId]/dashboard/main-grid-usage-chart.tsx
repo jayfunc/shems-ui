@@ -3,14 +3,12 @@
 import EnergyPieChart from "@/components/pie-chart";
 import energyUnitConverter from "@/extensions/energy-unit-converter";
 import MainGridAcct from "@/models/main-grid-acct";
-import ApiUriBuilder from "@/services/api";
+import ApiService from "@/services/api";
 import EnergyCard from "./energy-card";
 import { Grid3x3 } from "lucide-react";
 import CenterDrawer from "@/components/scrollable-drawer";
 import { Badge } from "@/components/ui/badge";
-import MainGridCfg, {
-  MainGridCfgSignal,
-} from "@/models/main-grid-cfg";
+import MainGridCfg, { MainGridCfgSignal } from "@/models/main-grid-cfg";
 import {
   Tooltip,
   TooltipContent,
@@ -20,12 +18,16 @@ import {
 import formatText from "@/extensions/string";
 import useSWR from "swr";
 
-export default function MainGridUsageChart({ hhId }: { hhId: number }) {
+export default function MainGridUsageChart({ houseId }: { houseId: number }) {
   const cfgKeys = ["onPeak", "midPeak", "offPeak"];
   const cfgLabels = ["On-peak", "Mid-peak", "Off-peak"];
 
-  const {data: mainGridAcct} = useSWR<MainGridAcct>(ApiUriBuilder.buildGetMainGridAcctUri(hhId));
-  const {data: mainGridCfg} = useSWR<MainGridCfg>(ApiUriBuilder.buildGetMainGridCfgUri());
+  const { data: mainGridAcct } = useSWR<MainGridAcct>(
+    ApiService.buildGetMainGridAcctUri(houseId),
+  );
+  const { data: mainGridCfg } = useSWR<MainGridCfg>(
+    ApiService.buildGetMainGridCfgUri(),
+  );
 
   return (
     <EnergyCard

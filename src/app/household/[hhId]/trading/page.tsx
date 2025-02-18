@@ -16,11 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import {
-  dataSizeLimit,
-} from "@/constants/constants";
-import ApiUriBuilder from "@/services/api";
-import { useState, useEffect } from "react";
+import ApiService from "@/services/api";
 import { usePathname } from "next/navigation";
 import CmtyGridAcct from "@/models/cmty-grid-acct";
 import { motion } from "motion/react";
@@ -30,11 +26,7 @@ import energyUnitConverter from "@/extensions/energy-unit-converter";
 import moneyUnitConverter from "@/extensions/money-unit-converter";
 import { Separator } from "@/components/ui/separator";
 import House from "@/models/house";
-import {
-  AxisChart,
-  AxisChartType,
-} from "@/components/axis-chart";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AxisChart, AxisChartType } from "@/components/axis-chart";
 import OrderMatch from "@/models/order-match";
 import OrderBuy, {
   BuySellOrderStatus as BuySellOrderStatus,
@@ -44,32 +36,41 @@ import formatText from "@/extensions/string";
 import useSWR from "swr";
 import HouseCnsmp from "@/models/house-cnsmp";
 import routing from "@/constants/routing";
+import CardTabs from "@/components/card-tabs";
+import { useCurrentHouseId, useDataSizeLimit } from "@/extensions/request";
 
 export default function Trading() {
-  const hhId = parseInt(
-    usePathname()
-      .replace(routing.household, "")
-      .replace(routing.trading, "")
-      .replaceAll("/", ""),
+  const houseId = useCurrentHouseId();
+
+  const { data: houses } = useSWR<House[]>(ApiService.buildGetAllHousesUri());
+
+  const { data: cmtyGridAcct } = useSWR<CmtyGridAcct>(
+    ApiService.buildGetCmtyGridAcctUri(houseId),
+  );
+  const { data: houseCnsmp } = useSWR<HouseCnsmp[]>(
+    ApiService.buildGetHouseCnsmpUri(houseId, useDataSizeLimit()),
   );
 
-  const { data: houses } = useSWR<House[]>(ApiUriBuilder.buildGetAllHousesUri());
-
-  const { data: cmtyGridAcct } = useSWR<CmtyGridAcct>(ApiUriBuilder.buildGetCmtyGridAcctUri(hhId));
-  const { data: houseCnsmp } = useSWR<HouseCnsmp[]>(ApiUriBuilder.buildGetHouseCnsmpUri(hhId));
-
   function mapToCmtyGridCnsmpData() {
-    return houseCnsmp?.map((item) => {
-      return {
-        dateTime: item.consumeTime,
-        data: item.communityGridConsumeAmount,
-      };
-    }) ?? [];
+    return (
+      houseCnsmp?.map((item) => {
+        return {
+          dateTime: item.consumeTime,
+          data: item.communityGridConsumeAmount,
+        };
+      }) ?? []
+    );
   }
 
-  const { data: matchedOrders } = useSWR<OrderMatch[]>(ApiUriBuilder.buildGetAllMatchOrdersUri(hhId));
-  const { data: buyOrders } = useSWR<OrderBuy[]>(ApiUriBuilder.buildGetAllBuyOrdersUri(hhId));
-  const { data: sellOrders } = useSWR<OrderSell[]>(ApiUriBuilder.buildGetAllSellOrdersUri(hhId));
+  const { data: matchedOrders } = useSWR<OrderMatch[]>(
+    ApiService.buildGetAllMatchOrdersUri(houseId),
+  );
+  const { data: buyOrders } = useSWR<OrderBuy[]>(
+    ApiService.buildGetAllBuyOrdersUri(houseId),
+  );
+  const { data: sellOrders } = useSWR<OrderSell[]>(
+    ApiService.buildGetAllSellOrdersUri(houseId),
+  );
 
   return (
     <motion.div
@@ -77,7 +78,7 @@ export default function Trading() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      <Card className="col-span-1">
+      <Card className="col-span-full md:col-span-1">
         <CardHeader>
           <CardTitle>Energy balance</CardTitle>
         </CardHeader>
@@ -139,7 +140,7 @@ export default function Trading() {
         </CardContent>
       </Card>
 
-      <Card className="col-span-1">
+      <Card className="col-span-full md:col-span-1">
         <CardHeader>
           <CardTitle>Fund balance</CardTitle>
         </CardHeader>
@@ -178,127 +179,102 @@ export default function Trading() {
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="match" className="col-span-full">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex flex-row items-center">
-              P2P energy trading
-              <div className="flex-1" />
-              <TabsList>
-                <TabsTrigger value="buy">Buy orders</TabsTrigger>
-                <TabsTrigger value="sell">Sell orders</TabsTrigger>
-                <TabsTrigger value="match">Matched orders</TabsTrigger>
-              </TabsList>
-            </CardTitle>
-          </CardHeader>
-
-          <CardContent>
-            <TabsContent value="buy">
-              <Table className="text-center">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-center">Quantity</TableHead>
-                    <TableHead className="text-center">Limit price</TableHead>
-                    <TableHead className="text-center">
-                      Submitted time
-                    </TableHead>
-                    <TableHead className="text-center">Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {buyOrders?.map((order) => (
-                    <TableRow key={order.id}>
-                      <TableCell>{order.quantity}</TableCell>
-                      <TableCell>{order.buyPrice}</TableCell>
-                      <TableCell>{order.orderTime.toLocaleString()}</TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            order.orderStatus === BuySellOrderStatus.Completed
-                              ? "default"
-                              : order.orderStatus ===
-                                BuySellOrderStatus.Cancelled
-                                ? "destructive"
-                                : order.orderStatus ===
-                                  BuySellOrderStatus.PartiallyCompleted
-                                  ? "secondary"
-                                  : "outline"
-                          }
-                        >
-                          {formatText(BuySellOrderStatus[order.orderStatus])}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TabsContent>
-
-            <TabsContent value="sell">
-              <Table className="text-center">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-center">Quantity</TableHead>
-                    <TableHead className="text-center">Limit price</TableHead>
-                    <TableHead className="text-center">
-                      Submitted time
-                    </TableHead>
-                    <TableHead className="text-center">Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {sellOrders?.map((order) => (
-                    <TableRow key={order.id}>
-                      <TableCell>{order.quantity}</TableCell>
-                      <TableCell>{order.sellPrice}</TableCell>
-                      <TableCell>{order.orderTime.toLocaleString()}</TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            order.orderStatus === BuySellOrderStatus.Completed
-                              ? "default"
-                              : order.orderStatus ===
-                                BuySellOrderStatus.Cancelled
-                                ? "destructive"
-                                : "secondary"
-                          }
-                        >
-                          {formatText(BuySellOrderStatus[order.orderStatus])}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TabsContent>
-
-            <TabsContent value="match">
-              <Table className="text-center">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-center">Buyer</TableHead>
-                    <TableHead className="text-center">Seller</TableHead>
-                    <TableHead className="text-center">Quantity</TableHead>
-                    <TableHead className="text-center">Matched price</TableHead>
-                    <TableHead className="text-center">Matched time</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {matchedOrders?.map((order) => (
-                    <TableRow key={order.id}>
-                      <TableCell>{order.buyerId}</TableCell>
-                      <TableCell>{order.sellerId}</TableCell>
-                      <TableCell>{order.quantity}</TableCell>
-                      <TableCell>{order.matchPrice}</TableCell>
-                      <TableCell>{order.matchTime.toLocaleString()}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TabsContent>
-          </CardContent>
-        </Card>
-      </Tabs>
+      <CardTabs
+        titles={"P2P energy trading"}
+        tabKeys={["buy", "sell", "match"]}
+        tabLabels={["Buy orders", "Sell orders", "Matched orders"]}
+        tabContents={[
+          <Table key={0} className="text-center">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-center">Quantity</TableHead>
+                <TableHead className="text-center">Limit price</TableHead>
+                <TableHead className="text-center">Submitted time</TableHead>
+                <TableHead className="text-center">Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {buyOrders?.map((order) => (
+                <TableRow key={order.id}>
+                  <TableCell>{order.quantity}</TableCell>
+                  <TableCell>{order.buyPrice}</TableCell>
+                  <TableCell>{order.orderTime.toLocaleString()}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        order.orderStatus === BuySellOrderStatus.Completed
+                          ? "default"
+                          : order.orderStatus === BuySellOrderStatus.Cancelled
+                            ? "destructive"
+                            : order.orderStatus ===
+                                BuySellOrderStatus.PartiallyCompleted
+                              ? "secondary"
+                              : "outline"
+                      }
+                    >
+                      {formatText(BuySellOrderStatus[order.orderStatus])}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>,
+          <Table key={1} className="text-center">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-center">Quantity</TableHead>
+                <TableHead className="text-center">Limit price</TableHead>
+                <TableHead className="text-center">Submitted time</TableHead>
+                <TableHead className="text-center">Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sellOrders?.map((order) => (
+                <TableRow key={order.id}>
+                  <TableCell>{order.quantity}</TableCell>
+                  <TableCell>{order.sellPrice}</TableCell>
+                  <TableCell>{order.orderTime.toLocaleString()}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        order.orderStatus === BuySellOrderStatus.Completed
+                          ? "default"
+                          : order.orderStatus === BuySellOrderStatus.Cancelled
+                            ? "destructive"
+                            : "secondary"
+                      }
+                    >
+                      {formatText(BuySellOrderStatus[order.orderStatus])}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>,
+          <Table key={2} className="text-center">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-center">Buyer</TableHead>
+                <TableHead className="text-center">Seller</TableHead>
+                <TableHead className="text-center">Quantity</TableHead>
+                <TableHead className="text-center">Matched price</TableHead>
+                <TableHead className="text-center">Matched time</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {matchedOrders?.map((order) => (
+                <TableRow key={order.id}>
+                  <TableCell>{order.buyerId}</TableCell>
+                  <TableCell>{order.sellerId}</TableCell>
+                  <TableCell>{order.quantity}</TableCell>
+                  <TableCell>{order.matchPrice}</TableCell>
+                  <TableCell>{order.matchTime.toLocaleString()}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>,
+        ]}
+      />
 
       <Card className="col-span-full">
         <CardHeader>
@@ -310,8 +286,8 @@ export default function Trading() {
             dots={matchedOrders
               ?.map((order) => {
                 if (
-                  BigInt(hhId) === order.buyerId ||
-                  BigInt(hhId) === order.sellerId
+                  BigInt(houseId) === order.buyerId ||
+                  BigInt(houseId) === order.sellerId
                 ) {
                   const buyer = houses?.find(
                     (house) => house.id.toString() === order.buyerId.toString(),
@@ -338,7 +314,7 @@ export default function Trading() {
       <Card className="col-span-full">
         <CardHeader>
           <CardTitle>Energy usage in community grid</CardTitle>
-          <CardDescription>{`${dataSizeLimit}-hour energy real-time usage level`}</CardDescription>
+          <CardDescription>{`${useDataSizeLimit()}-hour energy real-time usage level`}</CardDescription>
         </CardHeader>
         <CardContent>
           <AxisChart

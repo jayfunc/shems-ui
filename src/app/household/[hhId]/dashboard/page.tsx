@@ -1,24 +1,13 @@
 "use client";
 
 import { Battery, Home, PlugZap, Sun, Unplug } from "lucide-react";
-import ApiUriBuilder from "@/services/api";
+import ApiService from "@/services/api";
 import { usePathname } from "next/navigation";
-import {
-  dataSizeLimit,
-} from "@/constants/constants";
 import LocStor from "@/models/loc-stor";
 import EnergyCard from "./energy-card";
 import { motion } from "motion/react";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
 import energyUnitConverter from "@/extensions/energy-unit-converter";
 import MainGridUsageChart from "./main-grid-usage-chart";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ScrollableDrawer from "@/components/scrollable-drawer";
 import {
   AxisChart,
@@ -31,91 +20,112 @@ import HouseCnsmpPred from "@/models/house-cnsmp-pred";
 import HouseGenPred from "@/models/house-gen-pred";
 import HouseGen from "@/models/house-gen";
 import routing from "@/constants/routing";
+import CardTabs from "@/components/card-tabs";
+import { useCurrentHouseId, useDataSizeLimit } from "@/extensions/request";
 
 function formatDeltaDesc(delta?: number): string {
   return `${delta !== undefined && !Number.isNaN(delta) && delta >= 0 ? "+" : ""}${energyUnitConverter.formatInStringWithUnit(delta)} from last hour`;
 }
 
 export default function Dashboard() {
-  const hhId = parseInt(
-    usePathname()
-      .replace(routing.household, "")
-      .replace(routing.dashboard, "")
-      .replaceAll("/", ""),
+  const houseId = useCurrentHouseId();
+  const dataSizeLimit = useDataSizeLimit();
+
+  const { data: houseCnsmp } = useSWR<HouseCnsmp[]>(
+    ApiService.buildGetHouseCnsmpUri(houseId, dataSizeLimit),
+  );
+  const { data: houseCnsmpPred } = useSWR<HouseCnsmpPred[]>(
+    ApiService.buildGetHouseCnsmpPredUri(houseId, dataSizeLimit),
   );
 
-  const { data: houseCnsmp } = useSWR<HouseCnsmp[]>(ApiUriBuilder.buildGetHouseCnsmpUri(hhId));
-  const { data: houseCnsmpPred } = useSWR<HouseCnsmpPred[]>(ApiUriBuilder.buildGetHouseCnsmpPredUri(hhId));
+  const { data: houseGen } = useSWR<HouseGen[]>(
+    ApiService.buildGetHouseGenUri(houseId, dataSizeLimit),
+  );
+  const { data: houseGenPred } = useSWR<HouseGenPred[]>(
+    ApiService.buildGetHouseGenPredUri(houseId, dataSizeLimit),
+  );
 
-  const { data: houseGen } = useSWR<HouseGen[]>(ApiUriBuilder.buildGetHouseGenUri(hhId));
-  const { data: houseGenPred } = useSWR<HouseGenPred[]>(ApiUriBuilder.buildGetHouseGenPredUri(hhId));
-
-  const { data: locStor } = useSWR<LocStor>(ApiUriBuilder.buildGetLocStorUri(hhId));
+  const { data: locStor } = useSWR<LocStor>(
+    ApiService.buildGetLocStorUri(houseId),
+  );
 
   function mapToHouseCnsmpData(): InputAxisChartDataProps[] {
-    return houseCnsmp?.map((item) => {
-      return {
-        dateTime: item.consumeTime,
-        data: item.totalConsumeAmount,
-      };
-    }) ?? [];
+    return (
+      houseCnsmp?.map((item) => {
+        return {
+          dateTime: item.consumeTime,
+          data: item.totalConsumeAmount,
+        };
+      }) ?? []
+    );
   }
 
   function mapToHouseGenData(): InputAxisChartDataProps[] {
-    return houseGen?.map((item) => {
-      return {
-        dateTime: item.generateTime,
-        data: item.powerAmount,
-      };
-    }) ?? [];
+    return (
+      houseGen?.map((item) => {
+        return {
+          dateTime: item.generateTime,
+          data: item.powerAmount,
+        };
+      }) ?? []
+    );
   }
 
   function mapToHouseCnsmpPredData(): InputAxisChartDataProps[] {
-    return houseCnsmpPred?.map((item) => {
-      return {
-        dateTime: item.predictTime,
-        data: item.airConditioner +
-          item.computer +
-          item.dishwasher +
-          item.electricRange1 +
-          item.electricRange2 +
-          item.fridge1 +
-          item.fridge2 +
-          item.furnace1 +
-          item.furnace2 +
-          item.television +
-          item.washerAndDryerSet +
-          item.waterHeater +
-          item.wineCellar,
-      };
-    }) ?? [];
+    return (
+      houseCnsmpPred?.map((item) => {
+        return {
+          dateTime: item.predictTime,
+          data:
+            item.airConditioner +
+            item.computer +
+            item.dishwasher +
+            item.electricRange1 +
+            item.electricRange2 +
+            item.fridge1 +
+            item.fridge2 +
+            item.furnace1 +
+            item.furnace2 +
+            item.television +
+            item.washerAndDryerSet +
+            item.waterHeater +
+            item.wineCellar,
+        };
+      }) ?? []
+    );
   }
 
   function mapToHouseGenPredData(): InputAxisChartDataProps[] {
-    return houseGenPred?.map((item) => {
-      return {
-        dateTime: item.predictTime,
-        data: item.solar,
-      };
-    }) ?? [];
+    return (
+      houseGenPred?.map((item) => {
+        return {
+          dateTime: item.predictTime,
+          data: item.solar,
+        };
+      }) ?? []
+    );
   }
 
   function mapToSolarCnsmpData(): InputAxisChartDataProps[] {
-    return houseCnsmp?.map((item) => {
-      return {
-        dateTime: item.consumeTime,
-        data: item.solarPanelConsumeAmount,
-      };
-    }) ?? [];
+    return (
+      houseCnsmp?.map((item) => {
+        return {
+          dateTime: item.consumeTime,
+          data: item.solarPanelConsumeAmount,
+        };
+      }) ?? []
+    );
   }
 
   function mapToBatteryCnsmpData(): InputAxisChartDataProps[] {
-    return houseCnsmp?.map((item) => {
-      return {
-        dateTime: item.consumeTime,
-        data: item.powerStorageConsumeAmount,
-      };
-    }) ?? [];
+    return (
+      houseCnsmp?.map((item) => {
+        return {
+          dateTime: item.consumeTime,
+          data: item.powerStorageConsumeAmount,
+        };
+      }) ?? []
+    );
   }
 
   return (
@@ -127,7 +137,10 @@ export default function Dashboard() {
       <EnergyCard
         title="Solar generation"
         subtitle={`${energyUnitConverter.formatInStringWithUnit(mapToHouseGenData().at(-1)?.data)}`}
-        desc={formatDeltaDesc((mapToHouseGenData().at(-1)?.data ?? NaN) - (mapToHouseGenData().at(-2)?.data ?? NaN))}
+        desc={formatDeltaDesc(
+          (mapToHouseGenData().at(-1)?.data ?? NaN) -
+            (mapToHouseGenData().at(-2)?.data ?? NaN),
+        )}
         icon={<Sun className="text-muted-foreground" />}
         actionArea={
           <ScrollableDrawer
@@ -150,7 +163,10 @@ export default function Dashboard() {
       <EnergyCard
         title="House consumption"
         subtitle={`${energyUnitConverter.formatInStringWithUnit(mapToHouseCnsmpData().at(-1)?.data)}`}
-        desc={formatDeltaDesc((mapToHouseCnsmpData().at(-1)?.data ?? NaN) - (mapToHouseCnsmpData().at(-2)?.data ?? NaN))}
+        desc={formatDeltaDesc(
+          (mapToHouseCnsmpData().at(-1)?.data ?? NaN) -
+            (mapToHouseCnsmpData().at(-2)?.data ?? NaN),
+        )}
         icon={<Home className="text-muted-foreground" />}
       />
 
@@ -198,64 +214,45 @@ export default function Dashboard() {
         }
       />
 
-      <MainGridUsageChart hhId={hhId} />
+      <MainGridUsageChart houseId={houseId} />
 
-      <Tabs defaultValue="gen-cnsmp" className="col-span-full">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex flex-row items-center">
-              <TabsContent value="gen-cnsmp">
-                House energy consumption and generation
-              </TabsContent>
-              <TabsContent value="gen-forcast">
-                House generation energy with forcast
-              </TabsContent>
-              <TabsContent value="cnsmp-forcast">
-                House consumption energy with forcast
-              </TabsContent>
-              <div className="flex-1" />
-              <TabsList>
-                <TabsTrigger value="gen-cnsmp">
-                  Generation w/ consumption
-                </TabsTrigger>
-                <TabsTrigger value="gen-forcast">
-                  Generation w/ forcast
-                </TabsTrigger>
-                <TabsTrigger value="cnsmp-forcast">
-                  Consumption w/ forcast
-                </TabsTrigger>
-              </TabsList>
-            </CardTitle>
-            <CardDescription>{`${dataSizeLimit}-hours line chart`}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <TabsContent value="gen-cnsmp">
-              <AxisChart
-                data={[mapToHouseCnsmpData(), mapToHouseGenData()]}
-                labels={["Consumption", "Generation"]}
-                colors={[1, 2]}
-                chartType={AxisChartType.Line}
-              />
-            </TabsContent>
-            <TabsContent value="gen-forcast">
-              <AxisChart
-                data={[mapToHouseGenData(), mapToHouseGenPredData()]}
-                labels={["Generation", "Generation forcast"]}
-                colors={[2, 3]}
-                chartType={AxisChartType.Line}
-              />
-            </TabsContent>
-            <TabsContent value="cnsmp-forcast">
-              <AxisChart
-                data={[mapToHouseCnsmpData(), mapToHouseCnsmpPredData()]}
-                labels={["Consumption", "Consumption forcast"]}
-                colors={[1, 4]}
-                chartType={AxisChartType.Line}
-              />
-            </TabsContent>
-          </CardContent>
-        </Card>
-      </Tabs>
+      <CardTabs
+        titles={[
+          "House energy consumption and generation",
+          "House generation energy with forcast",
+          "House consumption energy with forcast",
+        ]}
+        descs={`${useDataSizeLimit()}-hours line chart`}
+        tabKeys={["gen-cnsmp", "gen-forcast", "cnsmp-forcast"]}
+        tabLabels={[
+          "Generation w/ consumption",
+          "Generation w/ forcast",
+          "Consumption w/ forcast",
+        ]}
+        tabContents={[
+          <AxisChart
+            key={0}
+            data={[mapToHouseCnsmpData(), mapToHouseGenData()]}
+            labels={["Consumption", "Generation"]}
+            colors={[1, 2]}
+            chartType={AxisChartType.Line}
+          />,
+          <AxisChart
+            key={1}
+            data={[mapToHouseGenData(), mapToHouseGenPredData()]}
+            labels={["Generation", "Generation forcast"]}
+            colors={[2, 3]}
+            chartType={AxisChartType.Line}
+          />,
+          <AxisChart
+            key={2}
+            data={[mapToHouseCnsmpData(), mapToHouseCnsmpPredData()]}
+            labels={["Consumption", "Consumption forcast"]}
+            colors={[1, 4]}
+            chartType={AxisChartType.Line}
+          />,
+        ]}
+      />
     </motion.div>
   );
 }

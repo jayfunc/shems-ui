@@ -5,8 +5,9 @@ import { AppTopbar } from "@/components/app-topbar";
 import { Placeholder } from "@/components/placeholder";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import routing from "@/constants/routing";
+import { useCurrentHouseId } from "@/extensions/request";
 import House from "@/models/house";
-import ApiUriBuilder from "@/services/api";
+import ApiService from "@/services/api";
 import {
   Home,
   CircuitBoard,
@@ -24,7 +25,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     0,
     curPathname.indexOf("/", `/${routing.household}/`.length),
   );
-  const hhId = parseInt(hhPathname.split("/").at(-1) ?? "");
   const selectedRouting = curPathname.replace(hhPathname, "").split("/")[1];
 
   const menuItems = [
@@ -55,7 +55,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     // },
   ];
 
-  const { data: house } = useSWR<House>(ApiUriBuilder.buildGetHouseUri(hhId));
+  const { data: house } = useSWR<House>(
+    ApiService.buildGetHouseUri(useCurrentHouseId()),
+  );
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>

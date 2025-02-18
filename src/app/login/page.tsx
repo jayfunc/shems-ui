@@ -9,11 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  adminPassword,
-  adminUsername,
-  userPassword,
-} from "@/constants/constants";
+import { adminPassword, adminUsername, userPassword } from "@/constants/login";
 import PrivacyPolicyText from "../login/privacy-policy";
 import {
   Form,

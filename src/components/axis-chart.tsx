@@ -7,7 +7,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/chart-patched";
-import { dataSizeLimit } from "@/constants/constants";
 import {
   Area,
   AreaChart,
@@ -88,9 +87,11 @@ export function AxisChart({
   isLoading?: boolean;
 }) {
   const outputData = convertToOutputData(...(data ?? []));
-  const isDataEmpty = isLoading !== true && outputData.every(
-    (element) => element.data1 == null && element.data2 == null,
-  );
+  const isDataEmpty =
+    isLoading !== true &&
+    outputData.every(
+      (element) => element.data1 == null && element.data2 == null,
+    );
 
   return (
     <div className="relative">
@@ -114,7 +115,8 @@ export function AxisChart({
         <div className="flex flex-col gap-2 items-center justify-center w-full h-full text-muted-foreground absolute top-0">
           <LoaderCircle className="animate-spin" />
           <Label className="text-center">Loading...</Label>
-        </div>)}
+        </div>
+      )}
     </div>
   );
 }

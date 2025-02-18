@@ -4,7 +4,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { AppTopbar } from "@/components/app-topbar";
 import { Placeholder } from "@/components/placeholder";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { adminUsername } from "@/constants/constants";
+import { adminUsername } from "@/constants/login";
 import routing from "@/constants/routing";
 import formatText from "@/extensions/string";
 import House, { HouseholdType } from "@/models/house";

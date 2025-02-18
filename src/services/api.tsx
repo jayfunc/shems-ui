@@ -1,126 +1,29 @@
-"use client";
+import { useDataSizeLimit, getServerHostname } from "@/extensions/request";
 
-import { dataSizeLimit } from "@/constants/constants";
-
-const baseUri: string = "http://localhost:8080/api";
-const gridUri: string = `${baseUri}/grid`;
-const houseUri: string = `${baseUri}/house`;
-const simUri: string = `${baseUri}/sim`;
-const applUri: string = `${baseUri}/appl`;
-const storUri: string = `${baseUri}/stor`;
-const weatherUri: string = `${baseUri}/weather`;
-const orderUri: string = `${baseUri}/order`;
-
-export default class ApiUriBuilder {
-  // Appl
-
-  static buildGetApplUri(applianceId: number): string {
-    return `${applUri}?applianceId=${applianceId}`;
-  }
-
-  static buildGetAllApplsUri(houseId: number): string {
-    return `${applUri}/all?houseId=${houseId}`;
-  }
-
-  static buildGetApplCnsmpUri(applianceId: number, size: number = dataSizeLimit): string {
-    return `${applUri}/cnsmp?applianceId=${applianceId}&size=${size}`;
-  }
-
-  // Grid
-
-  static buildGetCmtyGridAcctUri(houseId: number): string {
-    return `${gridUri}/cmty?houseId=${houseId}`;
-  }
-
-  static buildGetMainGridAcctUri(houseId: number): string {
-    return `${gridUri}/main?houseId=${houseId}`;
-  }
-
-  static buildGetMainGridCfgUri(): string {
-    return `${gridUri}/main/cfg`;
-  }
-
-  static buildPostMainGridCfgNormalSignalUri(): string {
-    return `${gridUri}/main/cfg/normal_signal`;
-  }
-
-  static buildPostMainGridCfgPeakShaveSignalUri(): string {
-    return `${gridUri}/main/cfg/peak_shave_signal`;
-  }
-
-  // House
-
-  static buildGetHouseCnsmpUri(houseId: number, size: number = dataSizeLimit): string {
-    return `${houseUri}/cnsmp?houseId=${houseId}&size=${size}`;
-  }
-
-  static buildGetHouseGenUri(houseId: number, size: number = dataSizeLimit): string {
-    return `${houseUri}/gen?houseId=${houseId}&size=${size}`;
-  }
-
-  static buildGetHouseCnsmpPredUri(householdType: number, size: number = dataSizeLimit): string {
-    return `${houseUri}/cnsmp/pred?householdType=${householdType}&size=${size}`;
-  }
-
-  static buildGetHouseGenPredUri(householdType: number, size: number = dataSizeLimit): string {
-    return `${houseUri}/gen/pred?householdType=${householdType}&size=${size}`;
-  }
-
-  static buildGetHouseUri(houseId: number): string {
-    return `${houseUri}?houseId=${houseId}`;
-  }
-
-  static buildGetAllHousesUri(): string {
-    return `${houseUri}/all`;
-  }
-
-  // Stor
-
-  static buildGetLocStorUri(houseId: number): string {
-    return `${storUri}/loc?houseId=${houseId}`;
-  }
-
-  static buildGetRmtStorUri(houseId: number): string {
-    return `${storUri}/rmt?houseId=${houseId}`;
-  }
-
-  // Sim
-
-  static buildGetSimCfgUri(): string {
-    return `${simUri}`;
-  }
-
-  // Weather
-
-  static buildGetWeatherUri(): string {
-    return `${weatherUri}`;
-  }
-
-  //Order
-
-  static buildGetAllBuyOrdersUri(houseId: number): string {
-    return `${orderUri}/buy/all?houseId=${houseId}`;
-  }
-
-  static buildGetAllSellOrdersUri(houseId: number): string {
-    return `${orderUri}/sell/all?houseId=${houseId}`;
-  }
-
-  static buildGetAllMatchOrdersUri(houseId: number): string {
-    return `${orderUri}/match/all?houseId=${houseId}`;
-  }
+class ApiUriBuilder {
+  static baseUri: () => string = () => `http://${getServerHostname()}:8080/api`;
+  static gridUri: () => string = () => `${this.baseUri()}/grid`;
+  static houseUri: () => string = () => `${this.baseUri()}/house`;
+  static simUri: () => string = () => `${this.baseUri()}/sim`;
+  static applUri: () => string = () => `${this.baseUri()}/appl`;
+  static storUri: () => string = () => `${this.baseUri()}/stor`;
+  static weatherUri: () => string = () => `${this.baseUri()}/weather`;
+  static orderUri: () => string = () => `${this.baseUri()}/order`;
 }
 
-export class ApiService<T> {
-  async fetch(resource: string | URL | globalThis.Request, init?: RequestInit): Promise<T> {
+export default class ApiService<T> {
+  async fetch(
+    resource: string | URL | globalThis.Request,
+    init?: RequestInit,
+  ): Promise<T> {
     const res = await fetch(resource, init);
     const resData: ResponseData<T> = await res.json();
     if (resData == null) {
-      throw new Error('Response data is null', {
+      throw new Error("Response data is null", {
         cause: resource,
       });
     } else if (resData.data == null) {
-      throw new Error('Data is null', {
+      throw new Error("Data is null", {
         cause: resource,
       });
     } else if (resData.status.code !== StatusCode.Success) {
@@ -130,6 +33,107 @@ export class ApiService<T> {
     } else {
       return resData.data;
     }
+  }
+
+  // Appl
+
+  static buildGetApplUri(applianceId: number): string {
+    return `${ApiUriBuilder.applUri()}?applianceId=${applianceId}`;
+  }
+
+  static buildGetAllApplsUri(houseId: number): string {
+    return `${ApiUriBuilder.applUri()}/all?houseId=${houseId}`;
+  }
+
+  static buildGetApplCnsmpUri(applianceId: number, size: number): string {
+    return `${ApiUriBuilder.applUri()}/cnsmp?applianceId=${applianceId}&size=${size}`;
+  }
+
+  // Grid
+
+  static buildGetCmtyGridAcctUri(houseId: number): string {
+    return `${ApiUriBuilder.gridUri()}/cmty?houseId=${houseId}`;
+  }
+
+  static buildGetMainGridAcctUri(houseId: number): string {
+    return `${ApiUriBuilder.gridUri()}/main?houseId=${houseId}`;
+  }
+
+  static buildGetMainGridCfgUri(): string {
+    return `${ApiUriBuilder.gridUri()}/main/cfg`;
+  }
+
+  static buildPostMainGridCfgNormalSignalUri(): string {
+    return `${ApiUriBuilder.gridUri()}/main/cfg/normal_signal`;
+  }
+
+  static buildPostMainGridCfgPeakShaveSignalUri(): string {
+    return `${ApiUriBuilder.gridUri()}/main/cfg/peak_shave_signal`;
+  }
+
+  // House
+
+  static buildGetHouseCnsmpUri(houseId: number, size: number): string {
+    return `${ApiUriBuilder.houseUri()}/cnsmp?houseId=${houseId}&size=${size}`;
+  }
+
+  static buildGetHouseGenUri(houseId: number, size: number): string {
+    return `${ApiUriBuilder.houseUri()}/gen?houseId=${houseId}&size=${size}`;
+  }
+
+  static buildGetHouseCnsmpPredUri(
+    householdType: number,
+    size: number,
+  ): string {
+    return `${ApiUriBuilder.houseUri()}/cnsmp/pred?householdType=${householdType}&size=${size}`;
+  }
+
+  static buildGetHouseGenPredUri(householdType: number, size: number): string {
+    return `${ApiUriBuilder.houseUri()}/gen/pred?householdType=${householdType}&size=${size}`;
+  }
+
+  static buildGetHouseUri(houseId: number): string {
+    return `${ApiUriBuilder.houseUri()}?houseId=${houseId}`;
+  }
+
+  static buildGetAllHousesUri(): string {
+    return `${ApiUriBuilder.houseUri()}/all`;
+  }
+
+  // Stor
+
+  static buildGetLocStorUri(houseId: number): string {
+    return `${ApiUriBuilder.storUri()}/loc?houseId=${houseId}`;
+  }
+
+  static buildGetRmtStorUri(houseId: number): string {
+    return `${ApiUriBuilder.storUri()}/rmt?houseId=${houseId}`;
+  }
+
+  // Sim
+
+  static buildGetSimCfgUri(): string {
+    return `${ApiUriBuilder.simUri()}`;
+  }
+
+  // Weather
+
+  static buildGetWeatherUri(): string {
+    return `${ApiUriBuilder.weatherUri()}`;
+  }
+
+  //Order
+
+  static buildGetAllBuyOrdersUri(houseId: number): string {
+    return `${ApiUriBuilder.orderUri()}/buy/all?houseId=${houseId}`;
+  }
+
+  static buildGetAllSellOrdersUri(houseId: number): string {
+    return `${ApiUriBuilder.orderUri()}/sell/all?houseId=${houseId}`;
+  }
+
+  static buildGetAllMatchOrdersUri(houseId: number): string {
+    return `${ApiUriBuilder.orderUri()}/match/all?houseId=${houseId}`;
   }
 }
 

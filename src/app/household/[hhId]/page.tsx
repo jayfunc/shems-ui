@@ -4,9 +4,9 @@ import { redirect } from "next/navigation";
 export default async function Page({
   params,
 }: {
-  params: Promise<{ hhId: number }>;
+  params: Promise<{ houseId: number }>;
 }) {
-  const hhId = (await params).hhId;
+  const houseId = (await params).houseId;
 
-  redirect(`/${routing.household}/${hhId}/${routing.dashboard}`);
+  redirect(`/${routing.household}/${houseId}/${routing.dashboard}`);
 }

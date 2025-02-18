@@ -10,6 +10,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { Label } from "./ui/label";
@@ -34,6 +35,8 @@ export function AppSidebar({
   selectedRouting: string;
   house?: House;
 }) {
+  const { setOpenMobile } = useSidebar();
+
   return (
     <Sidebar>
       <SidebarHeader className="h-16 shrink-0 gap-2 border-b px-4 place-items-center flex flex-row">
@@ -44,16 +47,19 @@ export function AppSidebar({
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    variant={
-                      selectedRouting === item.subRouting
-                        ? "outline"
-                        : "default"
-                    }
-                    asChild
-                  >
-                    <Link href={`${mainRouting}/${item.subRouting}`}>
+                <SidebarMenuItem
+                  key={item.title}
+                  className={
+                    selectedRouting === item.subRouting
+                      ? "bg-sidebar-accent"
+                      : ""
+                  }
+                >
+                  <SidebarMenuButton asChild>
+                    <Link
+                      href={`${mainRouting}/${item.subRouting}`}
+                      onClick={() => setOpenMobile(false)}
+                    >
                       <item.icon />
                       {item.title}
                     </Link>

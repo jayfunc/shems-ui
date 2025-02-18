@@ -30,7 +30,9 @@ export default function CenterDrawer({
       <DrawerTrigger asChild>
         {trigger ?? <Button variant="outline">More</Button>}
       </DrawerTrigger>
-      <DrawerContent className={stretchToWidth ? "" : "left-1/3 right-1/3"}>
+      <DrawerContent
+        className={stretchToWidth ? "" : "md:left-1/3 md:right-1/3"}
+      >
         <DrawerHeader>
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{desc}</DrawerDescription>

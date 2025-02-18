@@ -1,6 +1,6 @@
 "use client";
 
-import ApiUriBuilder from "@/services/api";
+import ApiService from "@/services/api";
 import ApplCnsmp from "@/models/appl-cnsmp";
 import {
   Card,
@@ -9,14 +9,11 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import {
-  AxisChart,
-  AxisChartType,
-} from "@/components/axis-chart";
+import { AxisChart, AxisChartType } from "@/components/axis-chart";
 import useSWR from "swr";
 
 export function CnsmpsChart({ applId }: { applId: number }) {
-  const { data, isLoading } = useSWR<ApplCnsmp[]>(ApiUriBuilder.buildGetApplCnsmpUri(applId));
+  const { data } = useSWR<ApplCnsmp[]>(ApiService.buildGetApplCnsmpUri(applId));
 
   return (
     <Card className="lg:col-span-full">
@@ -26,12 +23,16 @@ export function CnsmpsChart({ applId }: { applId: number }) {
       </CardHeader>
       <CardContent>
         <AxisChart
-          data={[!isLoading ? data!.map((item) => {
-            return {
-              data: item.consumeAmount,
-              dateTime: item.consumeTime,
-            };
-          }) : []]}
+          data={[
+            data == null || data.map == null
+              ? []
+              : data.map((item) => {
+                  return {
+                    data: item.consumeAmount,
+                    dateTime: item.consumeTime,
+                  };
+                }),
+          ]}
           labels={["Consumption"]}
           chartType={AxisChartType.Line}
         />

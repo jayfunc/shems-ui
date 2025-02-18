@@ -1,7 +1,7 @@
-import proj4 from 'proj4';
-import inside from '@turf/boolean-point-in-polygon';
-import geojsonWorld from './countries.geo.json';
-import DottedMapWithoutCountries from './without-countries';
+import proj4 from "proj4";
+import inside from "@turf/boolean-point-in-polygon";
+import geojsonWorld from "./countries.geo.json";
+import DottedMapWithoutCountries from "./without-countries";
 
 const geojsonByCountry = geojsonWorld.features.reduce((countries, feature) => {
   countries[feature.id] = feature;
@@ -12,13 +12,13 @@ const geojsonToMultiPolygons = (geojson) => {
   const coordinates = geojson.features.reduce(
     (poly, feature) =>
       poly.concat(
-        feature.geometry.type === 'Polygon'
+        feature.geometry.type === "Polygon"
           ? [feature.geometry.coordinates]
           : feature.geometry.coordinates,
       ),
     [],
   );
-  return { type: 'Feature', geometry: { type: 'MultiPolygon', coordinates } };
+  return { type: "Feature", geometry: { type: "MultiPolygon", coordinates } };
 };
 
 const CACHE = {};
@@ -30,7 +30,7 @@ const DEFAULT_WORLD_REGION = {
 
 const computeGeojsonBox = (geojson) => {
   const { type, features, geometry, coordinates } = geojson;
-  if (type === 'FeatureCollection') {
+  if (type === "FeatureCollection") {
     const boxes = features.map(computeGeojsonBox);
     return {
       lat: {
@@ -42,14 +42,14 @@ const computeGeojsonBox = (geojson) => {
         max: Math.max(...boxes.map((box) => box.lng.max)),
       },
     };
-  } else if (type == 'Feature') {
+  } else if (type == "Feature") {
     return computeGeojsonBox(geometry);
-  } else if (type === 'MultiPolygon') {
+  } else if (type === "MultiPolygon") {
     return computeGeojsonBox({
-      type: 'Polygon',
+      type: "Polygon",
       coordinates: coordinates.flat(),
     });
-  } else if (type == 'Polygon') {
+  } else if (type == "Polygon") {
     const coords = coordinates.flat();
     const latitudes = coords.map(([_lng, lat]) => lat);
     const longitudes = coords.map(([lng, _lat]) => lng);
@@ -74,16 +74,16 @@ const getMap = ({
   width = 0,
   countries = [],
   region,
-  grid = 'vertical',
+  grid = "vertical",
 }) => {
   if (height <= 0 && width <= 0) {
-    throw new Error('height or width is required');
+    throw new Error("height or width is required");
   }
 
   let geojson = geojsonWorld;
   if (countries.length > 0) {
     geojson = {
-      type: 'FeatureCollection',
+      type: "FeatureCollection",
       features: countries.map((country) => geojsonByCountry[country]),
     };
     if (!region) {
@@ -95,11 +95,11 @@ const getMap = ({
 
   const poly = geojsonToMultiPolygons(geojson);
 
-  const [X_MIN, Y_MIN] = proj4(proj4.defs('GOOGLE'), [
+  const [X_MIN, Y_MIN] = proj4(proj4.defs("GOOGLE"), [
     region.lng.min,
     region.lat.min,
   ]);
-  const [X_MAX, Y_MAX] = proj4(proj4.defs('GOOGLE'), [
+  const [X_MAX, Y_MAX] = proj4(proj4.defs("GOOGLE"), [
     region.lng.max,
     region.lat.max,
   ]);
@@ -113,11 +113,11 @@ const getMap = ({
   }
 
   const points = {};
-  const ystep = grid === 'diagonal' ? Math.sqrt(3) / 2 : 1;
+  const ystep = grid === "diagonal" ? Math.sqrt(3) / 2 : 1;
 
   for (let y = 0; y * ystep < height; y += 1) {
     for (let x = 0; x < width; x += 1) {
-      const localx = y % 2 === 0 && grid === 'diagonal' ? x + 0.5 : x;
+      const localx = y % 2 === 0 && grid === "diagonal" ? x + 0.5 : x;
       const localy = y * ystep;
 
       const pointGoogle = [
@@ -125,13 +125,13 @@ const getMap = ({
         Y_MAX - (localy / height) * Y_RANGE,
       ];
       const wgs84Point = proj4(
-        proj4.defs('GOOGLE'),
-        proj4.defs('WGS84'),
+        proj4.defs("GOOGLE"),
+        proj4.defs("WGS84"),
         pointGoogle,
       );
 
       if (inside(wgs84Point, poly)) {
-        points[[x, y].join(';')] = { x: localx, y: localy };
+        points[[x, y].join(";")] = { x: localx, y: localy };
       }
     }
   }
@@ -159,7 +159,7 @@ const getCacheKey = ({
   width = 0,
   countries = [],
   region,
-  grid = 'vertical',
+  grid = "vertical",
 }) => {
   return [
     JSON.stringify(region),
@@ -167,7 +167,7 @@ const getCacheKey = ({
     height,
     width,
     JSON.stringify(countries),
-  ].join(' ');
+  ].join(" ");
 };
 
 function DottedMap({ avoidOuterPins = false, ...args }) {

@@ -25,7 +25,7 @@ export default function ScrollableDialog({
   return (
     <Dialog>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="h-1/2">
+      <DialogContent className="h-1/2 w-3/4 rounded-lg">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{desc}</DialogDescription>

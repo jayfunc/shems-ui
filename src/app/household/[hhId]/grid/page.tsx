@@ -1,11 +1,6 @@
 "use client";
 
 import UotPriceChart from "../grid/uot-price-chart";
-import {
-  autoRefreshInterval,
-  chartMaxPoints,
-  routing,
-} from "@/constants/constants";
 import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
 import {
@@ -17,15 +12,14 @@ import {
 } from "@/components/ui/card";
 import MainGridCfg from "@/models/main-grid-cfg";
 import ApiUriBuilder from "@/services/api";
-import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import houseCnsmp from "@/models/house-cnsmp";
 import {
   AxisChart,
   AxisChartType,
-  InputAxisChartDataProps,
 } from "@/components/axis-chart";
 import useSWR from "swr";
+import routing from "@/constants/routing";
 
 export default function Trading() {
   const hhId = parseInt(

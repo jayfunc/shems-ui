@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import ApiUriBuilder from "../../../../services/api";
+import ApiUriBuilder, { ApiService } from "../../../../services/api";
 import { useEffect, useState } from "react";
 import Appl, {
   AppliancePriority,
@@ -34,12 +34,12 @@ import {
   Unlink,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { autoRefreshInterval, routing } from "@/constants/constants";
 import { motion } from "motion/react";
 import { usePathname } from "next/navigation";
 import formatText from "@/extensions/string";
 import { Input } from "@/components/ui/input";
-import useSWR from "swr";
+import useSWR, { preload } from "swr";
+import routing from "@/constants/routing";
 
 function ApplianceIcon({ applianceType }: { applianceType: ApplianceType }) {
   switch (applianceType) {
@@ -122,7 +122,7 @@ function ApplianceGrid({
                     </CardHeader>
                     <CardContent className="flex flex-row">
                       <div className="flex-1" />
-                      <Link href={`${routing.appliance}/${item.id}`}>
+                      <Link href={`${routing.appliance}/${item.id}`} onMouseOver={() => preload(ApiUriBuilder.buildGetApplCnsmpUri(Number(item.id)), fetch)}>
                         <Button variant="secondary">View</Button>
                       </Link>
                     </CardContent>

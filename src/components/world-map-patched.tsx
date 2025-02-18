@@ -1,10 +1,10 @@
 "use client";
 
-import { useRef, memo, useMemo } from "react";
+import { useRef, useMemo } from "react";
 import { motion } from "motion/react";
-import DottedMap from "dotted-map";
 import Image from "next/image";
 import { useTheme } from "next-themes";
+import DottedMap from "@/lib/dotted-map/with-countries";
 
 interface MapProps {
   dots?: Array<{
@@ -30,7 +30,7 @@ const WorldMap = function WorldMap({
   lineColor = "#0ea5e9",
 }: MapProps) {
   const svgRef = useRef<SVGSVGElement>(null);
-  const map = new DottedMap({
+  const map = DottedMap({
     width: 100,
     grid: "diagonal",
     countries: ["TB1", "TB2", "TB3", "TB4"],
@@ -59,18 +59,15 @@ const WorldMap = function WorldMap({
     backgroundColor: theme === "dark" ? "black" : "white",
   });
 
-  const projectPoint = useMemo(
-    () => (lat: number, lng: number) => {
-      const x =
-        ((lng - boundary.lng.min) / (boundary.lng.max - boundary.lng.min)) *
-        width;
-      const y =
-        ((boundary.lat.max - lat) / (boundary.lat.max - boundary.lat.min)) *
-        height;
-      return { x, y };
-    },
-    [],
-  );
+  const projectPoint = (lat: number, lng: number) => {
+    const x =
+      ((lng - boundary.lng.min) / (boundary.lng.max - boundary.lng.min)) *
+      width;
+    const y =
+      ((boundary.lat.max - lat) / (boundary.lat.max - boundary.lat.min)) *
+      height;
+    return { x, y };
+  };
 
   const createCurvedPath = (
     start: { x: number; y: number },

@@ -9,14 +9,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   adminPassword,
   adminUsername,
-  routing,
   userPassword,
 } from "@/constants/constants";
-import ApiUriBuilder from "@/services/api";
 import PrivacyPolicyText from "../login/privacy-policy";
 import {
   Form,
@@ -34,6 +31,7 @@ import ScrollableDialog from "@/components/scrollable-dialog";
 import Link from "next/link";
 import TermOfServiceText from "./term-of-service";
 import { motion } from "motion/react";
+import routing from "@/constants/routing";
 
 const formSchema = z.object({
   username: z.string().min(1).max(10),

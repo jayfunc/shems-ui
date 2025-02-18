@@ -1,9 +1,6 @@
 "use client";
 
-import OrderBuy, { BuySellOrderStatus } from "@/models/order-buy";
-import OrderMatch from "@/models/order-match";
-import OrderSell from "@/models/order-sell";
-import { chartMaxPoints } from "@/constants/constants";
+import { dataSizeLimit } from "@/constants/constants";
 
 const baseUri: string = "http://localhost:8080/api";
 const gridUri: string = `${baseUri}/grid`;
@@ -25,7 +22,7 @@ export default class ApiUriBuilder {
     return `${applUri}/all?houseId=${houseId}`;
   }
 
-  static buildGetApplCnsmpUri(applianceId: number, size: number = chartMaxPoints): string {
+  static buildGetApplCnsmpUri(applianceId: number, size: number = dataSizeLimit): string {
     return `${applUri}/cnsmp?applianceId=${applianceId}&size=${size}`;
   }
 
@@ -53,19 +50,19 @@ export default class ApiUriBuilder {
 
   // House
 
-  static buildGetHouseCnsmpUri(houseId: number, size: number = chartMaxPoints): string {
+  static buildGetHouseCnsmpUri(houseId: number, size: number = dataSizeLimit): string {
     return `${houseUri}/cnsmp?houseId=${houseId}&size=${size}`;
   }
 
-  static buildGetHouseGenUri(houseId: number, size: number = chartMaxPoints): string {
+  static buildGetHouseGenUri(houseId: number, size: number = dataSizeLimit): string {
     return `${houseUri}/gen?houseId=${houseId}&size=${size}`;
   }
 
-  static buildGetHouseCnsmpPredUri(householdType: number, size: number = chartMaxPoints): string {
+  static buildGetHouseCnsmpPredUri(householdType: number, size: number = dataSizeLimit): string {
     return `${houseUri}/cnsmp/pred?householdType=${householdType}&size=${size}`;
   }
 
-  static buildGetHouseGenPredUri(householdType: number, size: number = chartMaxPoints): string {
+  static buildGetHouseGenPredUri(householdType: number, size: number = dataSizeLimit): string {
     return `${houseUri}/gen/pred?householdType=${householdType}&size=${size}`;
   }
 
@@ -101,175 +98,16 @@ export default class ApiUriBuilder {
 
   //Order
 
-  static async getAllBuyOrders(
-    houseId: number,
-  ): Promise<ResponseData<OrderBuy[]>> {
-    return new ResponseData<OrderBuy[]>(
-      new Status(0, "Success"),
-      [
-        new OrderBuy(
-          BigInt(1), // order id
-          "order_no",
-          BigInt(1), // buyer id
-          BuySellOrderStatus.Pending,
-          new Date(),
-          1, // quan
-          1, // buy price
-          1, // completed quan
-          "order_hash",
-          new Date(),
-          0,
-          new Date(),
-          new Date(),
-        ),
-        new OrderBuy(
-          BigInt(2), // order id
-          "order_no",
-          BigInt(1), // buyer id
-          BuySellOrderStatus.PartiallyCompleted,
-          new Date(),
-          1, // quan
-          2, // buy price
-          1, // completed quan
-          "order_hash",
-          new Date(),
-          0,
-          new Date(),
-          new Date(),
-        ),
-        new OrderBuy(
-          BigInt(3), // order id
-          "order_no",
-          BigInt(1), // buyer id
-          BuySellOrderStatus.Completed,
-          new Date(),
-          1, // quan
-          3, // buy price
-          1, // completed quan
-          "order_hash",
-          new Date(),
-          0,
-          new Date(),
-          new Date(),
-        ),
-        new OrderBuy(
-          BigInt(4), // order id
-          "order_no",
-          BigInt(1), // buyer id
-          BuySellOrderStatus.Cancelled,
-          new Date(),
-          1, // quan
-          4, // buy price
-          1, // completed quan
-          "order_hash",
-          new Date(),
-          0,
-          new Date(),
-          new Date(),
-        ),
-      ],
-      1,
-    );
-    const response = await fetch(`${orderUri}?houseId=${houseId}`);
-    const data = await response.json();
-    return data;
+  static buildGetAllBuyOrdersUri(houseId: number): string {
+    return `${orderUri}/buy/all?houseId=${houseId}`;
   }
 
-  static async getAllSellOrders(
-    houseId: number,
-  ): Promise<ResponseData<OrderSell[]>> {
-    return new ResponseData<OrderSell[]>(
-      new Status(0, "Success"),
-      [
-        new OrderSell(
-          BigInt(1), // order id
-          "order_no",
-          BigInt(1), // seller id
-          0, // order status
-          new Date(),
-          1, // quan
-          1, // sell price
-          1, // completed quan
-          "order_hash",
-          new Date(),
-          0,
-          new Date(),
-          new Date(),
-        ),
-      ],
-      1,
-    );
-    const response = await fetch(`${orderUri}/sell?houseId=${houseId}`);
-    const data = await response.json();
-    return data;
+  static buildGetAllSellOrdersUri(houseId: number): string {
+    return `${orderUri}/sell/all?houseId=${houseId}`;
   }
 
-  static async getAllMatchedOrders(
-    houseId: number,
-  ): Promise<ResponseData<OrderMatch[]>> {
-    return new ResponseData<OrderMatch[]>(
-      new Status(0, "Success"),
-      [
-        new OrderMatch(
-          BigInt(1), // order id
-          "order_no",
-          BigInt(1), // seller id
-          BigInt(2), // buyer id
-          1, // quan
-          1, // match price
-          new Date(),
-          1, // seller price
-          1, // buyer price
-          BigInt(1), // sell order id
-          BigInt(1), // buy order id
-          "order_hash",
-          new Date(),
-          0,
-          new Date(),
-          new Date(),
-        ),
-        new OrderMatch(
-          BigInt(2), // order id
-          "order_no",
-          BigInt(1), // seller id
-          BigInt(3), // buyer id
-          1, // quan
-          2, // match price
-          new Date(),
-          1, // seller price
-          1, // buyer price
-          BigInt(1), // sell order id
-          BigInt(1), // buy order id
-          "order_hash",
-          new Date(),
-          0,
-          new Date(),
-          new Date(),
-        ),
-        new OrderMatch(
-          BigInt(3), // order id
-          "order_no",
-          BigInt(1), // seller id
-          BigInt(4), // buyer id
-          1, // quan
-          3, // match price
-          new Date(),
-          1, // seller price
-          1, // buyer price
-          BigInt(1), // sell order id
-          BigInt(1), // buy order id
-          "order_hash",
-          new Date(),
-          0,
-          new Date(),
-          new Date(),
-        ),
-      ],
-      1,
-    );
-    const response = await fetch(`${orderUri}/match?houseId=${houseId}`);
-    const data = await response.json();
-    return data;
+  static buildGetAllMatchOrdersUri(houseId: number): string {
+    return `${orderUri}/match/all?houseId=${houseId}`;
   }
 }
 

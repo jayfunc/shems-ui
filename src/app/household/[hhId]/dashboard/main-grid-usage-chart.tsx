@@ -1,11 +1,9 @@
 "use client";
 
 import EnergyPieChart from "@/components/pie-chart";
-import { autoRefreshInterval } from "@/constants/constants";
 import energyUnitConverter from "@/extensions/energy-unit-converter";
 import MainGridAcct from "@/models/main-grid-acct";
 import ApiUriBuilder from "@/services/api";
-import { useEffect, useState } from "react";
 import EnergyCard from "./energy-card";
 import { Grid3x3 } from "lucide-react";
 import CenterDrawer from "@/components/scrollable-drawer";

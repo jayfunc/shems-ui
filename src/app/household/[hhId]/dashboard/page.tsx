@@ -1,13 +1,10 @@
 "use client";
 
 import { Battery, Home, PlugZap, Sun, Unplug } from "lucide-react";
-import { useEffect, useState } from "react";
 import ApiUriBuilder from "@/services/api";
 import { usePathname } from "next/navigation";
 import {
-  autoRefreshInterval,
-  chartMaxPoints,
-  routing,
+  dataSizeLimit,
 } from "@/constants/constants";
 import LocStor from "@/models/loc-stor";
 import EnergyCard from "./energy-card";
@@ -33,6 +30,7 @@ import useSWR from "swr";
 import HouseCnsmpPred from "@/models/house-cnsmp-pred";
 import HouseGenPred from "@/models/house-gen-pred";
 import HouseGen from "@/models/house-gen";
+import routing from "@/constants/routing";
 
 function formatDeltaDesc(delta?: number): string {
   return `${delta !== undefined && !Number.isNaN(delta) && delta >= 0 ? "+" : ""}${energyUnitConverter.formatInStringWithUnit(delta)} from last hour`;
@@ -228,7 +226,7 @@ export default function Dashboard() {
                 </TabsTrigger>
               </TabsList>
             </CardTitle>
-            <CardDescription>{`${chartMaxPoints}-hours line chart`}</CardDescription>
+            <CardDescription>{`${dataSizeLimit}-hours line chart`}</CardDescription>
           </CardHeader>
           <CardContent>
             <TabsContent value="gen-cnsmp">

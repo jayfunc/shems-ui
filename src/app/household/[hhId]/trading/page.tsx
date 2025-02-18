@@ -17,9 +17,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import {
-  autoRefreshInterval,
-  chartMaxPoints,
-  routing,
+  dataSizeLimit,
 } from "@/constants/constants";
 import ApiUriBuilder from "@/services/api";
 import { useState, useEffect } from "react";
@@ -45,6 +43,7 @@ import OrderSell from "@/models/order-sell";
 import formatText from "@/extensions/string";
 import useSWR from "swr";
 import HouseCnsmp from "@/models/house-cnsmp";
+import routing from "@/constants/routing";
 
 export default function Trading() {
   const hhId = parseInt(
@@ -54,10 +53,10 @@ export default function Trading() {
       .replaceAll("/", ""),
   );
 
-  const {data: houses} = useSWR<House[]>(ApiUriBuilder.buildGetAllHousesUri());
+  const { data: houses } = useSWR<House[]>(ApiUriBuilder.buildGetAllHousesUri());
 
-  const {data: cmtyGridAcct} = useSWR<CmtyGridAcct>(ApiUriBuilder.buildGetCmtyGridAcctUri(hhId));
-  const {data: houseCnsmp} = useSWR<HouseCnsmp[]>(ApiUriBuilder.buildGetHouseCnsmpUri(hhId));
+  const { data: cmtyGridAcct } = useSWR<CmtyGridAcct>(ApiUriBuilder.buildGetCmtyGridAcctUri(hhId));
+  const { data: houseCnsmp } = useSWR<HouseCnsmp[]>(ApiUriBuilder.buildGetHouseCnsmpUri(hhId));
 
   function mapToCmtyGridCnsmpData() {
     return houseCnsmp?.map((item) => {
@@ -68,33 +67,9 @@ export default function Trading() {
     }) ?? [];
   }
 
-  const [matchedOrders, setMatchedOrder] = useState<OrderMatch[]>([]);
-  const [buyOrders, setBuyOrders] = useState<OrderBuy[]>([]);
-  const [sellOrders, setSellOrders] = useState<OrderSell[]>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      await ApiUriBuilder.getAllMatchedOrders(hhId).then((res) => {
-        setMatchedOrder(res.data);
-      });
-
-      await ApiUriBuilder.getAllBuyOrders(hhId).then((res) => {
-        setBuyOrders(res.data);
-      });
-
-      await ApiUriBuilder.getAllSellOrders(hhId).then((res) => {
-        setSellOrders(res.data);
-      });
-    };
-
-    fetchData();
-
-    const interval = setInterval(async () => {
-      await fetchData();
-    }, autoRefreshInterval);
-
-    return () => clearInterval(interval);
-  }, []);
+  const { data: matchedOrders } = useSWR<OrderMatch[]>(ApiUriBuilder.buildGetAllMatchOrdersUri(hhId));
+  const { data: buyOrders } = useSWR<OrderBuy[]>(ApiUriBuilder.buildGetAllBuyOrdersUri(hhId));
+  const { data: sellOrders } = useSWR<OrderSell[]>(ApiUriBuilder.buildGetAllSellOrdersUri(hhId));
 
   return (
     <motion.div
@@ -231,7 +206,7 @@ export default function Trading() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {buyOrders.map((order) => (
+                  {buyOrders?.map((order) => (
                     <TableRow key={order.id}>
                       <TableCell>{order.quantity}</TableCell>
                       <TableCell>{order.buyPrice}</TableCell>
@@ -242,10 +217,10 @@ export default function Trading() {
                             order.orderStatus === BuySellOrderStatus.Completed
                               ? "default"
                               : order.orderStatus ===
-                                  BuySellOrderStatus.Cancelled
+                                BuySellOrderStatus.Cancelled
                                 ? "destructive"
                                 : order.orderStatus ===
-                                    BuySellOrderStatus.PartiallyCompleted
+                                  BuySellOrderStatus.PartiallyCompleted
                                   ? "secondary"
                                   : "outline"
                           }
@@ -272,7 +247,7 @@ export default function Trading() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {sellOrders.map((order) => (
+                  {sellOrders?.map((order) => (
                     <TableRow key={order.id}>
                       <TableCell>{order.quantity}</TableCell>
                       <TableCell>{order.sellPrice}</TableCell>
@@ -283,7 +258,7 @@ export default function Trading() {
                             order.orderStatus === BuySellOrderStatus.Completed
                               ? "default"
                               : order.orderStatus ===
-                                  BuySellOrderStatus.Cancelled
+                                BuySellOrderStatus.Cancelled
                                 ? "destructive"
                                 : "secondary"
                           }
@@ -309,7 +284,7 @@ export default function Trading() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {matchedOrders.map((order) => (
+                  {matchedOrders?.map((order) => (
                     <TableRow key={order.id}>
                       <TableCell>{order.buyerId}</TableCell>
                       <TableCell>{order.sellerId}</TableCell>
@@ -333,7 +308,7 @@ export default function Trading() {
         <CardContent>
           <WorldMap
             dots={matchedOrders
-              .map((order) => {
+              ?.map((order) => {
                 if (
                   BigInt(hhId) === order.buyerId ||
                   BigInt(hhId) === order.sellerId
@@ -363,7 +338,7 @@ export default function Trading() {
       <Card className="col-span-full">
         <CardHeader>
           <CardTitle>Energy usage in community grid</CardTitle>
-          <CardDescription>{`${chartMaxPoints}-hour energy real-time usage level`}</CardDescription>
+          <CardDescription>{`${dataSizeLimit}-hour energy real-time usage level`}</CardDescription>
         </CardHeader>
         <CardContent>
           <AxisChart

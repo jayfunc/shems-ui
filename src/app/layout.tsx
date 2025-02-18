@@ -3,8 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import SwrConfig from "@/components/swr-config";
-import { Slide, ToastContainer } from 'react-toastify';
-import { hideGlobalToast } from "@/constants/constants";
+import ThemedToastContainer from "@/components/themed-toast-container";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,7 +39,7 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               {children}
-              {!hideGlobalToast && <ToastContainer transition={Slide} position="bottom-right" stacked />}
+              <ThemedToastContainer />
             </ThemeProvider>
           </SwrConfig>
         </div>

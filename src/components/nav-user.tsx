@@ -21,9 +21,9 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { redirect } from "next/navigation";
-import { routing } from "@/constants/constants";
 import House, { HouseholdType } from "@/models/house";
 import formatText from "@/extensions/string";
+import routing from "@/constants/routing";
 
 function logOut() {
   redirect(`/${routing.login}`);

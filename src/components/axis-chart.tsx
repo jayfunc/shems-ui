@@ -7,7 +7,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/chart-patched";
-import { chartMaxPoints } from "@/constants/constants";
+import { dataSizeLimit } from "@/constants/constants";
 import {
   Area,
   AreaChart,

@@ -1,5 +1,3 @@
-import { fractionDigits } from "@/constants/constants";
-
 export default class UnitConverter {
   private units: { [key: string]: number };
 
@@ -29,9 +27,7 @@ export default class UnitConverter {
       return undefined;
     }
     return parseFloat(
-      (value / (this.targetUnitValue / this.sourceUnitValue)).toFixed(
-        fractionDigits,
-      ),
+      (value / (this.targetUnitValue / this.sourceUnitValue)).toFixed(2),
     );
   }
 

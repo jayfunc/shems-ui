@@ -4,7 +4,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { AppTopbar } from "@/components/app-topbar";
 import { Placeholder } from "@/components/placeholder";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { routing } from "@/constants/constants";
+import routing from "@/constants/routing";
 import House from "@/models/house";
 import ApiUriBuilder from "@/services/api";
 import {
@@ -12,11 +12,10 @@ import {
   CircuitBoard,
   ChartCandlestick,
   UtilityPole,
-  Settings2,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { usePathname } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense } from "react";
 import useSWR from "swr";
 
 export default function Layout({ children }: { children: React.ReactNode }) {

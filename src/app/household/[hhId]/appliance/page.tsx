@@ -184,7 +184,7 @@ export default function Page() {
               <TabsTrigger value="priority">Priority</TabsTrigger>
               <TabsTrigger value="status">Status</TabsTrigger>
             </TabsList>
-            <div className="absolute top-0 h-4 w-full -mt-4 bg-gradient-to-t from-background from-15% to-transparent" />
+            <div className="absolute top-0 right-0 h-4 w-full -mt-4 bg-gradient-to-t from-background from-15% to-transparent" />
           </div>
         </div>
         <div>

@@ -222,7 +222,7 @@ export default function Dashboard() {
           "House generation energy with forcast",
           "House consumption energy with forcast",
         ]}
-        descs={`${useDataSizeLimit()}-hours line chart`}
+        descs={`${useDataSizeLimit()}-hour line chart`}
         tabKeys={["gen-cnsmp", "gen-forcast", "cnsmp-forcast"]}
         tabLabels={[
           "Generation w/ consumption",

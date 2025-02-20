@@ -5,6 +5,9 @@ import { motion } from "motion/react";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import DottedMap from "@/lib/dotted-map-patched/with-countries";
+import { Card, CardHeader } from "./ui/card";
+import { dataSizeLimitForOrders } from "@/extensions/request";
+import { Info } from "lucide-react";
 
 interface MapProps {
   dots?: Array<{
@@ -202,6 +205,14 @@ const WorldMap = function WorldMap({
           </g>
         ))}
       </svg>
+      {dots.length === 0 && (
+        <Card className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
+          <CardHeader className="flex flex-row gap-2">
+            <Info />
+            No trading data available in the last {dataSizeLimitForOrders} hours
+          </CardHeader>
+        </Card>
+      )}
     </div>
   );
 };

@@ -7,17 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import ApiService from "@/services/api";
-import { usePathname } from "next/navigation";
 import CmtyGridAcct from "@/models/cmty-grid-acct";
 import { motion } from "motion/react";
 import React from "react";
@@ -28,16 +18,21 @@ import { Separator } from "@/components/ui/separator";
 import House from "@/models/house";
 import { AxisChart, AxisChartType } from "@/components/axis-chart";
 import OrderMatch from "@/models/order-match";
-import OrderBuy, {
-  BuySellOrderStatus as BuySellOrderStatus,
-} from "@/models/order-buy";
+import OrderBuy, { BuySellOrderStatus } from "@/models/order-buy";
 import OrderSell from "@/models/order-sell";
-import formatText from "@/extensions/string";
 import useSWR from "swr";
 import HouseCnsmp from "@/models/house-cnsmp";
-import routing from "@/constants/routing";
 import CardTabs from "@/components/card-tabs";
-import { useCurrentHouseId, useDataSizeLimit } from "@/extensions/request";
+import {
+  dataSizeLimitForOrders,
+  useCurrentHouseId,
+  useDataSizeLimit,
+} from "@/extensions/request";
+import { DataTable } from "../../../../components/data-table";
+import { ColumnDef } from "@tanstack/react-table";
+import { DataTableColumnHeader } from "@/components/data-table-column-header";
+import formatText from "@/extensions/string";
+import { Badge } from "@/components/ui/badge";
 
 export default function Trading() {
   const houseId = useCurrentHouseId();
@@ -63,14 +58,55 @@ export default function Trading() {
   }
 
   const { data: matchedOrders } = useSWR<OrderMatch[]>(
-    ApiService.buildGetAllMatchOrdersUri(houseId),
+    ApiService.buildGetAllMatchOrdersUri(houseId, dataSizeLimitForOrders),
   );
   const { data: buyOrders } = useSWR<OrderBuy[]>(
-    ApiService.buildGetAllBuyOrdersUri(houseId),
+    ApiService.buildGetAllBuyOrdersUri(houseId, dataSizeLimitForOrders),
   );
   const { data: sellOrders } = useSWR<OrderSell[]>(
-    ApiService.buildGetAllSellOrdersUri(houseId),
+    ApiService.buildGetAllSellOrdersUri(houseId, dataSizeLimitForOrders),
   );
+
+  function mapKeysToColumns<T>(keys: string[]): ColumnDef<T>[] {
+    return keys.map((key) => {
+      return {
+        accessorKey: key,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title={formatText(key)} />
+        ),
+        cell: ({ row }) => {
+          const lowerKey = key.toLowerCase();
+          if (lowerKey.includes("time")) {
+            const val: string = row.getValue(key);
+            if (val == null) {
+              return "-";
+            } else {
+              return new Date(val).toLocaleString();
+            }
+          } else if (lowerKey.includes("status")) {
+            const status: BuySellOrderStatus = row.getValue("orderStatus");
+            const label = formatText(BuySellOrderStatus[status]);
+            return <Badge variant="outline">{label}</Badge>;
+          } else if (lowerKey.includes("price")) {
+            return moneyUnitConverter.formatInStringWithUnit(row.getValue(key));
+          } else if (lowerKey.includes("quan")) {
+            return energyUnitConverter.formatInStringWithUnit(
+              row.getValue(key),
+            );
+          } else if (lowerKey.includes("id")) {
+            return formatText(
+              houses?.find(
+                (house) =>
+                  house.id.toString() === Number(row.getValue(key)).toString(),
+              )?.householdName ?? "-",
+            );
+          } else {
+            return row.getValue(key);
+          }
+        },
+      } satisfies ColumnDef<T>;
+    });
+  }
 
   return (
     <motion.div
@@ -181,113 +217,69 @@ export default function Trading() {
 
       <CardTabs
         titles={"P2P energy trading"}
+        descs={`${dataSizeLimitForOrders}-hour trading records`}
         tabKeys={["buy", "sell", "match"]}
         tabLabels={["Buy orders", "Sell orders", "Matched orders"]}
         tabContents={[
-          <Table key={0} className="text-center">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-center">Quantity</TableHead>
-                <TableHead className="text-center">Limit price</TableHead>
-                <TableHead className="text-center">Submitted time</TableHead>
-                <TableHead className="text-center">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {buyOrders?.map((order) => (
-                <TableRow key={order.id}>
-                  <TableCell>{order.quantity}</TableCell>
-                  <TableCell>{order.buyPrice}</TableCell>
-                  <TableCell>{order.orderTime.toLocaleString()}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        order.orderStatus === BuySellOrderStatus.Completed
-                          ? "default"
-                          : order.orderStatus === BuySellOrderStatus.Cancelled
-                            ? "destructive"
-                            : order.orderStatus ===
-                                BuySellOrderStatus.PartiallyCompleted
-                              ? "secondary"
-                              : "outline"
-                      }
-                    >
-                      {formatText(BuySellOrderStatus[order.orderStatus])}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>,
-          <Table key={1} className="text-center">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-center">Quantity</TableHead>
-                <TableHead className="text-center">Limit price</TableHead>
-                <TableHead className="text-center">Submitted time</TableHead>
-                <TableHead className="text-center">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sellOrders?.map((order) => (
-                <TableRow key={order.id}>
-                  <TableCell>{order.quantity}</TableCell>
-                  <TableCell>{order.sellPrice}</TableCell>
-                  <TableCell>{order.orderTime.toLocaleString()}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        order.orderStatus === BuySellOrderStatus.Completed
-                          ? "default"
-                          : order.orderStatus === BuySellOrderStatus.Cancelled
-                            ? "destructive"
-                            : "secondary"
-                      }
-                    >
-                      {formatText(BuySellOrderStatus[order.orderStatus])}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>,
-          <Table key={2} className="text-center">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-center">Buyer</TableHead>
-                <TableHead className="text-center">Seller</TableHead>
-                <TableHead className="text-center">Quantity</TableHead>
-                <TableHead className="text-center">Matched price</TableHead>
-                <TableHead className="text-center">Matched time</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {matchedOrders?.map((order) => (
-                <TableRow key={order.id}>
-                  <TableCell>{order.buyerId}</TableCell>
-                  <TableCell>{order.sellerId}</TableCell>
-                  <TableCell>{order.quantity}</TableCell>
-                  <TableCell>{order.matchPrice}</TableCell>
-                  <TableCell>{order.matchTime.toLocaleString()}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>,
+          <DataTable
+            key={0}
+            columns={mapKeysToColumns([
+              "orderNo",
+              "orderStatus",
+              "completed_quantity",
+              "quantity",
+              "buyPrice",
+              "orderTime",
+              "completeTime",
+              "cancelTime",
+            ])}
+            data={buyOrders ?? []}
+          />,
+          <DataTable
+            key={1}
+            columns={mapKeysToColumns([
+              "orderNo",
+              "orderStatus",
+              "completed_quantity",
+              "quantity",
+              "sellPrice",
+              "orderTime",
+              "completeTime",
+              "cancelTime",
+            ])}
+            data={sellOrders ?? []}
+          />,
+          <DataTable
+            key={2}
+            columns={mapKeysToColumns([
+              "orderNo",
+              "buyerId",
+              "sellerId",
+              "matchTime",
+              "buyerPrice",
+              "sellerPrice",
+              "matchPrice",
+              "quantity",
+            ])}
+            data={matchedOrders ?? []}
+          />,
         ]}
       />
 
       <Card className="col-span-full">
         <CardHeader>
           <CardTitle>Energy map</CardTitle>
-          <CardDescription>Energy trading map</CardDescription>
+          <CardDescription>
+            Trading records in the last {dataSizeLimitForOrders} hours
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <WorldMap
             dots={matchedOrders
               ?.map((order) => {
                 if (
-                  BigInt(houseId) === order.buyerId ||
-                  BigInt(houseId) === order.sellerId
+                  houseId.toString() === order.buyerId.toString() ||
+                  houseId.toString() === order.sellerId.toString()
                 ) {
                   const buyer = houses?.find(
                     (house) => house.id.toString() === order.buyerId.toString(),

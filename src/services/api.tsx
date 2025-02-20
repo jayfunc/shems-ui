@@ -124,16 +124,16 @@ export default class ApiService<T> {
 
   //Order
 
-  static buildGetAllBuyOrdersUri(houseId: number): string {
-    return `${ApiUriBuilder.orderUri()}/buy/all?houseId=${houseId}`;
+  static buildGetAllBuyOrdersUri(houseId: number, size: number): string {
+    return `${ApiUriBuilder.orderUri()}/buy/all?houseId=${houseId}&size=${size}`;
   }
 
-  static buildGetAllSellOrdersUri(houseId: number): string {
-    return `${ApiUriBuilder.orderUri()}/sell/all?houseId=${houseId}`;
+  static buildGetAllSellOrdersUri(houseId: number, size: number): string {
+    return `${ApiUriBuilder.orderUri()}/sell/all?houseId=${houseId}&size=${size}`;
   }
 
-  static buildGetAllMatchOrdersUri(houseId: number): string {
-    return `${ApiUriBuilder.orderUri()}/match/all?houseId=${houseId}`;
+  static buildGetAllMatchOrdersUri(houseId: number, size: number): string {
+    return `${ApiUriBuilder.orderUri()}/match/all?houseId=${houseId}&size=${size}`;
   }
 }
 

@@ -21,26 +21,28 @@ export default class UnitConverter {
     this.targetUnitValue = Object.values(units)[this.targetUnitIndex];
   }
 
-  format(value?: number): number | undefined {
+  format(value?: number, fractionDigits?: number): number | undefined {
     // Check if value is null or undefined
     if (value == null || Number.isNaN(value)) {
       return undefined;
     }
     return parseFloat(
-      (value / (this.targetUnitValue / this.sourceUnitValue)).toFixed(2),
+      (value / (this.targetUnitValue / this.sourceUnitValue)).toFixed(
+        fractionDigits ?? 2,
+      ),
     );
   }
 
-  formatInNumber(value?: number): number {
-    return this.format(value) ?? 0;
+  formatInNumber(value?: number, fractionDigits?: number): number {
+    return this.format(value, fractionDigits) ?? 0;
   }
 
-  formatInString(value?: number): string {
-    return `${this.format(value) ?? "-"}`;
+  formatInString(value?: number, fractionDigits?: number): string {
+    return `${this.format(value, fractionDigits) ?? "-"}`;
   }
 
-  formatInStringWithUnit(value?: number): string {
-    return `${this.formatInString(value)} ${this.getTargetUnit()}`;
+  formatInStringWithUnit(value?: number, fractionDigits?: number): string {
+    return `${this.formatInString(value, fractionDigits)} ${this.getTargetUnit()}`;
   }
 
   getTargetUnit(): string {

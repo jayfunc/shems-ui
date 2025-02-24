@@ -1,6 +1,5 @@
 "use client";
 
-import UotPriceChart from "../grid/uot-price-chart";
 import { motion } from "motion/react";
 import MainGridCfg from "@/models/main-grid-cfg";
 import ApiService from "@/services/api";
@@ -9,6 +8,8 @@ import { AxisChart, AxisChartType } from "@/components/axis-chart";
 import useSWR from "swr";
 import CardTabs from "@/components/card-tabs";
 import { useCurrentHouseId, useDataSizeLimit } from "@/extensions/request";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import EnergyPieChart from "@/components/pie-chart";
 
 export default function Trading() {
   const { data: houseCnsmp } = useSWR<houseCnsmp[]>(
@@ -17,6 +18,11 @@ export default function Trading() {
   const { data: mainGridCfg } = useSWR<MainGridCfg>(
     ApiService.buildGetMainGridCfgUri(),
   );
+  const { data: simCfg } = useSWR(ApiService.buildGetSimCfgUri());
+
+  const offset = 18;
+  let timeTicks = [...Array.from(Array(24).keys()).reverse()];
+  timeTicks = [...timeTicks.slice(offset), ...timeTicks.slice(0, offset)];
 
   function mapToMainGridCnsmpData() {
     return (
@@ -77,8 +83,8 @@ export default function Trading() {
           <AxisChart
             key={0}
             data={[mapToMainGridCnsmpData()]}
-            labels={["On-peak"]}
-            colors={[1]}
+            labels={["Total"]}
+            colors={["--power-cnsmp"]}
             chartType={AxisChartType.Line}
           />,
           <AxisChart
@@ -89,12 +95,48 @@ export default function Trading() {
               mapToOffPeakCnsmpData(),
             ]}
             labels={["On-peak", "Mid-peak", "Off-peak"]}
-            colors={[2, 3, 4]}
+            colors={["--peak-on", "--peak-mid", "--peak-off"]}
             chartType={AxisChartType.Area}
           />,
         ]}
       />
-      <UotPriceChart mainGridCfg={mainGridCfg} />
+      <Card className="col-span-full">
+        <CardHeader>
+          <CardTitle>Electricity time-of-use price periods</CardTitle>
+          <CardDescription>Current time-of-use price periods</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <EnergyPieChart
+            cfgLabels={timeTicks.map((key) => {
+              const hour = key;
+              let label = '';
+              if (mainGridCfg?.onPeakHour.indexOf(hour) !== -1) {
+                label = "On-peak";
+              } else if (mainGridCfg?.midPeakHour.indexOf(hour) !== -1) {
+                label = "Mid-peak";
+              } else if (mainGridCfg?.offPeakHour.indexOf(hour) !== -1) {
+                label = "Off-peak";
+              }
+              return label;
+            })}
+            colors={timeTicks
+              .map((key) => {
+                const hour = Number(key);
+                let color = "--foreground";
+                if (mainGridCfg?.onPeakHour.indexOf(hour) !== -1) {
+                  color = "--peak-on";
+                } else if (mainGridCfg?.midPeakHour.indexOf(hour) !== -1) {
+                  color = "--peak-mid";
+                } else if (mainGridCfg?.offPeakHour.indexOf(hour) !== -1) {
+                  color = "--peak-off";
+                }
+                return color;
+              })}
+            dataValues={timeTicks.map(() => 1)}
+            itemFormatter={(value) => `${value} o'clock`}
+          />
+        </CardContent>
+      </Card>
     </motion.div>
   );
 }

@@ -10,7 +10,7 @@ export function useDataSizeLimit() {
 }
 
 export function useCurrentHouseId() {
-  return parseInt(usePathname().split("/").at(2) ?? "");
+  return Number(usePathname().split("/").at(2) ?? "");
 }
 
 export function getServerHostname() {

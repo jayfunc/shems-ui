@@ -12,6 +12,8 @@ Next.js: 15.1.4
 
 ## Build and run
 
+Please use `npm install --legacy-peer-deps` to install deps.
+
 ```bash
 npm run build
 npm run start

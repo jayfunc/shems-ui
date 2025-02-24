@@ -19,9 +19,6 @@ import formatText from "@/extensions/string";
 import useSWR from "swr";
 
 export default function MainGridUsageChart({ houseId }: { houseId: number }) {
-  const cfgKeys = ["onPeak", "midPeak", "offPeak"];
-  const cfgLabels = ["On-peak", "Mid-peak", "Off-peak"];
-
   const { data: mainGridAcct } = useSWR<MainGridAcct>(
     ApiService.buildGetMainGridAcctUri(houseId),
   );
@@ -56,10 +53,10 @@ export default function MainGridUsageChart({ houseId }: { houseId: number }) {
         mainGridAcct === undefined
           ? "-"
           : energyUnitConverter.formatInStringWithUnit(
-              mainGridAcct.midPeakPowerUsage +
-                mainGridAcct.onPeakPowerUsage +
-                mainGridAcct.offPeakPowerUsage,
-            )
+            mainGridAcct.midPeakPowerUsage +
+            mainGridAcct.onPeakPowerUsage +
+            mainGridAcct.offPeakPowerUsage,
+          )
       }
       actionArea={
         <CenterDrawer
@@ -68,9 +65,8 @@ export default function MainGridUsageChart({ houseId }: { houseId: number }) {
           content={
             mainGridAcct !== undefined && (
               <EnergyPieChart
-                cfgKeys={cfgKeys}
-                cfgLabels={cfgLabels}
-                dataKey="hours"
+                cfgLabels={["On-peak", "Mid-peak", "Off-peak"]}
+                colors={["--peak-on", "--peak-mid", "--peak-off"]}
                 dataValues={[
                   energyUnitConverter.formatInNumber(
                     mainGridAcct.onPeakPowerUsage,

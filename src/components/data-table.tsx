@@ -5,8 +5,6 @@ import {
   ColumnFiltersState,
   flexRender,
   getCoreRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
@@ -22,21 +20,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Settings2, Unlink } from "lucide-react";
+import { Unlink } from "lucide-react";
 import { DataTablePagination } from "@/components/data-table-pagination";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import formatText from "@/extensions/string";
 import React from "react";
-import { DataTableFacetedFilter } from "./data-table-faceted-filter";
-import { BuySellOrderStatus } from "@/models/order-buy";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

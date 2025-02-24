@@ -86,13 +86,13 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
             ([theme, prefix]) => `
 ${prefix} [data-chart=${id}] {
 ${colorConfig
-  .map(([key, itemConfig]) => {
-    const color =
-      itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
-      itemConfig.color;
-    return color ? `  --color-${key}: ${color};` : null;
-  })
-  .join("\n")}
+                .map(([key, itemConfig]) => {
+                  const color =
+                    itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
+                    itemConfig.color;
+                  return color ? `  --color-${key}: ${color};` : null;
+                })
+                .join("\n")}
 }
 `,
           )
@@ -107,15 +107,15 @@ const ChartTooltip = RechartsPrimitive.Tooltip;
 const ChartTooltipContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
-    React.ComponentProps<"div"> & {
-      hideLabel?: boolean;
-      hideIndicator?: boolean;
-      indicator?: "line" | "dot" | "dashed";
-      nameKey?: string;
-      labelKey?: string;
-      // Pathed here
-      itemFormatter?: (value: string) => string;
-    }
+  React.ComponentProps<"div"> & {
+    hideLabel?: boolean;
+    hideIndicator?: boolean;
+    indicator?: "line" | "dot" | "dashed";
+    nameKey?: string;
+    labelKey?: string;
+    // Pathed here
+    itemFormatter?: (value: string) => string;
+  }
 >(
   (
     {
@@ -271,10 +271,10 @@ const ChartLegend = RechartsPrimitive.Legend;
 const ChartLegendContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> &
-    Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
-      hideIcon?: boolean;
-      nameKey?: string;
-    }
+  Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
+    hideIcon?: boolean;
+    nameKey?: string;
+  }
 >(
   (
     { className, hideIcon = false, payload, verticalAlign = "bottom", nameKey },
@@ -285,6 +285,8 @@ const ChartLegendContent = React.forwardRef<
     if (!payload?.length) {
       return null;
     }
+
+    const addedLabels: string[] = [];
 
     return (
       <div
@@ -299,8 +301,13 @@ const ChartLegendContent = React.forwardRef<
           const key = `${nameKey || item.dataKey || "value"}`;
           const itemConfig = getPayloadConfigFromPayload(config, item, key);
 
+          const allowAdd = itemConfig != null && itemConfig?.label != null && !addedLabels.includes(itemConfig.label.toString());
+          if (allowAdd) {
+            addedLabels.push(itemConfig!.label!.toString());
+          }
+
           return (
-            <div
+            allowAdd ? <div
               key={item.value}
               className={cn(
                 "flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground",
@@ -317,9 +324,9 @@ const ChartLegendContent = React.forwardRef<
                 />
               )}
               {itemConfig?.label}
-            </div>
+            </div> : null
           );
-        })}
+        }).filter((item) => item != null)}
       </div>
     );
   },
@@ -338,8 +345,8 @@ function getPayloadConfigFromPayload(
 
   const payloadPayload =
     "payload" in payload &&
-    typeof payload.payload === "object" &&
-    payload.payload !== null
+      typeof payload.payload === "object" &&
+      payload.payload !== null
       ? payload.payload
       : undefined;
 

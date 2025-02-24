@@ -2,8 +2,10 @@ import { Label, Pie, PieChart } from "recharts";
 import {
   ChartConfig,
   ChartContainer,
+  ChartLegend,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegendContent,
 } from "./chart-patched";
 
 /**
@@ -15,10 +17,9 @@ export default function EnergyPieChart({
   darkPieChartBaseColor = "teal",
   colorStart = 400,
   colorEnd = 900,
-  cfgKeys,
+  colors,
   cfgLabels,
   data,
-  dataKey,
   dataValues,
   centerSubtitle = "",
   itemFormatter,
@@ -27,30 +28,38 @@ export default function EnergyPieChart({
   darkPieChartBaseColor?: string;
   colorStart?: number;
   colorEnd?: number;
-  cfgKeys: string[];
+  colors?: string[];
   cfgLabels: string[];
   data?: unknown[];
-  dataKey: string;
   dataValues?: number[];
   centerSubtitle?: string;
   itemFormatter: (value: string) => string;
 }) {
   const chartConfig: ChartConfig = {};
 
-  let colorStep: number =
-    (colorEnd - colorStart) / Math.max(1, cfgKeys.length - 1);
-  colorStep = Math.floor(colorStep / 100) * 100;
+  if (colors === undefined) {
+    let colorStep: number =
+      (colorEnd - colorStart) / Math.max(1, cfgLabels.length - 1);
+    colorStep = Math.floor(colorStep / 100) * 100;
 
-  cfgKeys.forEach((key, index) => {
-    const colorDepth = `${colorStart + colorStep * index}`;
-    const lightColor = `hsl(var(--${lightPieChartBaseColor}-${colorDepth}))`;
-    const darkColor = `hsl(var(--${darkPieChartBaseColor}-${colorDepth}))`;
+    cfgLabels.forEach((key, index) => {
+      const colorDepth = `${colorStart + colorStep * index}`;
+      const lightColor = `hsl(var(--${lightPieChartBaseColor}-${colorDepth}))`;
+      const darkColor = `hsl(var(--${darkPieChartBaseColor}-${colorDepth}))`;
 
-    chartConfig[key] = {
-      label: cfgLabels[index],
-      theme: { light: lightColor, dark: darkColor },
-    };
-  });
+      chartConfig[key] = {
+        label: key,
+        theme: { light: lightColor, dark: darkColor },
+      };
+    });
+  } else {
+    cfgLabels.forEach((key, index) => {
+      chartConfig[key] = {
+        label: key,
+        color: `hsl(var(${colors[index]}))`,
+      };
+    });
+  }
 
   const showCenterArea = centerSubtitle !== "";
 
@@ -68,37 +77,36 @@ export default function EnergyPieChart({
         <Pie
           data={
             data === undefined && dataValues !== undefined
-              ? cfgKeys.map((key, index) => {
-                  return {
-                    section: cfgLabels[index],
-                    [dataKey]: dataValues[index],
-                    fill: `var(--color-${key})`,
-                  };
-                })
+              ? cfgLabels.map((key, index) => {
+                return {
+                  nameKey: cfgLabels[index],
+                  dataKey: dataValues[index],
+                  fill: `var(--color-${key})`,
+                };
+              })
               : data
           }
-          dataKey={dataKey}
-          nameKey="section"
+          dataKey="dataKey"
+          nameKey="nameKey"
           innerRadius={showCenterArea ? 60 : 0}
-          strokeWidth={3}
-          strokeLinecap="round"
-          strokeDasharray={5}
+          labelLine={false}
+          activeIndex={0}
           label={({ payload, ...props }) => {
             return (
-              <text
+              <></> || <text
                 cx={props.cx}
                 cy={props.cy}
                 x={props.x}
                 y={props.y}
                 textAnchor={props.textAnchor}
-                dominantBaseline={props.dominantBaseline}
                 fill={payload.fill}
                 fontWeight="bold"
               >
-                &nbsp;{payload.section}&nbsp;
+                {payload.nameKey}
               </text>
             );
           }}
+          blendStroke
         >
           {showCenterArea && (
             <Label
@@ -132,6 +140,9 @@ export default function EnergyPieChart({
             />
           )}
         </Pie>
+        <ChartLegend
+          content={<ChartLegendContent nameKey="nameKey" />}
+        />
       </PieChart>
     </ChartContainer>
   );

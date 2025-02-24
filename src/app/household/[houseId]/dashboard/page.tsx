@@ -1,9 +1,7 @@
 "use client";
 
 import { Battery, Home, PlugZap, Sun, Unplug } from "lucide-react";
-import ApiService from "@/services/api";
-import { usePathname } from "next/navigation";
-import LocStor from "@/models/loc-stor";
+import ApiService from "@/services/api";import LocStor from "@/models/loc-stor";
 import EnergyCard from "./energy-card";
 import { motion } from "motion/react";
 import energyUnitConverter from "@/extensions/energy-unit-converter";
@@ -151,7 +149,7 @@ export default function Dashboard() {
                 <AxisChart
                   data={[mapToSolarCnsmpData()]}
                   labels={["Solar usage"]}
-                  colors={[1]}
+                  colors={["--power-cnsmp"]}
                   chartType={AxisChartType.Line}
                 />
               </div>
@@ -205,7 +203,7 @@ export default function Dashboard() {
                 <AxisChart
                   data={[mapToBatteryCnsmpData()]}
                   labels={["Battery usage"]}
-                  colors={[1]}
+                  colors={["--power-cnsmp"]}
                   chartType={AxisChartType.Line}
                 />
               </div>
@@ -234,21 +232,21 @@ export default function Dashboard() {
             key={0}
             data={[mapToHouseCnsmpData(), mapToHouseGenData()]}
             labels={["Consumption", "Generation"]}
-            colors={[1, 2]}
+            colors={["--power-cnsmp", "--power-gen"]}
             chartType={AxisChartType.Line}
           />,
           <AxisChart
             key={1}
             data={[mapToHouseGenData(), mapToHouseGenPredData()]}
-            labels={["Generation", "Generation forcast"]}
-            colors={[2, 3]}
+            labels={["Generation", "Forcast"]}
+            colors={["--power-gen", "--power-gen-pred"]}
             chartType={AxisChartType.Line}
           />,
           <AxisChart
             key={2}
             data={[mapToHouseCnsmpData(), mapToHouseCnsmpPredData()]}
-            labels={["Consumption", "Consumption forcast"]}
-            colors={[1, 4]}
+            labels={["Consumption", "Forcast"]}
+            colors={["--power-cnsmp", "--power-cnsmp-pred"]}
             chartType={AxisChartType.Line}
           />,
         ]}

@@ -352,6 +352,19 @@ body {
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --peak-on: var(--red-600);
+    --peak-mid: var(--yellow-400);
+    --peak-off: var(--lime-600);
+
+    --power-cnsmp: var(--rose-600);
+    --power-cnsmp-pred: var(--fuchsia-600);
+
+    --power-gen: var(--blue-600);
+    --power-gen-pred: var(--cyan-600);
+
+    --power-buy: var(--violet-600);
+    --power-sell: var(--teal-600);
   }
 
   .dark {
@@ -387,6 +400,19 @@ body {
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --peak-on: var(--red-800);
+    --peak-mid: var(--yellow-600);
+    --peak-off: var(--lime-800);
+
+    --power-cnsmp: var(--rose-800);
+    --power-cnsmp-pred: var(--fuchsia-800);
+
+    --power-gen: var(--blue-800);
+    --power-gen-pred: var(--cyan-800);
+
+    --power-buy: var(--violet-800);
+    --power-sell: var(--teal-800);
   }
 }
 

@@ -37,6 +37,7 @@ export function CnsmpsChart({ applId }: { applId: number }) {
                 }),
           ]}
           labels={["Consumption"]}
+          colors={["--power-cnsmp"]}
           chartType={AxisChartType.Line}
         />
       </CardContent>

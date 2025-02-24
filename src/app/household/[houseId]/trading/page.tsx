@@ -88,18 +88,23 @@ export default function Trading() {
             const label = formatText(BuySellOrderStatus[status]);
             return <Badge variant="outline">{label}</Badge>;
           } else if (lowerKey.includes("price")) {
-            return moneyUnitConverter.formatInStringWithUnit(row.getValue(key));
+            return moneyUnitConverter.formatInStringWithUnit(row.getValue(key), 3);
           } else if (lowerKey.includes("quan")) {
             return energyUnitConverter.formatInStringWithUnit(
               row.getValue(key),
             );
           } else if (lowerKey.includes("id")) {
-            return formatText(
-              houses?.find(
-                (house) =>
-                  house.id.toString() === Number(row.getValue(key)).toString(),
-              )?.householdName ?? "-",
-            );
+            const val = String(row.getValue(key));
+            if (houseId.toString() === val) {
+              return "You";
+            } else {
+              return formatText(
+                houses?.find(
+                  (house) =>
+                    house.id.toString() === val,
+                )?.householdName ?? "-",
+              );
+            }
           } else {
             return row.getValue(key);
           }
@@ -292,8 +297,9 @@ export default function Trading() {
                   if (!buyer || !seller) return undefined;
 
                   return {
-                    start: { lat: seller.latitude, lng: seller.longitude },
-                    end: { lat: buyer.latitude, lng: buyer.longitude },
+                    start: { lat: seller.latitude, lng: seller.longitude, label: `${order.quantity} kWh`, },
+                    end: { lat: buyer.latitude, lng: buyer.longitude, label: `${order.quantity} kWh`, },
+
                   };
                 }
                 return undefined;
@@ -311,8 +317,8 @@ export default function Trading() {
         <CardContent>
           <AxisChart
             data={[mapToCmtyGridCnsmpData()]}
-            labels={["Community grid usage"]}
-            colors={[1]}
+            labels={["Grid usage"]}
+            colors={["--power-cnsmp"]}
             chartType={AxisChartType.Line}
           />
         </CardContent>

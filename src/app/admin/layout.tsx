@@ -32,6 +32,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     0,
     HouseholdType.Admin,
     formatText(adminUsername),
+    false,
     new Date(),
   );
 

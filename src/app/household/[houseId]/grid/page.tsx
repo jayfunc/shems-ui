@@ -105,7 +105,7 @@ export default function Trading() {
           <CardTitle>Electricity time-of-use price periods</CardTitle>
           <CardDescription>Current time-of-use price periods</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="relative">
           <EnergyPieChart
             cfgLabels={timeTicks.map((key) => {
               const hour = key;
@@ -133,8 +133,20 @@ export default function Trading() {
                 return color;
               })}
             dataValues={timeTicks.map(() => 1)}
-            itemFormatter={(value) => `${value} o'clock`}
+            itemFormatter={() => ""}
           />
+          <div className="ml-28 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-sm text-muted-foreground">
+            7 A.M.
+          </div>
+          <div className="mt-20 ml-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-sm text-muted-foreground">
+            11 A.M.
+          </div>
+          <div className="-ml-28 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-sm text-muted-foreground">
+            5 P.M.
+          </div>
+          <div className="-ml-28 -mt-14 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-sm text-muted-foreground">
+            7 P.M.
+          </div>
         </CardContent>
       </Card>
     </motion.div>

@@ -17,7 +17,7 @@ export default class House extends Base {
   longitude: number;
   householdType: HouseholdType;
   householdName: string;
-  hasSolarSystem: Boolean;
+  hasSolarSystem: boolean;
 
   constructor(
     id: bigint,
@@ -25,7 +25,7 @@ export default class House extends Base {
     longitude: number,
     householdType: HouseholdType,
     householdName: string,
-    hasSolarSystem: Boolean,
+    hasSolarSystem: boolean,
     simulationTime: Date,
     area?: number,
   ) {

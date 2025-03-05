@@ -1,14 +1,14 @@
 "use client";
 
-import { useRef, useMemo, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion } from "motion/react";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import DottedMap from "@/lib/dotted-map-patched/with-countries";
-import { Card, CardHeader } from "./ui/card";
 import { dataSizeLimitForOrders } from "@/extensions/request";
-import { Fullscreen, Info, ZoomIn, ZoomOut } from "lucide-react";
+import { Fullscreen, Unlink } from "lucide-react";
 import { Button } from "./ui/button";
+import { Label } from "./ui/label";
 
 interface MapProps {
   dots?: Array<{
@@ -42,7 +42,8 @@ const WorldMap = function WorldMap({
     }
   }, [fitMode]);
 
-  lineColor = resolvedTheme === "dark" ? "oklch(0.541 0.281 293.009)" : "oklch(0.432 0.232 292.759)";
+  const buyLineColor = resolvedTheme === "dark" ? "oklch(0.541 0.281 293.009)" : "oklch(0.432 0.232 292.759)";
+  const sellLineColor = resolvedTheme === "dark" ? "oklch(0.511 0.262 276.966)" : "oklch(0.398 0.195 277.366)";
 
   const boundary = {
     lat: { min: 48.2882457, max: 48.5149964 },
@@ -111,7 +112,7 @@ const WorldMap = function WorldMap({
   };
 
   return (
-    <div className="w-full aspect-[2/1] dark:bg-black bg-white rounded-lg relative font-sans">
+    <div className="w-full aspect-[1/1] dark:bg-black bg-white rounded-lg relative font-sans">
       <Image
         src={`data:image/svg+xml;utf8,${encodeURIComponent(svgMap)}`}
         className="pointer-events-none select-none w-full h-full"
@@ -123,7 +124,7 @@ const WorldMap = function WorldMap({
       <svg
         ref={svgRef}
         viewBox={`0 0 ${width} ${height}`}
-        className="w-full h-full absolute inset-0 pointer-events-none select-none"
+        className="w-full h-full absolute inset-0"
       >
         {dots.map((dot, i) => {
           const startPoint = projectPoint(dot.start.lat, dot.start.lng);
@@ -137,7 +138,7 @@ const WorldMap = function WorldMap({
               <motion.path
                 d={createCurvedPath(startPoint, endPoint)}
                 fill="none"
-                stroke="url(#path-gradient)"
+                stroke={`url(#path-gradient-${dot.start.label === "You" ? "sell" : "buy"})`}
                 strokeWidth={lineWidth}
                 initial={{
                   pathLength: 0,
@@ -162,10 +163,16 @@ const WorldMap = function WorldMap({
         })}
 
         <defs>
-          <linearGradient id="path-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <linearGradient id="path-gradient-buy" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor={resolvedTheme === "dark" ? "black" : "white"} stopOpacity="0" />
-            <stop offset="5%" stopColor={lineColor} stopOpacity="1" />
-            <stop offset="95%" stopColor={lineColor} stopOpacity="1" />
+            <stop offset="5%" stopColor={buyLineColor} stopOpacity="1" />
+            <stop offset="95%" stopColor={buyLineColor} stopOpacity="1" />
+            <stop offset="100%" stopColor={resolvedTheme === "dark" ? "black" : "white"} stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="path-gradient-sell" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor={resolvedTheme === "dark" ? "black" : "white"} stopOpacity="0" />
+            <stop offset="5%" stopColor={sellLineColor} stopOpacity="1" />
+            <stop offset="95%" stopColor={sellLineColor} stopOpacity="1" />
             <stop offset="100%" stopColor={resolvedTheme === "dark" ? "black" : "white"} stopOpacity="0" />
           </linearGradient>
         </defs>
@@ -203,6 +210,14 @@ const WorldMap = function WorldMap({
                   repeatCount="indefinite"
                 />
               </circle>
+              <text
+                x={projectPoint(dot.start.lat, dot.start.lng).x + 10}
+                y={projectPoint(dot.start.lat, dot.start.lng).y}
+                className="text-muted-foreground"
+                fontSize="20"
+              >
+                {dot.start.label}
+              </text>
             </g>
             <g key={`end-${i}`}>
               <circle
@@ -235,23 +250,29 @@ const WorldMap = function WorldMap({
                   repeatCount="indefinite"
                 />
               </circle>
+              <text
+                x={projectPoint(dot.end.lat, dot.end.lng).x + 10}
+                y={projectPoint(dot.end.lat, dot.end.lng).y}
+                fontSize="20"
+                className="text"
+              >
+                {dot.end.label}
+              </text>
             </g>
           </g>
         ))}
       </svg>
-      {dots.length === 0 && (
-        <Card className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
-          <CardHeader className="flex flex-row gap-2">
-            <Info />
-            No trading data available in the last {dataSizeLimitForOrders} hours
-          </CardHeader>
-        </Card>
-      )}
-      {dots.length !== 0 && <div className="absolute bottom-0 right-0 flex flex-row gap-2">
+      <div className="absolute bottom-0 right-0 flex flex-row gap-2">
         <Button variant="outline" onClick={() => setFitMode(!fitMode)}>
           <Fullscreen /> {fitMode ? "Fit to city" : "Fit to points"}
         </Button>
-      </div>}
+      </div>
+      {dots.length === 0 && (
+        <div className="absolute backdrop-blur-sm -top-1 -left-1 -right-1 -bottom-1 flex flex-col gap-2 items-center justify-center text-center text-muted-foreground">
+          <Unlink />
+          <Label>No trading data available in the past {dataSizeLimitForOrders} hours</Label>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { useDataSizeLimit, getServerHostname } from "@/extensions/request";
+import { HouseholdType } from "@/models/house";
 
 class ApiUriBuilder {
   static baseUri: () => string = () => `http://${getServerHostname()}:8080/api`;
@@ -82,13 +83,13 @@ export default class ApiService<T> {
   }
 
   static buildGetHouseCnsmpPredUri(
-    householdType: number,
+    householdType: HouseholdType,
     size: number,
   ): string {
     return `${ApiUriBuilder.houseUri()}/cnsmp/pred?householdType=${householdType}&size=${size}`;
   }
 
-  static buildGetHouseGenPredUri(householdType: number, size: number): string {
+  static buildGetHouseGenPredUri(householdType: HouseholdType, size: number): string {
     return `${ApiUriBuilder.houseUri()}/gen/pred?householdType=${householdType}&size=${size}`;
   }
 

@@ -261,11 +261,11 @@ function EnergyAreaChart({
             <Area
               key={label}
               dataKey={`data${index + 1}`}
-              type="linear"
+              type="step"
               stroke={color}
               fill={color}
               strokeWidth={2}
-              stackId={0}
+              stackId={index}
               isAnimationActive={false}
             >
               <LabelList

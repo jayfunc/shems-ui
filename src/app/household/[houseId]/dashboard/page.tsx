@@ -1,7 +1,7 @@
 "use client";
 
 import { Battery, Home, PlugZap, Sun, Unplug } from "lucide-react";
-import ApiService from "@/services/api";import LocStor from "@/models/loc-stor";
+import ApiService from "@/services/api"; import LocStor from "@/models/loc-stor";
 import EnergyCard from "./energy-card";
 import { motion } from "motion/react";
 import energyUnitConverter from "@/extensions/energy-unit-converter";
@@ -20,27 +20,32 @@ import HouseGen from "@/models/house-gen";
 import routing from "@/constants/routing";
 import CardTabs from "@/components/card-tabs";
 import { useCurrentHouseId, useDataSizeLimit } from "@/extensions/request";
+import House, { HouseholdType } from "@/models/house";
 
 function formatDeltaDesc(delta?: number): string {
-  return `${delta !== undefined && !Number.isNaN(delta) && delta >= 0 ? "+" : ""}${energyUnitConverter.formatInStringWithUnit(delta)} from last hour`;
+  return `${delta !== undefined && !Number.isNaN(delta) && delta >= 0 ? "+" : ""}${energyUnitConverter.formatInStringWithUnit(delta)} from past hour`;
 }
 
 export default function Dashboard() {
   const houseId = useCurrentHouseId();
   const dataSizeLimit = useDataSizeLimit();
 
+  const { data: house } = useSWR<House>(
+    ApiService.buildGetHouseUri(houseId),
+  );
+
   const { data: houseCnsmp } = useSWR<HouseCnsmp[]>(
     ApiService.buildGetHouseCnsmpUri(houseId, dataSizeLimit),
   );
   const { data: houseCnsmpPred } = useSWR<HouseCnsmpPred[]>(
-    ApiService.buildGetHouseCnsmpPredUri(houseId, dataSizeLimit),
+    ApiService.buildGetHouseCnsmpPredUri(house?.householdType ?? HouseholdType.NA, dataSizeLimit),
   );
 
   const { data: houseGen } = useSWR<HouseGen[]>(
     ApiService.buildGetHouseGenUri(houseId, dataSizeLimit),
   );
   const { data: houseGenPred } = useSWR<HouseGenPred[]>(
-    ApiService.buildGetHouseGenPredUri(houseId, dataSizeLimit),
+    ApiService.buildGetHouseGenPredUri(house?.householdType ?? HouseholdType.NA, dataSizeLimit),
   );
 
   const { data: locStor } = useSWR<LocStor>(
@@ -137,7 +142,7 @@ export default function Dashboard() {
         subtitle={`${energyUnitConverter.formatInStringWithUnit(mapToHouseGenData().at(-1)?.data)}`}
         desc={formatDeltaDesc(
           (mapToHouseGenData().at(-1)?.data ?? NaN) -
-            (mapToHouseGenData().at(-2)?.data ?? NaN),
+          (mapToHouseGenData().at(-2)?.data ?? NaN),
         )}
         icon={<Sun className="text-muted-foreground" />}
         actionArea={
@@ -163,7 +168,7 @@ export default function Dashboard() {
         subtitle={`${energyUnitConverter.formatInStringWithUnit(mapToHouseCnsmpData().at(-1)?.data)}`}
         desc={formatDeltaDesc(
           (mapToHouseCnsmpData().at(-1)?.data ?? NaN) -
-            (mapToHouseCnsmpData().at(-2)?.data ?? NaN),
+          (mapToHouseCnsmpData().at(-2)?.data ?? NaN),
         )}
         icon={<Home className="text-muted-foreground" />}
       />

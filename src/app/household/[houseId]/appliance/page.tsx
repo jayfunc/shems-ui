@@ -165,8 +165,8 @@ export default function Page() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <Tabs defaultValue="type">
-        <div className="flex flex-row gap-4 sticky top-20 z-[50]">
-          <div className="relative pb-2 bg-gradient-to-b from-background from-85% to-transparent">
+        <div className="flex flex-row gap-4 sticky top-16 z-[50] backdrop-blur-sm py-4">
+          <div className="relative">
             <Input
               type="search"
               placeholder="Search appliance"
@@ -174,17 +174,14 @@ export default function Page() {
               onChange={(value) => setSearch(value.target.value)}
             />
             <Search className="absolute top-2 left-2 text-muted-foreground size-4" />
-            <div className="absolute top-0 h-4 w-full -mt-4 bg-gradient-to-t from-background from-15% to-transparent" />
           </div>
           <div className="flex-1" />
-          <div className="pb-2 bg-gradient-to-b from-background from-85% to-transparent flex flex-row gap-4 items-center">
-            <Label className="pl-2">Group by</Label>
+          <div className="flex flex-row gap-4 items-center">
             <TabsList>
               <TabsTrigger value="type">Type</TabsTrigger>
               <TabsTrigger value="priority">Priority</TabsTrigger>
               <TabsTrigger value="status">Status</TabsTrigger>
             </TabsList>
-            <div className="absolute top-0 right-0 h-4 w-full -mt-4 bg-gradient-to-t from-background from-15% to-transparent" />
           </div>
         </div>
         <div>

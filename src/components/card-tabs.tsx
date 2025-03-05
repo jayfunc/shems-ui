@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Card,
   CardHeader,
@@ -15,8 +16,8 @@ export default function CardTabs({
   tabLabels,
   tabContents,
 }: {
-  titles: string[] | string;
-  descs?: string[] | string;
+  titles: string[] | string | React.ReactNode[] | React.ReactNode;
+  descs?: string[] | string | React.ReactNode[] | React.ReactNode;
   tabKeys: string[];
   defaultTabKeyIndex?: number;
   tabLabels: string[];
@@ -33,9 +34,9 @@ export default function CardTabs({
                 value={key}
                 className="flex flex-col gap-2"
               >
-                {typeof titles === "string" ? titles : titles[index]}
+                {Array.isArray(titles) ? titles[index] : titles}
                 <CardDescription className="font-normal">
-                  {typeof descs === "string" ? descs : descs?.at(index)}
+                  {Array.isArray(descs) ? descs[index] : descs}
                 </CardDescription>
               </TabsContent>
             ))}

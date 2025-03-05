@@ -58,34 +58,6 @@ export default function MainGridUsageChart({ houseId }: { houseId: number }) {
             mainGridAcct.offPeakPowerUsage,
           )
       }
-      actionArea={
-        <CenterDrawer
-          title="Main grid usage distribution"
-          desc="By peak all time"
-          content={
-            mainGridAcct !== undefined && (
-              <EnergyPieChart
-                cfgLabels={["On-peak", "Mid-peak", "Off-peak"]}
-                colors={["--peak-on", "--peak-mid", "--peak-off"]}
-                dataValues={[
-                  energyUnitConverter.formatInNumber(
-                    mainGridAcct.onPeakPowerUsage,
-                  ),
-                  energyUnitConverter.formatInNumber(
-                    mainGridAcct.midPeakPowerUsage,
-                  ),
-                  energyUnitConverter.formatInNumber(
-                    mainGridAcct.offPeakPowerUsage,
-                  ),
-                ]}
-                itemFormatter={(value) =>
-                  `${value} ${energyUnitConverter.getTargetUnit()}`
-                }
-              />
-            )
-          }
-        />
-      }
     />
   );
 }

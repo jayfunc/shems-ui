@@ -33,6 +33,9 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "@/components/data-table-column-header";
 import formatText from "@/extensions/string";
 import { Badge } from "@/components/ui/badge";
+import ScrollableDrawer from "@/components/scrollable-drawer";
+import { CircleHelp, Map } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function Trading() {
   const houseId = useCurrentHouseId();
@@ -45,17 +48,6 @@ export default function Trading() {
   const { data: houseCnsmp } = useSWR<HouseCnsmp[]>(
     ApiService.buildGetHouseCnsmpUri(houseId, useDataSizeLimit()),
   );
-
-  function mapToCmtyGridCnsmpData() {
-    return (
-      houseCnsmp?.map((item) => {
-        return {
-          dateTime: item.consumeTime,
-          data: item.communityGridConsumeAmount,
-        };
-      }) ?? []
-    );
-  }
 
   const { data: matchedOrders } = useSWR<OrderMatch[]>(
     ApiService.buildGetAllMatchOrdersUri(houseId, dataSizeLimitForOrders),
@@ -221,7 +213,46 @@ export default function Trading() {
       </Card>
 
       <CardTabs
-        titles={"P2P energy trading"}
+        titles={<div className="flex flex-row gap-2 items-center -mt-4">
+          P2P energy trading
+          <ScrollableDrawer
+            trigger={<Button size="icon" variant="outline"><Map /></Button>}
+            title="Energy map"
+            desc={`Trading records in the past ${dataSizeLimitForOrders} hours`}
+            content={
+              <WorldMap
+                dots={matchedOrders
+                  ?.map((order) => {
+                    if (
+                      houseId.toString() === order.buyerId.toString() ||
+                      houseId.toString() === order.sellerId.toString()
+                    ) {
+                      const buyer = houses?.find(
+                        (house) => house.id.toString() === order.buyerId.toString(),
+                      );
+                      const seller = houses?.find(
+                        (house) =>
+                          house.id.toString() === order.sellerId.toString(),
+                      );
+
+                      if (!buyer || !seller) return undefined;
+
+                      const sellerName = houseId.toString() === seller.id.toString() ? "You" : seller.householdName;
+                      const buyerName = houseId.toString() === buyer.id.toString() ? "You" : buyer.householdName;
+
+                      return {
+                        start: { lat: seller.latitude, lng: seller.longitude, label: sellerName, },
+                        end: { lat: buyer.latitude, lng: buyer.longitude, label: buyerName, },
+
+                      };
+                    }
+                    return undefined;
+                  })
+                  .filter((dot) => dot !== undefined)}
+              />
+            }
+          />
+        </div>}
         descs={`${dataSizeLimitForOrders}-hour trading records`}
         tabKeys={["buy", "sell", "match"]}
         tabLabels={["Buy orders", "Sell orders", "Matched orders"]}
@@ -271,58 +302,7 @@ export default function Trading() {
         ]}
       />
 
-      <Card className="col-span-full">
-        <CardHeader>
-          <CardTitle>Energy map</CardTitle>
-          <CardDescription>
-            Trading records in the last {dataSizeLimitForOrders} hours
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <WorldMap
-            dots={matchedOrders
-              ?.map((order) => {
-                if (
-                  houseId.toString() === order.buyerId.toString() ||
-                  houseId.toString() === order.sellerId.toString()
-                ) {
-                  const buyer = houses?.find(
-                    (house) => house.id.toString() === order.buyerId.toString(),
-                  );
-                  const seller = houses?.find(
-                    (house) =>
-                      house.id.toString() === order.sellerId.toString(),
-                  );
 
-                  if (!buyer || !seller) return undefined;
-
-                  return {
-                    start: { lat: seller.latitude, lng: seller.longitude, label: `${order.quantity} kWh`, },
-                    end: { lat: buyer.latitude, lng: buyer.longitude, label: `${order.quantity} kWh`, },
-
-                  };
-                }
-                return undefined;
-              })
-              .filter((dot) => dot !== undefined)}
-          />
-        </CardContent>
-      </Card>
-
-      <Card className="col-span-full">
-        <CardHeader>
-          <CardTitle>Energy usage in community grid</CardTitle>
-          <CardDescription>{`${useDataSizeLimit()}-hour energy real-time usage level`}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <AxisChart
-            data={[mapToCmtyGridCnsmpData()]}
-            labels={["Grid usage"]}
-            colors={["--power-cnsmp"]}
-            chartType={AxisChartType.Line}
-          />
-        </CardContent>
-      </Card>
     </motion.div>
   );
 }

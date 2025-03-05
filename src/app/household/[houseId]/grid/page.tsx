@@ -163,7 +163,7 @@ export default function Trading() {
         tabLabels={["Main grid usage", "Community grid usage"]}
         tabContents={[
           <AxisChart
-            key={1}
+            key={0}
             data={[
               mapToOnPeakCnsmpData(),
               mapToMidPeakCnsmpData(),
@@ -174,6 +174,7 @@ export default function Trading() {
             chartType={AxisChartType.Area}
           />,
           <AxisChart
+            key={1}
             data={[mapToCmtyGridCnsmpData()]}
             labels={["Community grid usage"]}
             colors={["--power-cnsmp"]}

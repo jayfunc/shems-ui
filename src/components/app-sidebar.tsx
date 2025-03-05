@@ -40,7 +40,7 @@ export function AppSidebar({
   return (
     <Sidebar>
       <SidebarHeader className="h-16 shrink-0 gap-2 border-b px-4 place-items-center flex flex-row">
-        <Label className="font-bold font-serif">SHEMS</Label>
+        <Label className="font-bold font-serif">EnergyPix</Label>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

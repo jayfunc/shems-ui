@@ -135,15 +135,15 @@ function EnergyLineChart({
   return (
     <ChartContainer
       config={getChartConfig(labels, colors)}
-      className="max-h-[45vh] w-full"
+      className="max-h-[35vh] w-full"
     >
       <LineChart
         accessibilityLayer
         data={outputData}
         margin={{
-          top: 40,
-          left: 40,
-          right: 40,
+          top: 5,
+          left: 20,
+          right: 20,
         }}
       >
         <CartesianGrid vertical={false} />
@@ -216,15 +216,15 @@ function EnergyAreaChart({
   return (
     <ChartContainer
       config={getChartConfig(labels, colors)}
-      className="max-h-[45vh] w-full"
+      className="max-h-[35vh] w-full"
     >
       <AreaChart
         accessibilityLayer
         data={outputData}
         margin={{
-          top: 40,
-          left: 40,
-          right: 40,
+          top: 5,
+          left: 20,
+          right: 20,
         }}
       >
         <CartesianGrid vertical={false} />

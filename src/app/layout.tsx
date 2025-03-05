@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SHEMS - UI",
-  description: "Smart Home Energy Management System",
+  title: "EnergyPix",
+  description: "Smart as a Pixie, precise as a pixel, optimizing every watt!",
 };
 
 export default async function RootLayout({

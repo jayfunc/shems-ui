@@ -66,7 +66,7 @@ export default function EnergyPieChart({
   return (
     <ChartContainer
       config={chartConfig}
-      className="mx-auto max-h-[250px] [&_.recharts-pie-label-text]:fill-foreground"
+      className="mx-auto -mt-8 h-[25vh] [&_.recharts-pie-label-text]:fill-foreground"
     >
       <PieChart>
         <ChartTooltip
@@ -75,6 +75,7 @@ export default function EnergyPieChart({
           }
         />
         <Pie
+          isAnimationActive={false}
           data={
             data === undefined && dataValues !== undefined
               ? cfgLabels.map((key, index) => {

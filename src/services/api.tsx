@@ -1,7 +1,7 @@
 import { HouseholdType } from "@/models/house";
 
 class ApiUriBuilder {
-  static baseUri: () => string = () => `https://34.130.112.14:8443/api`;
+  static baseUri: () => string = () => `http://api.energypix.app:8080/api`;
 
   static gridUri: () => string = () => `${this.baseUri()}/grid`;
   static houseUri: () => string = () => `${this.baseUri()}/house`;

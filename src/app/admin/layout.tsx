@@ -4,7 +4,8 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { AppTopbar } from "@/components/app-topbar";
 import { Placeholder } from "@/components/placeholder";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { adminUsername, routing } from "@/constants/constants";
+import { adminUsername } from "@/constants/login";
+import routing from "@/constants/routing";
 import formatText from "@/extensions/string";
 import House, { HouseholdType } from "@/models/house";
 import { Home } from "lucide-react";
@@ -29,8 +30,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     BigInt(0),
     0,
     0,
-    HouseholdType.Admin,
+    HouseholdType.NA,
     formatText(adminUsername),
+    false,
     new Date(),
   );
 

@@ -9,14 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  adminPassword,
-  adminUsername,
-  routing,
-  userPassword,
-} from "@/constants/constants";
-import ApiUriBuilder from "@/services/api";
+import { adminPassword, adminUsername, userPassword } from "@/constants/login";
 import PrivacyPolicyText from "../login/privacy-policy";
 import {
   Form,
@@ -34,6 +27,9 @@ import ScrollableDialog from "@/components/scrollable-dialog";
 import Link from "next/link";
 import TermOfServiceText from "./term-of-service";
 import { motion } from "motion/react";
+import routing from "@/constants/routing";
+import ApiService, { ResponseData } from "@/services/api";
+import House from "@/models/house";
 
 const formSchema = z.object({
   username: z.string().min(1).max(10),
@@ -65,19 +61,25 @@ export default function Page() {
     });
   }
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     if (values.username === adminUsername) {
       if (values.pwd === adminPassword) {
         router.push(routing.admin);
       } else {
         showErrorPwdMsg();
       }
-    } else if (isNaN(Number(values.username))) {
-      showErrorUsernameMsg();
-    } else if (values.pwd !== userPassword) {
-      showErrorPwdMsg();
     } else {
-      router.push(`${routing.household}/${values.username}`);
+      const found = !isNaN(Number(values.username)) &&
+        (await
+          (await fetch(ApiService.buildGetHouseUri(Number(values.username)))).json() as ResponseData<House>
+        ).data != null;
+      if (!found) {
+        showErrorUsernameMsg();
+      } else if (values.pwd !== userPassword) {
+        showErrorPwdMsg();
+      } else {
+        router.push(`${routing.household}/${values.username}`);
+      }
     }
   }
 

@@ -10,7 +10,9 @@ npm: 10.9.2
 node: 22.13.0
 Next.js: 15.1.4
 
-## How to build and run
+## Build and run
+
+Please use `npm install --legacy-peer-deps` to install deps.
 
 ```bash
 npm run build
@@ -19,15 +21,11 @@ npm run start
 npm run dev
 ```
 
-## Before open the browser
+## It's time to see the result
 
-Replace the content in [./node_modules/dotted-map/index.js](./node_modules/dotted-map/index.js) with the content in [./src/components/world-map-patched-file.js](./src/components/world-map-patched-file.js) **_(Only required for the first time)_**
-
-And then you can open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can find admin's username, admin's password and user's password in [./src/constants/constants.ts](./src/constants/constants.ts)
-
-You can disable global toast in the file mentioned above also.
 
 ## Screenshots
 

@@ -11,8 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import ApiUriBuilder from "../../../../services/api";
-import { useEffect, useState } from "react";
+import ApiService from "../../../../services/api";
+import { useState } from "react";
 import Appl, {
   AppliancePriority,
   ApplianceStatus,
@@ -34,12 +34,12 @@ import {
   Unlink,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { autoRefreshInterval, routing } from "@/constants/constants";
 import { motion } from "motion/react";
-import { usePathname } from "next/navigation";
 import formatText from "@/extensions/string";
 import { Input } from "@/components/ui/input";
-import useSWR from "swr";
+import useSWR, { preload } from "swr";
+import routing from "@/constants/routing";
+import { useCurrentHouseId, useDataSizeLimit } from "@/extensions/request";
 
 function ApplianceIcon({ applianceType }: { applianceType: ApplianceType }) {
   switch (applianceType) {
@@ -76,11 +76,12 @@ function ApplianceGrid({
 }: {
   appliancesByGroup: Partial<Record<number, Appl[]>>;
   groupEnum:
-  | typeof ApplianceType
-  | typeof AppliancePriority
-  | typeof ApplianceStatus;
+    | typeof ApplianceType
+    | typeof AppliancePriority
+    | typeof ApplianceStatus;
 }) {
   const keys = Object.keys(appliancesByGroup);
+  const dataSizeLimit = useDataSizeLimit();
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -122,7 +123,18 @@ function ApplianceGrid({
                     </CardHeader>
                     <CardContent className="flex flex-row">
                       <div className="flex-1" />
-                      <Link href={`${routing.appliance}/${item.id}`}>
+                      <Link
+                        href={`${routing.appliance}/${item.id}`}
+                        onMouseOver={() =>
+                          preload(
+                            ApiService.buildGetApplCnsmpUri(
+                              Number(item.id),
+                              dataSizeLimit,
+                            ),
+                            fetch,
+                          )
+                        }
+                      >
                         <Button variant="secondary">View</Button>
                       </Link>
                     </CardContent>
@@ -144,21 +156,16 @@ function filterData(data: Appl[], search: string) {
 }
 
 export default function Page() {
-  const hhId = parseInt(
-    usePathname()
-      .replace(routing.household, "")
-      .replace(routing.trading, "")
-      .replaceAll("/", ""),
+  const { data } = useSWR<Appl[]>(
+    ApiService.buildGetAllApplsUri(useCurrentHouseId()),
   );
-
-  const { data } = useSWR<Appl[]>(ApiUriBuilder.buildGetAllApplsUri(hhId));
 
   const [search, setSearch] = useState<string>("");
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <Tabs defaultValue="type">
-        <div className="flex flex-row place-items-center gap-4 sticky top-16 backdrop-blur pt-4 z-[998]">
+        <div className="flex flex-row gap-4 sticky top-16 z-[50] backdrop-blur-sm py-4">
           <div className="relative">
             <Input
               type="search"
@@ -169,12 +176,13 @@ export default function Page() {
             <Search className="absolute top-2 left-2 text-muted-foreground size-4" />
           </div>
           <div className="flex-1" />
-          <Label>Group by</Label>
-          <TabsList>
-            <TabsTrigger value="type">Type</TabsTrigger>
-            <TabsTrigger value="priority">Priority</TabsTrigger>
-            <TabsTrigger value="status">Status</TabsTrigger>
-          </TabsList>
+          <div className="flex flex-row gap-4 items-center">
+            <TabsList>
+              <TabsTrigger value="type">Type</TabsTrigger>
+              <TabsTrigger value="priority">Priority</TabsTrigger>
+              <TabsTrigger value="status">Status</TabsTrigger>
+            </TabsList>
+          </div>
         </div>
         <div>
           <TabsContent value="type">

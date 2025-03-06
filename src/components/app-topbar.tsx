@@ -16,7 +16,7 @@ import {
   BreadcrumbSeparator,
 } from "./ui/breadcrumb";
 import { Separator } from "./ui/separator";
-import ApiUriBuilder from "@/services/api";
+import ApiService from "@/services/api";
 import { motion } from "motion/react";
 import formatText from "@/extensions/string";
 import useSWR from "swr";
@@ -60,8 +60,8 @@ export function AppTopbar() {
   const [showTime, setShowTime] = useState<boolean>(true);
   const [showWeather, setShowWeather] = useState<boolean>(true);
 
-  const { data: simCfg } = useSWR<SimCfg>(ApiUriBuilder.buildGetSimCfgUri());
-  const { data: weather } = useSWR<Weather>(ApiUriBuilder.buildGetWeatherUri());
+  const { data: simCfg } = useSWR<SimCfg>(ApiService.buildGetSimCfgUri());
+  const { data: weather } = useSWR<Weather>(ApiService.buildGetWeatherUri());
 
   return (
     <div className="sticky top-0 backdrop-blur realtive h-16 border-b items-center flex gap-2 px-4 z-10">
@@ -103,7 +103,7 @@ export function AppTopbar() {
           <Thermometer />
         </Button>
         {showWeather && (
-          <Label className="m-1.5">{`${weather?.temperature?.toFixed(0) ?? "-"} °C`}</Label>
+          <Label className="m-1.5 text-xs md:text-sm">{`${weather?.temperature?.toFixed(0) ?? "-"} °C`}</Label>
         )}
       </motion.div>
 
@@ -118,7 +118,9 @@ export function AppTopbar() {
           <Clock />
         </Button>
         {showTime && simCfg !== undefined && (
-          <Label className="m-1.5">{new Date(simCfg.simulationTime).toLocaleString()}</Label>
+          <Label className="m-1.5 text-xs md:text-sm">
+            {new Date(simCfg.simulationTime).toLocaleString()}
+          </Label>
         )}
       </motion.div>
 

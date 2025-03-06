@@ -1,7 +1,7 @@
 import Base from "./base";
 
 export enum HouseholdType {
-  Admin = 0,
+  NA = 0,
   ExtraLarge = 1,
   Large = 2,
   Medium = 3,
@@ -17,6 +17,7 @@ export default class House extends Base {
   longitude: number;
   householdType: HouseholdType;
   householdName: string;
+  hasSolarSystem: boolean;
 
   constructor(
     id: bigint,
@@ -24,6 +25,7 @@ export default class House extends Base {
     longitude: number,
     householdType: HouseholdType,
     householdName: string,
+    hasSolarSystem: boolean,
     simulationTime: Date,
     area?: number,
   ) {
@@ -32,6 +34,7 @@ export default class House extends Base {
     this.longitude = longitude;
     this.householdType = householdType;
     this.householdName = householdName;
+    this.hasSolarSystem = hasSolarSystem;
     this.area = area;
   }
 }

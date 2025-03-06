@@ -8,11 +8,11 @@ import Appl, {
   ApplianceStatus,
   ApplianceType,
 } from "@/models/appl";
-import ApiUriBuilder from "@/services/api";
+import ApiService from "@/services/api";
 import useSWR from "swr";
 
 export default function Detail({ applId }: { applId: number }) {
-  const {data} = useSWR<Appl>(ApiUriBuilder.buildGetApplUri(applId));
+  const { data } = useSWR<Appl>(ApiService.buildGetApplUri(applId));
 
   return (
     <Card className="lg:col-span-full">

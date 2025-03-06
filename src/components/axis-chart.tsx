@@ -7,7 +7,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/chart-patched";
-import { chartMaxPoints } from "@/constants/constants";
 import {
   Area,
   AreaChart,
@@ -16,11 +15,13 @@ import {
   Line,
   LineChart,
   XAxis,
+  YAxis,
 } from "recharts";
 import React from "react";
 import { LoaderCircle, Unlink } from "lucide-react";
 import { Label } from "./ui/label";
 import energyUnitConverter from "../extensions/energy-unit-converter";
+import { Button } from "./ui/button";
 
 export enum AxisChartType {
   Line,
@@ -64,11 +65,11 @@ function convertToOutputData(
   return data;
 }
 
-function getChartConfig(labels: string[], colors?: number[]): ChartConfig {
+function getChartConfig(labels: string[], colors?: string[]): ChartConfig {
   return labels.reduce((acc, label, index) => {
     acc[`data${index + 1}`] = {
       label: `${label}`,
-      color: `hsl(var(--chart-${colors?.at(index) ?? index + 1}))`,
+      color: `hsl(var(${colors?.at(index) ?? '--foreground'}))`,
     };
     return acc;
   }, {} as ChartConfig);
@@ -84,13 +85,15 @@ export function AxisChart({
   data?: InputAxisChartDataProps[][];
   chartType: AxisChartType;
   labels: string[];
-  colors?: number[];
+  colors?: string[];
   isLoading?: boolean;
 }) {
   const outputData = convertToOutputData(...(data ?? []));
-  const isDataEmpty = isLoading !== true && outputData.every(
-    (element) => element.data1 == null && element.data2 == null,
-  );
+  const isDataEmpty =
+    isLoading !== true &&
+    outputData.every(
+      (element) => element.data1 == null && element.data2 == null,
+    );
 
   return (
     <div className="relative">
@@ -102,7 +105,7 @@ export function AxisChart({
         />
       )}
       {chartType === AxisChartType.Area && (
-        <EnergyAreaChart outputData={outputData} labels={labels} />
+        <EnergyAreaChart outputData={outputData} labels={labels} colors={colors} />
       )}
       {isDataEmpty && (
         <div className="flex flex-col gap-2 items-center justify-center w-full h-full text-muted-foreground absolute top-0">
@@ -114,7 +117,8 @@ export function AxisChart({
         <div className="flex flex-col gap-2 items-center justify-center w-full h-full text-muted-foreground absolute top-0">
           <LoaderCircle className="animate-spin" />
           <Label className="text-center">Loading...</Label>
-        </div>)}
+        </div>
+      )}
     </div>
   );
 }
@@ -126,20 +130,20 @@ function EnergyLineChart({
 }: {
   outputData: OutputAxisChartDataProps[];
   labels: string[];
-  colors?: number[];
+  colors?: string[];
 }) {
   return (
     <ChartContainer
       config={getChartConfig(labels, colors)}
-      className="max-h-[45vh] w-full"
+      className="max-h-[35vh] w-full"
     >
       <LineChart
         accessibilityLayer
         data={outputData}
         margin={{
-          top: 40,
-          left: 40,
-          right: 40,
+          top: 5,
+          left: 20,
+          right: 20,
         }}
       >
         <CartesianGrid vertical={false} />
@@ -152,8 +156,14 @@ function EnergyLineChart({
             value === "" ? "" : new Date(value).toLocaleTimeString()
           }
         />
+        <YAxis
+          axisLine={false}
+          tickLine={false}
+          tickMargin={40}
+          unit={` ${energyUnitConverter.getTargetUnit()}`}
+        />
         <ChartTooltip
-          cursor={false}
+          cursor={true}
           content={
             <ChartTooltipContent
               indicator="dot"
@@ -174,21 +184,18 @@ function EnergyLineChart({
               type="linear"
               stroke={color}
               strokeWidth={2}
-              dot={{
-                fill: color,
-              }}
-              activeDot={{
-                r: 6,
-              }}
+              isAnimationActive={false}
             >
               <LabelList
+                className="hidden"
                 position="top"
                 fill={color}
                 offset={10}
                 formatter={(value: string | number) =>
                   `${value} ${energyUnitConverter.getTargetUnit()}`
                 }
-              />
+              >
+              </LabelList>
             </Line>
           );
         })}
@@ -204,20 +211,20 @@ function EnergyAreaChart({
 }: {
   outputData: OutputAxisChartDataProps[];
   labels: string[];
-  colors?: number[];
+  colors?: string[];
 }) {
   return (
     <ChartContainer
       config={getChartConfig(labels, colors)}
-      className="max-h-[45vh] w-full"
+      className="max-h-[35vh] w-full"
     >
       <AreaChart
         accessibilityLayer
         data={outputData}
         margin={{
-          top: 40,
-          left: 40,
-          right: 40,
+          top: 5,
+          left: 20,
+          right: 20,
         }}
       >
         <CartesianGrid vertical={false} />
@@ -230,8 +237,14 @@ function EnergyAreaChart({
             value === "" ? "" : new Date(value).toLocaleTimeString()
           }
         />
+        <YAxis
+          axisLine={false}
+          tickLine={false}
+          tickMargin={40}
+          unit={` ${energyUnitConverter.getTargetUnit()}`}
+        />
         <ChartTooltip
-          cursor={false}
+          cursor={true}
           content={
             <ChartTooltipContent
               indicator="dot"
@@ -248,17 +261,15 @@ function EnergyAreaChart({
             <Area
               key={label}
               dataKey={`data${index + 1}`}
-              type="linear"
+              type="step"
               stroke={color}
+              fill={color}
               strokeWidth={2}
-              dot={{
-                fill: color,
-              }}
-              activeDot={{
-                r: 6,
-              }}
+              stackId={index}
+              isAnimationActive={false}
             >
               <LabelList
+                className="hidden"
                 position="top"
                 fill={color}
                 offset={10}

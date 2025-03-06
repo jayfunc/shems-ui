@@ -17,7 +17,7 @@ export default function EnergyCard({
   status?: React.ReactNode;
 }) {
   return (
-    <Card className="col-span-2">
+    <Card className="col-span-full md:col-span-2">
       <CardHeader>
         <CardTitle className="flex flex-row items-center">
           <div className="mr-4">{icon}</div>

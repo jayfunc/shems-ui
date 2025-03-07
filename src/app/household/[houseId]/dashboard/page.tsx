@@ -11,16 +11,18 @@ import {
   AxisChart,
   AxisChartType,
   InputAxisChartDataProps,
+  PrimaryType,
+  SecondaryType,
 } from "@/components/axis-chart";
 import HouseCnsmp from "@/models/house-cnsmp";
 import useSWR from "swr";
 import HouseCnsmpPred from "@/models/house-cnsmp-pred";
 import HouseGenPred from "@/models/house-gen-pred";
 import HouseGen from "@/models/house-gen";
-import routing from "@/constants/routing";
 import CardTabs from "@/components/card-tabs";
 import { useCurrentHouseId, useDataSizeLimit } from "@/extensions/request";
 import House, { HouseholdType } from "@/models/house";
+import Formatter from "@/extensions/formatter";
 
 function formatDeltaDesc(delta?: number): string {
   return `${delta !== undefined && !Number.isNaN(delta) && delta >= 0 ? "+" : ""}${energyUnitConverter.formatInStringWithUnit(delta)} from past hour`;
@@ -152,6 +154,8 @@ export default function Dashboard() {
             content={
               <div className="flex flex-col gap-2 p-6">
                 <AxisChart
+                  primaryType={PrimaryType.Time}
+                  secondaryType={SecondaryType.Energy}
                   data={[mapToSolarCnsmpData()]}
                   labels={["Solar usage"]}
                   colors={["--power-cnsmp"]}
@@ -174,6 +178,8 @@ export default function Dashboard() {
       />
 
       <EnergyCard
+        disabled={house?.hasSolarSystem === false}
+        disabledHint="No battery installed"
         title="Battery storage"
         subtitle={`${locStor === undefined ? "-" : `${Math.floor((locStor.currentPowerAmount / locStor.capacity) * 100)}`} %`}
         desc={`${energyUnitConverter.formatInStringWithUnit(locStor?.currentPowerAmount)} /
@@ -206,6 +212,8 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <AxisChart
+                  primaryType={PrimaryType.Time}
+                  secondaryType={SecondaryType.Energy}
                   data={[mapToBatteryCnsmpData()]}
                   labels={["Battery usage"]}
                   colors={["--power-cnsmp"]}
@@ -233,6 +241,8 @@ export default function Dashboard() {
         ]}
         tabContents={[
           <AxisChart
+            primaryType={PrimaryType.Time}
+            secondaryType={SecondaryType.Energy}
             key={0}
             data={[mapToHouseCnsmpData(), mapToHouseGenData()]}
             labels={["Consumption", "Generation"]}
@@ -240,6 +250,8 @@ export default function Dashboard() {
             chartType={AxisChartType.Line}
           />,
           <AxisChart
+            primaryType={PrimaryType.Time}
+            secondaryType={SecondaryType.Energy}
             key={1}
             data={[mapToHouseGenData(), mapToHouseGenPredData()]}
             labels={["Generation", "Forcast"]}
@@ -247,6 +259,8 @@ export default function Dashboard() {
             chartType={AxisChartType.Line}
           />,
           <AxisChart
+            primaryType={PrimaryType.Time}
+            secondaryType={SecondaryType.Energy}
             key={2}
             data={[mapToHouseCnsmpData(), mapToHouseCnsmpPredData()]}
             labels={["Consumption", "Forcast"]}

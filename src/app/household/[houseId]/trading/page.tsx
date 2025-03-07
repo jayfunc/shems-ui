@@ -14,7 +14,7 @@ import energyUnitConverter from "@/extensions/energy-unit-converter";
 import moneyUnitConverter from "@/extensions/money-unit-converter";
 import { Separator } from "@/components/ui/separator";
 import House from "@/models/house";
-import { AxisChart, AxisChartType } from "@/components/axis-chart";
+import { AxisChart, AxisChartType, PrimaryType, SecondaryType } from "@/components/axis-chart";
 import useSWR from "swr";
 import CardTabs from "@/components/card-tabs";
 import {
@@ -26,8 +26,6 @@ import routing from "@/constants/routing";
 
 export default function Trading() {
   const houseId = useCurrentHouseId();
-
-  const { data: houses } = useSWR<House[]>(ApiService.buildAllHousesUri());
 
   const { data: cmtyGridAcct } = useSWR<CmtyGridAcct>(
     ApiService.buildCmtyGridAcctUri(houseId),
@@ -44,12 +42,15 @@ export default function Trading() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
+
       <CardTabs
         titles="Community matched order summary"
         descs={[`24-hour average trading price`, `24-hour trading quantity`]}
         tabLabels={["Price", "Quantity"]}
         tabContents={[
           <AxisChart
+            primaryType={PrimaryType.Time}
+            secondaryType={SecondaryType.Money}
             key={0}
             data={[matchOrderPriceStat?.map((value) => {
               return { primary: value.matchTime, secondary: value.matchPrice };
@@ -59,6 +60,8 @@ export default function Trading() {
             chartType={AxisChartType.Line}
           />,
           <AxisChart
+            primaryType={PrimaryType.Time}
+            secondaryType={SecondaryType.Energy}
             key={1}
             data={[matchOrderQtyStat?.map((value) => {
               return { primary: value.matchTime, secondary: value.quantity };
@@ -179,7 +182,7 @@ export default function Trading() {
         tabLabels={["Last hour", "Last day"]}
         tabContents={[
           <AxisChart
-            secondaryFormatter={(value) => moneyUnitConverter.formatInStringWithUnit(Number(value))}
+            secondaryType={SecondaryType.Money}
             key={0}
             data={[
               [{
@@ -215,7 +218,7 @@ export default function Trading() {
             chartType={AxisChartType.Bar}
           />,
           <AxisChart
-            secondaryFormatter={(value) => moneyUnitConverter.formatInStringWithUnit(Number(value))}
+            secondaryType={SecondaryType.Money}
             key={1}
             data={[
               [{
@@ -261,7 +264,7 @@ export default function Trading() {
         tabLabels={["Last hour", "Last day"]}
         tabContents={[
           <AxisChart
-            secondaryFormatter={(value) => energyUnitConverter.formatInStringWithUnit(Number(value))}
+            secondaryType={SecondaryType.Energy}
             key={0}
             data={[
               [{
@@ -297,7 +300,7 @@ export default function Trading() {
             chartType={AxisChartType.Bar}
           />,
           <AxisChart
-            secondaryFormatter={(value) => energyUnitConverter.formatInStringWithUnit(Number(value))}
+            secondaryType={SecondaryType.Energy}
             key={1}
             data={[
               [{
@@ -423,21 +426,21 @@ export default function Trading() {
         tabLabels={["Last hour", "Last day"]}
         tabContents={[
           <AxisChart
-            secondaryFormatter={(value) => `${value} ‰`}
+            secondaryType={SecondaryType.Percentage}
             key={0}
             data={[
               [{
                 primary: "Buy order match rate",
-                secondary: (houseTradingStat?.lastHour.buyOrderMatchRate ?? 0) * 1000
+                secondary: (houseTradingStat?.lastHour.buyOrderMatchRate ?? 0) * 100
               }, {
                 primary: "Sell order match rate",
-                secondary: (houseTradingStat?.lastHour.sellOrderMatchRate ?? 0) * 1000
+                secondary: (houseTradingStat?.lastHour.sellOrderMatchRate ?? 0) * 100
               }], [{
                 primary: "Buy order match rate",
-                secondary: (cmtyGridStat?.lastHour.buyOrderMatchRate ?? 0) * 1000
+                secondary: (cmtyGridStat?.lastHour.buyOrderMatchRate ?? 0) * 100
               }, {
                 primary: "Sell order match rate",
-                secondary: (cmtyGridStat?.lastHour.sellOrderMatchRate ?? 0) * 1000
+                secondary: (cmtyGridStat?.lastHour.sellOrderMatchRate ?? 0) * 100
               }]]}
             labels={[
               "Me",
@@ -447,21 +450,21 @@ export default function Trading() {
             chartType={AxisChartType.Bar}
           />,
           <AxisChart
-            secondaryFormatter={(value) => `${value} ‰`}
+            secondaryType={SecondaryType.Percentage}
             key={1}
             data={[
               [{
                 primary: "Buy order match rate",
-                secondary: (houseTradingStat?.lastDay.buyOrderMatchRate ?? 0) * 1000
+                secondary: (houseTradingStat?.lastDay.buyOrderMatchRate ?? 0) * 100
               }, {
                 primary: "Sell order match rate",
-                secondary: (houseTradingStat?.lastDay.sellOrderMatchRate ?? 0) * 1000
+                secondary: (houseTradingStat?.lastDay.sellOrderMatchRate ?? 0) * 100
               }], [{
                 primary: "Buy order match rate",
-                secondary: (cmtyGridStat?.lastDay.buyOrderMatchRate ?? 0) * 1000
+                secondary: (cmtyGridStat?.lastDay.buyOrderMatchRate ?? 0) * 100
               }, {
                 primary: "Sell order match rate",
-                secondary: (cmtyGridStat?.lastDay.sellOrderMatchRate ?? 0) * 1000
+                secondary: (cmtyGridStat?.lastDay.sellOrderMatchRate ?? 0) * 100
               }]]}
             labels={[
               "Me",

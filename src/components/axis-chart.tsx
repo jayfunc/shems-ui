@@ -24,6 +24,10 @@ import { LoaderCircle, Unlink } from "lucide-react";
 import { Label } from "./ui/label";
 import energyUnitConverter from "../extensions/energy-unit-converter";
 import Formatter from "@/extensions/formatter";
+import moneyUnitConverter from "@/extensions/money-unit-converter";
+
+const xAxisTickMargin = 10;
+const yAxisTickMargin = 20;
 
 export enum AxisChartType {
   Line,
@@ -57,9 +61,8 @@ function convertToOutputData(
       secondary2: undefined,
     };
     dataArrays.forEach((dataArray, index) => {
-      combinedData[`secondary${index + 1}`] = energyUnitConverter.format(
-        dataArray.find((element) => element.primary === primary)?.secondary,
-      );
+      combinedData[`secondary${index + 1}`] =
+        dataArray.find((element) => element.primary === primary)?.secondary;
     });
     data.push(combinedData);
   });
@@ -77,20 +80,35 @@ function getChartConfig(labels: string[], colors?: string[]): ChartConfig {
   }, {} as ChartConfig);
 }
 
+export enum PrimaryType {
+  None,
+  Time,
+}
+
+export enum SecondaryType {
+  None,
+  Energy,
+  Money,
+  Percentage,
+  PerMille,
+}
+
 export function AxisChart({
   data,
   chartType,
   labels,
   colors,
   isLoading,
-  secondaryFormatter,
+  primaryType = PrimaryType.None,
+  secondaryType = SecondaryType.None,
 }: {
   data?: InputAxisChartDataProps[][];
   chartType: AxisChartType;
   labels: string[];
   colors?: string[];
   isLoading?: boolean;
-  secondaryFormatter?: (value: string) => string;
+  primaryType?: PrimaryType;
+  secondaryType?: SecondaryType;
 }) {
   const outputData = convertToOutputData(...(data ?? []));
   const isDataEmpty =
@@ -99,20 +117,49 @@ export function AxisChart({
       (element) => element.secondary1 == null && element.secondary2 == null,
     );
 
+  const primaryFormatter = (value: string) => {
+    switch (primaryType) {
+      case PrimaryType.Time:
+        return Formatter.timeFormatter(value);
+      case PrimaryType.None:
+      default:
+        return value;
+    }
+  };
+
+  const secondaryFormatter = (value: string) => {
+    switch (secondaryType) {
+      case SecondaryType.Energy:
+        return energyUnitConverter.formatInStringWithUnit(Number(value));
+      case SecondaryType.Money:
+        return moneyUnitConverter.formatInStringWithUnit(Number(value));
+      case SecondaryType.PerMille:
+        return `${value} ‰`;
+      case SecondaryType.Percentage:
+        return `${value} %`;
+      case SecondaryType.None:
+      default:
+        return value;
+    }
+  };
+
   return (
     <div className="relative">
       {chartType === AxisChartType.Line && (
-        <EnergyLineChart
+        <BestLineChart
           outputData={outputData}
           labels={labels}
           colors={colors}
+          primaryFormatter={primaryFormatter} secondaryFormatter={secondaryFormatter}
         />
       )}
       {chartType === AxisChartType.Area && (
-        <EnergyAreaChart outputData={outputData} labels={labels} colors={colors} />
+        <BestAreaChart outputData={outputData} labels={labels} colors={colors}
+          primaryFormatter={primaryFormatter} secondaryFormatter={secondaryFormatter} />
       )}
       {chartType === AxisChartType.Bar && (
-        <EnergyBarChart outputData={outputData} labels={labels} colors={colors} secondaryFormatter={secondaryFormatter} />
+        <BestBarChart outputData={outputData} labels={labels} colors={colors}
+          primaryFormatter={primaryFormatter} secondaryFormatter={secondaryFormatter} />
       )}
       {isDataEmpty && (
         <div className="flex flex-col gap-2 items-center justify-center w-full h-full text-muted-foreground absolute top-0">
@@ -130,14 +177,18 @@ export function AxisChart({
   );
 }
 
-function EnergyLineChart({
+function BestLineChart({
   outputData,
   labels,
   colors,
+  primaryFormatter = (value) => value,
+  secondaryFormatter = (value) => value,
 }: {
   outputData: OutputAxisChartDataProps[];
   labels: string[];
   colors?: string[];
+  primaryFormatter?: (value: string) => string;
+  secondaryFormatter?: (value: string) => string;
 }) {
   return (
     <ChartContainer
@@ -157,27 +208,25 @@ function EnergyLineChart({
         <XAxis
           dataKey="primary"
           tickLine={false}
-          tickMargin={10}
+          tickMargin={xAxisTickMargin}
           axisLine={false}
-          tickFormatter={(value) => Formatter.timeFormatter(value)}
+          tickFormatter={(value) => primaryFormatter(value)}
         />
         <YAxis
           axisLine={false}
           tickLine={false}
-          tickMargin={40}
-          unit={` ${energyUnitConverter.getTargetUnit()}`}
+          tickMargin={yAxisTickMargin}
+          tickFormatter={(value) => secondaryFormatter(value)}
         />
         <ChartTooltip
           cursor={true}
           content={
             <ChartTooltipContent
               indicator="dot"
-              itemFormatter={(value) =>
-                `${value} ${energyUnitConverter.getTargetUnit()}`
-              }
+              itemFormatter={(value) => secondaryFormatter(value)}
             />
           }
-          labelFormatter={(value) => new Date(value).toLocaleString()}
+          labelFormatter={(value) => primaryFormatter(value)}
         ></ChartTooltip>
         <ChartLegend content={<ChartLegendContent />} />
         {labels.map((label, index) => {
@@ -196,9 +245,7 @@ function EnergyLineChart({
                 position="top"
                 fill={color}
                 offset={10}
-                formatter={(value: string | number) =>
-                  `${value} ${energyUnitConverter.getTargetUnit()}`
-                }
+                formatter={(value: string | number) => secondaryFormatter(`${value}`)}
               >
               </LabelList>
             </Line>
@@ -209,14 +256,18 @@ function EnergyLineChart({
   );
 }
 
-function EnergyAreaChart({
+function BestAreaChart({
   outputData,
   labels,
   colors,
+  primaryFormatter = (value) => value,
+  secondaryFormatter = (value) => value,
 }: {
   outputData: OutputAxisChartDataProps[];
   labels: string[];
   colors?: string[];
+  primaryFormatter?: (value: string) => string;
+  secondaryFormatter?: (value: string) => string;
 }) {
   return (
     <ChartContainer
@@ -236,27 +287,25 @@ function EnergyAreaChart({
         <XAxis
           dataKey="primary"
           tickLine={false}
-          tickMargin={10}
+          tickMargin={xAxisTickMargin}
           axisLine={false}
-          tickFormatter={(value) => Formatter.timeFormatter(value)}
+          tickFormatter={(value) => primaryFormatter(value)}
         />
         <YAxis
           axisLine={false}
           tickLine={false}
-          tickMargin={40}
-          unit={` ${energyUnitConverter.getTargetUnit()}`}
+          tickMargin={yAxisTickMargin}
+          tickFormatter={(value) => secondaryFormatter(value)}
         />
         <ChartTooltip
           cursor={true}
           content={
             <ChartTooltipContent
               indicator="dot"
-              itemFormatter={(value) =>
-                `${value} ${energyUnitConverter.getTargetUnit()}`
-              }
+              itemFormatter={(value) => secondaryFormatter(value)}
             />
           }
-          labelFormatter={(value) => new Date(value).toLocaleString()}
+          labelFormatter={(value) => primaryFormatter(value)}
         ></ChartTooltip>
         {labels.map((label, index) => {
           const color = `var(--color-secondary${index + 1})`;
@@ -276,9 +325,7 @@ function EnergyAreaChart({
                 position="top"
                 fill={color}
                 offset={10}
-                formatter={(value: string | number) =>
-                  `${value} ${energyUnitConverter.getTargetUnit()}`
-                }
+                formatter={(value: string | number) => secondaryFormatter(`${value}`)}
               />
             </Area>
           );
@@ -289,7 +336,7 @@ function EnergyAreaChart({
   );
 }
 
-function EnergyBarChart({
+function BestBarChart({
   outputData,
   labels,
   colors,
@@ -324,7 +371,7 @@ function EnergyBarChart({
         <YAxis
           axisLine={false}
           tickLine={false}
-          tickMargin={40}
+          tickMargin={yAxisTickMargin}
           tickFormatter={(value) => secondaryFormatter(value)}
           unit={` `}
         />

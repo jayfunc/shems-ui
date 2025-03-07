@@ -1,6 +1,6 @@
 "use client";
 
-import EnergyPieChart from "@/components/pie-chart";
+import BestPieChart from "@/components/pie-chart";
 import energyUnitConverter from "@/extensions/energy-unit-converter";
 import MainGridAcct from "@/models/main-grid-acct";
 import ApiService from "@/services/api";

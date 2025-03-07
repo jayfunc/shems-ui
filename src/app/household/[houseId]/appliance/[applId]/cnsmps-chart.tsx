@@ -9,9 +9,11 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { AxisChart, AxisChartType } from "@/components/axis-chart";
+import { AxisChart, AxisChartType, PrimaryType, SecondaryType } from "@/components/axis-chart";
 import useSWR from "swr";
 import { useDataSizeLimit } from "@/extensions/request";
+import Formatter from "@/extensions/formatter";
+import energyUnitConverter from "@/extensions/energy-unit-converter";
 
 export function CnsmpsChart({ applId }: { applId: number }) {
   const { data } = useSWR<ApplCnsmp[]>(
@@ -26,15 +28,17 @@ export function CnsmpsChart({ applId }: { applId: number }) {
       </CardHeader>
       <CardContent>
         <AxisChart
+          primaryType={PrimaryType.Time}
+          secondaryType={SecondaryType.Energy}
           data={[
             data == null || data.map == null
               ? []
               : data.map((item) => {
-                  return {
-                    secondary: item.consumeAmount,
-                    primary: item.consumeTime,
-                  };
-                }),
+                return {
+                  secondary: item.consumeAmount,
+                  primary: item.consumeTime,
+                };
+              }),
           ]}
           labels={["Consumption"]}
           colors={["--power-cnsmp"]}

@@ -23,7 +23,7 @@ export default class UnitConverter {
 
   format(value?: number, fractionDigits?: number): number | undefined {
     // Check if value is null or undefined
-    if (value == null || Number.isNaN(value)) {
+    if (value == null) {
       return undefined;
     }
     return parseFloat(

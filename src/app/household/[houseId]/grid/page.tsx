@@ -4,12 +4,12 @@ import { motion } from "motion/react";
 import MainGridCfg from "@/models/main-grid-cfg";
 import ApiService from "@/services/api";
 import houseCnsmp from "@/models/house-cnsmp";
-import { AxisChart, AxisChartType } from "@/components/axis-chart";
+import { AxisChart, AxisChartType, PrimaryType, SecondaryType } from "@/components/axis-chart";
 import useSWR from "swr";
 import CardTabs from "@/components/card-tabs";
 import { useCurrentHouseId, useDataSizeLimit } from "@/extensions/request";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import EnergyPieChart from "@/components/pie-chart";
+import BestPieChart from "@/components/pie-chart";
 import MainGridAcct from "@/models/main-grid-acct";
 import energyUnitConverter from "@/extensions/energy-unit-converter";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
@@ -28,8 +28,9 @@ function MainGridUsageCardTitle({ timeTicks, mainGridCfg }: { timeTicks: number[
             <CardTitle>Electricity time-of-use price periods</CardTitle>
             <CardDescription>Current time-of-use price periods</CardDescription>
           </CardHeader>
-          <CardContent className="relative">
-            <EnergyPieChart
+          <CardContent>
+            <BestPieChart
+              showLabel
               cfgLabels={timeTicks.map((key) => {
                 const hour = key;
                 let label = '';
@@ -58,18 +59,6 @@ function MainGridUsageCardTitle({ timeTicks, mainGridCfg }: { timeTicks: number[
               dataValues={timeTicks.map(() => 1)}
               itemFormatter={() => ""}
             />
-            <div className="ml-28 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-sm text-muted-foreground">
-              7 A.M.
-            </div>
-            <div className="mt-16 ml-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-sm text-muted-foreground">
-              11 A.M.
-            </div>
-            <div className="-ml-28 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-sm text-muted-foreground">
-              5 P.M.
-            </div>
-            <div className="-ml-28 -mt-14 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-sm text-muted-foreground">
-              7 P.M.
-            </div>
           </CardContent>
         </HoverCardContent>
       </HoverCard>
@@ -162,6 +151,8 @@ export default function Trading() {
         tabLabels={["Main grid usage", "Community grid usage"]}
         tabContents={[
           <AxisChart
+            primaryType={PrimaryType.Time}
+            secondaryType={SecondaryType.Energy}
             key={0}
             data={[
               mapToOnPeakCnsmpData(),
@@ -173,6 +164,8 @@ export default function Trading() {
             chartType={AxisChartType.Area}
           />,
           <AxisChart
+            primaryType={PrimaryType.Time}
+            secondaryType={SecondaryType.Energy}
             key={1}
             data={[mapToCmtyGridCnsmpData()]}
             labels={["Community grid usage"]}
@@ -188,7 +181,7 @@ export default function Trading() {
         </CardHeader>
         <CardContent>
           {mainGridAcct !== undefined && (
-            <EnergyPieChart
+            <BestPieChart
               cfgLabels={["On-peak", "Mid-peak", "Off-peak"]}
               colors={["--peak-on", "--peak-mid", "--peak-off"]}
               dataValues={[

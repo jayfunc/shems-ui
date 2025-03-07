@@ -9,6 +9,7 @@ import { dataSizeLimitForOrders } from "@/extensions/request";
 import { Fullscreen, Unlink } from "lucide-react";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
+import formatText from "@/extensions/string";
 
 interface MapProps {
   dots?: Array<{
@@ -112,7 +113,7 @@ const WorldMap = function WorldMap({
   };
 
   return (
-    <div className="w-full aspect-[1/1] dark:bg-black bg-white rounded-lg relative font-sans">
+    <div className="w-full dark:bg-black bg-white rounded-lg relative font-sans">
       <Image
         src={`data:image/svg+xml;utf8,${encodeURIComponent(svgMap)}`}
         className="pointer-events-none select-none w-full h-full"
@@ -216,7 +217,7 @@ const WorldMap = function WorldMap({
                 className="text-muted-foreground"
                 fontSize="20"
               >
-                {dot.start.label}
+                {formatText(dot.start.label ?? "")}
               </text>
             </g>
             <g key={`end-${i}`}>
@@ -256,13 +257,13 @@ const WorldMap = function WorldMap({
                 fontSize="20"
                 className="text"
               >
-                {dot.end.label}
+                {formatText(dot.end.label ?? "")}
               </text>
             </g>
           </g>
         ))}
       </svg>
-      <div className="absolute bottom-0 right-0 flex flex-row gap-2">
+      <div className="absolute -bottom-12 right-0 flex flex-row gap-2">
         <Button variant="outline" onClick={() => setFitMode(!fitMode)}>
           <Fullscreen /> {fitMode ? "Fit to city" : "Fit to points"}
         </Button>
@@ -270,7 +271,7 @@ const WorldMap = function WorldMap({
       {dots.length === 0 && (
         <div className="absolute backdrop-blur-sm -top-1 -left-1 -right-1 -bottom-1 flex flex-col gap-2 items-center justify-center text-center text-muted-foreground">
           <Unlink />
-          <Label>No trading data available in the past {dataSizeLimitForOrders} hours</Label>
+          <Label>No matched order available in the past {dataSizeLimitForOrders} hours</Label>
         </div>
       )}
     </div>

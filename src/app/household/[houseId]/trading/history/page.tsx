@@ -8,8 +8,7 @@ import energyUnitConverter from "@/extensions/energy-unit-converter";
 import moneyUnitConverter from "@/extensions/money-unit-converter";
 import House from "@/models/house";
 import OrderMatch from "@/models/order-match";
-import OrderBuy, { BuySellOrderStatus } from "@/models/order-buy";
-import OrderSell from "@/models/order-sell";
+import OrderBuySell, { BuySellOrderStatus } from "@/models/order-buy-sell";
 import useSWR from "swr";
 import CardTabs from "@/components/card-tabs";
 import {
@@ -19,11 +18,11 @@ import {
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "@/components/data-table-column-header";
 import formatText from "@/extensions/string";
-import { Badge } from "@/components/ui/badge";
 import ScrollableDrawer from "@/components/scrollable-drawer";
 import { Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Trading() {
   const houseId = useCurrentHouseId();
@@ -33,12 +32,30 @@ export default function Trading() {
   const { data: matchedOrders } = useSWR<OrderMatch[]>(
     ApiService.buildAllMatchOrdersUri(houseId, dataSizeLimitForOrders),
   );
-  const { data: buyOrders } = useSWR<OrderBuy[]>(
+  const { data: buyOrders } = useSWR<OrderBuySell[]>(
     ApiService.buildAllBuyOrdersUri(houseId, dataSizeLimitForOrders),
   );
-  const { data: sellOrders } = useSWR<OrderSell[]>(
+  const { data: sellOrders } = useSWR<OrderBuySell[]>(
     ApiService.buildAllSellOrdersUri(houseId, dataSizeLimitForOrders),
   );
+
+  const buysellOrders = (buyOrders?.map((value) => {
+    const matched = matchedOrders?.find((order) => {
+      return order.buyOrderId === value.id;
+    });
+    value.sellerId = matched?.sellerId;
+    value.sellPrice = matched?.matchPrice;
+    value.matchPrice = matched?.matchPrice;
+    return value;
+  }) ?? []).concat(sellOrders?.map((value) => {
+    const matched = matchedOrders?.find((order) => {
+      return order.sellOrderId === value.id;
+    });
+    value.buyerId = matched?.buyerId;
+    value.buyPrice = matched?.buyerPrice;
+    value.matchPrice = matched?.matchPrice;
+    return value;
+  }) ?? []);
 
   function mapKeysToColumns<T>(keys: string[]): ColumnDef<T>[] {
     return keys.map((key) => {
@@ -59,7 +76,7 @@ export default function Trading() {
           } else if (lowerKey.includes("status")) {
             const status: BuySellOrderStatus = row.getValue("orderStatus");
             const label = formatText(BuySellOrderStatus[status]);
-            return <Badge variant="outline">{label}</Badge>;
+            return label;
           } else if (lowerKey.includes("price")) {
             return moneyUnitConverter.formatInStringWithUnit(row.getValue(key), 3);
           } else if (lowerKey.includes("quan")) {
@@ -93,55 +110,34 @@ export default function Trading() {
       animate={{ opacity: 1 }}
     >
 
-      <CardTabs
-        titles={"Trading history"}
-        descs={`${dataSizeLimitForOrders}-hour trading records`}
-        tabLabels={["Buy orders", "Sell orders", "Matched orders"]}
-        tabContents={[
+      <Card className="col-span-full">
+        <CardHeader>
+          <CardTitle>
+            Trading history
+          </CardTitle>
+          <CardDescription>
+            {dataSizeLimitForOrders}-hour trading records
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
           <DataTable
             key={0}
             columns={mapKeysToColumns([
-              "orderNo",
               "orderStatus",
-              "completed_quantity",
               "quantity",
-              "buyPrice",
-              "orderTime",
-              "completeTime",
-              "cancelTime",
-            ])}
-            data={buyOrders ?? []}
-          />,
-          <DataTable
-            key={1}
-            columns={mapKeysToColumns([
-              "orderNo",
-              "orderStatus",
-              "completed_quantity",
-              "quantity",
-              "sellPrice",
-              "orderTime",
-              "completeTime",
-              "cancelTime",
-            ])}
-            data={sellOrders ?? []}
-          />,
-          <DataTable
-            key={2}
-            columns={mapKeysToColumns([
-              "orderNo",
               "buyerId",
               "sellerId",
-              "matchTime",
-              "buyerPrice",
-              "sellerPrice",
+              "buyPrice",
+              "sellPrice",
               "matchPrice",
-              "quantity",
+              "orderTime",
+              "completeTime",
+              "cancelTime",
             ])}
-            data={matchedOrders ?? []}
-          />,
-        ]}
-      />
+            data={buysellOrders}
+          />
+        </CardContent>
+      </Card>
 
       <ScrollableDrawer
         trigger={
@@ -152,36 +148,38 @@ export default function Trading() {
         title="Energy map"
         desc={`Trading records in the past ${dataSizeLimitForOrders} hours`}
         content={
-          <WorldMap
-            dots={matchedOrders
-              ?.map((order) => {
-                if (
-                  houseId.toString() === order.buyerId.toString() ||
-                  houseId.toString() === order.sellerId.toString()
-                ) {
-                  const buyer = houses?.find(
-                    (house) => house.id.toString() === order.buyerId.toString(),
-                  );
-                  const seller = houses?.find(
-                    (house) =>
-                      house.id.toString() === order.sellerId.toString(),
-                  );
+          <div className="px-4 pt-0 pb-16">
+            <WorldMap
+              dots={buysellOrders
+                ?.map((order) => {
+                  if (
+                    houseId.toString() === order.buyerId?.toString() ||
+                    houseId.toString() === order.sellerId?.toString()
+                  ) {
+                    const buyer = houses?.find(
+                      (house) => house.id.toString() === order.buyerId?.toString(),
+                    );
+                    const seller = houses?.find(
+                      (house) =>
+                        house.id.toString() === order.sellerId?.toString(),
+                    );
 
-                  if (!buyer || !seller) return undefined;
+                    if (!buyer || !seller) return undefined;
 
-                  const sellerName = houseId.toString() === seller.id.toString() ? "Me" : seller.householdName;
-                  const buyerName = houseId.toString() === buyer.id.toString() ? "Me" : buyer.householdName;
+                    const sellerName = houseId.toString() === seller.id.toString() ? "Me" : seller.householdName;
+                    const buyerName = houseId.toString() === buyer.id.toString() ? "Me" : buyer.householdName;
 
-                  return {
-                    start: { lat: seller.latitude, lng: seller.longitude, label: sellerName, },
-                    end: { lat: buyer.latitude, lng: buyer.longitude, label: buyerName, },
+                    return {
+                      start: { lat: seller.latitude, lng: seller.longitude, label: sellerName, },
+                      end: { lat: buyer.latitude, lng: buyer.longitude, label: buyerName, },
 
-                  };
-                }
-                return undefined;
-              })
-              .filter((dot) => dot !== undefined)}
-          />
+                    };
+                  }
+                  return undefined;
+                })
+                .filter((dot) => dot !== undefined)}
+            />
+          </div>
         }
       />
 

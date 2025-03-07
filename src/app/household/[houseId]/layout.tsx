@@ -56,7 +56,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   ];
 
   const { data: house } = useSWR<House>(
-    ApiService.buildGetHouseUri(useCurrentHouseId()),
+    ApiService.buildHouseUri(useCurrentHouseId()),
   );
 
   return (

@@ -31,33 +31,33 @@ export default function Dashboard() {
   const dataSizeLimit = useDataSizeLimit();
 
   const { data: house } = useSWR<House>(
-    ApiService.buildGetHouseUri(houseId),
+    ApiService.buildHouseUri(houseId),
   );
 
   const { data: houseCnsmp } = useSWR<HouseCnsmp[]>(
-    ApiService.buildGetHouseCnsmpUri(houseId, dataSizeLimit),
+    ApiService.buildHouseCnsmpUri(houseId, dataSizeLimit),
   );
   const { data: houseCnsmpPred } = useSWR<HouseCnsmpPred[]>(
-    ApiService.buildGetHouseCnsmpPredUri(house?.householdType ?? HouseholdType.NA, dataSizeLimit),
+    ApiService.buildHouseCnsmpPredUri(house?.householdType ?? HouseholdType.NA, dataSizeLimit),
   );
 
   const { data: houseGen } = useSWR<HouseGen[]>(
-    ApiService.buildGetHouseGenUri(houseId, dataSizeLimit),
+    ApiService.buildHouseGenUri(houseId, dataSizeLimit),
   );
   const { data: houseGenPred } = useSWR<HouseGenPred[]>(
-    ApiService.buildGetHouseGenPredUri(house?.householdType ?? HouseholdType.NA, dataSizeLimit),
+    ApiService.buildHouseGenPredUri(house?.householdType ?? HouseholdType.NA, dataSizeLimit),
   );
 
   const { data: locStor } = useSWR<LocStor>(
-    ApiService.buildGetLocStorUri(houseId),
+    ApiService.buildLocStorUri(houseId),
   );
 
   function mapToHouseCnsmpData(): InputAxisChartDataProps[] {
     return (
       houseCnsmp?.map((item) => {
         return {
-          dateTime: item.consumeTime,
-          data: item.totalConsumeAmount,
+          primary: item.consumeTime,
+          secondary: item.totalConsumeAmount,
         };
       }) ?? []
     );
@@ -67,8 +67,8 @@ export default function Dashboard() {
     return (
       houseGen?.map((item) => {
         return {
-          dateTime: item.generateTime,
-          data: item.powerAmount,
+          primary: item.generateTime,
+          secondary: item.powerAmount,
         };
       }) ?? []
     );
@@ -78,8 +78,8 @@ export default function Dashboard() {
     return (
       houseCnsmpPred?.map((item) => {
         return {
-          dateTime: item.predictTime,
-          data:
+          primary: item.predictTime,
+          secondary:
             item.airConditioner +
             item.computer +
             item.dishwasher +
@@ -102,8 +102,8 @@ export default function Dashboard() {
     return (
       houseGenPred?.map((item) => {
         return {
-          dateTime: item.predictTime,
-          data: item.solar,
+          primary: item.predictTime,
+          secondary: item.solar,
         };
       }) ?? []
     );
@@ -113,8 +113,8 @@ export default function Dashboard() {
     return (
       houseCnsmp?.map((item) => {
         return {
-          dateTime: item.consumeTime,
-          data: item.solarPanelConsumeAmount,
+          primary: item.consumeTime,
+          secondary: item.solarPanelConsumeAmount,
         };
       }) ?? []
     );
@@ -124,8 +124,8 @@ export default function Dashboard() {
     return (
       houseCnsmp?.map((item) => {
         return {
-          dateTime: item.consumeTime,
-          data: item.powerStorageConsumeAmount,
+          primary: item.consumeTime,
+          secondary: item.powerStorageConsumeAmount,
         };
       }) ?? []
     );
@@ -139,10 +139,10 @@ export default function Dashboard() {
     >
       <EnergyCard
         title="Solar generation"
-        subtitle={`${energyUnitConverter.formatInStringWithUnit(mapToHouseGenData().at(-1)?.data)}`}
+        subtitle={`${energyUnitConverter.formatInStringWithUnit(mapToHouseGenData().at(-1)?.secondary)}`}
         desc={formatDeltaDesc(
-          (mapToHouseGenData().at(-1)?.data ?? NaN) -
-          (mapToHouseGenData().at(-2)?.data ?? NaN),
+          (mapToHouseGenData().at(-1)?.secondary ?? NaN) -
+          (mapToHouseGenData().at(-2)?.secondary ?? NaN),
         )}
         icon={<Sun className="text-muted-foreground" />}
         actionArea={
@@ -165,10 +165,10 @@ export default function Dashboard() {
 
       <EnergyCard
         title="House consumption"
-        subtitle={`${energyUnitConverter.formatInStringWithUnit(mapToHouseCnsmpData().at(-1)?.data)}`}
+        subtitle={`${energyUnitConverter.formatInStringWithUnit(mapToHouseCnsmpData().at(-1)?.secondary)}`}
         desc={formatDeltaDesc(
-          (mapToHouseCnsmpData().at(-1)?.data ?? NaN) -
-          (mapToHouseCnsmpData().at(-2)?.data ?? NaN),
+          (mapToHouseCnsmpData().at(-1)?.secondary ?? NaN) -
+          (mapToHouseCnsmpData().at(-2)?.secondary ?? NaN),
         )}
         icon={<Home className="text-muted-foreground" />}
       />
@@ -226,7 +226,6 @@ export default function Dashboard() {
           "House consumption energy with forcast",
         ]}
         descs={`${useDataSizeLimit()}-hour line chart`}
-        tabKeys={["gen-cnsmp", "gen-forcast", "cnsmp-forcast"]}
         tabLabels={[
           "Generation w/ consumption",
           "Generation w/ forcast",

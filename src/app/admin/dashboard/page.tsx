@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 export default function Page() {
   function sendNormalSignal() {
     new ApiService<boolean>()
-      .fetch(ApiService.buildPostMainGridCfgNormalSignalUri())
+      .fetch(ApiService.buildMainGridCfgNormalSignalUri())
       .then((res: boolean) => {
         if (res) {
           toast("Normal signal sent", {
@@ -31,7 +31,7 @@ export default function Page() {
 
   function sendPeakShaveSignal() {
     new ApiService<boolean>()
-      .fetch(ApiService.buildPostMainGridCfgPeakShaveSignalUri())
+      .fetch(ApiService.buildMainGridCfgPeakShaveSignalUri())
       .then((res: boolean) => {
         if (res) {
           toast("Peak shave signal sent", {

@@ -60,8 +60,8 @@ export function AppTopbar() {
   const [showTime, setShowTime] = useState<boolean>(true);
   const [showWeather, setShowWeather] = useState<boolean>(true);
 
-  const { data: simCfg } = useSWR<SimCfg>(ApiService.buildGetSimCfgUri());
-  const { data: weather } = useSWR<Weather>(ApiService.buildGetWeatherUri());
+  const { data: simCfg } = useSWR<SimCfg>(ApiService.buildSimCfgUri());
+  const { data: weather } = useSWR<Weather>(ApiService.buildWeatherUri());
 
   return (
     <div className="sticky top-0 backdrop-blur realtive h-16 border-b items-center flex gap-2 px-4 z-10">

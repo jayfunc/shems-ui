@@ -10,6 +10,8 @@ import {
 import {
   Area,
   AreaChart,
+  Bar,
+  BarChart,
   CartesianGrid,
   LabelList,
   Line,
@@ -21,7 +23,7 @@ import React from "react";
 import { LoaderCircle, Unlink } from "lucide-react";
 import { Label } from "./ui/label";
 import energyUnitConverter from "../extensions/energy-unit-converter";
-import { Button } from "./ui/button";
+import Formatter from "@/extensions/formatter";
 
 export enum AxisChartType {
   Line,
@@ -30,11 +32,11 @@ export enum AxisChartType {
 }
 
 export interface InputAxisChartDataProps {
-  dateTime?: Date;
-  data?: number;
+  primary?: any;
+  secondary?: number;
 }
 interface OutputAxisChartDataProps {
-  dateTime?: Date;
+  primary?: any;
   [key: string]: any;
 }
 
@@ -42,21 +44,21 @@ function convertToOutputData(
   ...dataArrays: InputAxisChartDataProps[][]
 ): OutputAxisChartDataProps[] {
   const data: OutputAxisChartDataProps[] = [];
-  const allDates = new Set(
+  const primaryData = new Set(
     dataArrays
-      .flatMap((dataArray) => dataArray.map((val) => val.dateTime))
+      .flatMap((dataArray) => dataArray.map((val) => val.primary))
       .toSorted(),
   );
 
-  allDates.forEach((dateTime) => {
+  primaryData.forEach((primary) => {
     const combinedData: OutputAxisChartDataProps = {
-      dateTime: dateTime,
-      data1: undefined,
-      data2: undefined,
+      primary: primary,
+      secondary1: undefined,
+      secondary2: undefined,
     };
     dataArrays.forEach((dataArray, index) => {
-      combinedData[`data${index + 1}`] = energyUnitConverter.format(
-        dataArray.find((element) => element.dateTime === dateTime)?.data,
+      combinedData[`secondary${index + 1}`] = energyUnitConverter.format(
+        dataArray.find((element) => element.primary === primary)?.secondary,
       );
     });
     data.push(combinedData);
@@ -67,7 +69,7 @@ function convertToOutputData(
 
 function getChartConfig(labels: string[], colors?: string[]): ChartConfig {
   return labels.reduce((acc, label, index) => {
-    acc[`data${index + 1}`] = {
+    acc[`secondary${index + 1}`] = {
       label: `${label}`,
       color: `hsl(var(${colors?.at(index) ?? '--foreground'}))`,
     };
@@ -81,18 +83,20 @@ export function AxisChart({
   labels,
   colors,
   isLoading,
+  secondaryFormatter,
 }: {
   data?: InputAxisChartDataProps[][];
   chartType: AxisChartType;
   labels: string[];
   colors?: string[];
   isLoading?: boolean;
+  secondaryFormatter?: (value: string) => string;
 }) {
   const outputData = convertToOutputData(...(data ?? []));
   const isDataEmpty =
     isLoading !== true &&
     outputData.every(
-      (element) => element.data1 == null && element.data2 == null,
+      (element) => element.secondary1 == null && element.secondary2 == null,
     );
 
   return (
@@ -106,6 +110,9 @@ export function AxisChart({
       )}
       {chartType === AxisChartType.Area && (
         <EnergyAreaChart outputData={outputData} labels={labels} colors={colors} />
+      )}
+      {chartType === AxisChartType.Bar && (
+        <EnergyBarChart outputData={outputData} labels={labels} colors={colors} secondaryFormatter={secondaryFormatter} />
       )}
       {isDataEmpty && (
         <div className="flex flex-col gap-2 items-center justify-center w-full h-full text-muted-foreground absolute top-0">
@@ -141,20 +148,18 @@ function EnergyLineChart({
         accessibilityLayer
         data={outputData}
         margin={{
-          top: 5,
+          top: 20,
           left: 20,
           right: 20,
         }}
       >
         <CartesianGrid vertical={false} />
         <XAxis
-          dataKey="dateTime"
+          dataKey="primary"
           tickLine={false}
           tickMargin={10}
           axisLine={false}
-          tickFormatter={(value) =>
-            value === "" ? "" : new Date(value).toLocaleTimeString()
-          }
+          tickFormatter={(value) => Formatter.timeFormatter(value)}
         />
         <YAxis
           axisLine={false}
@@ -176,11 +181,11 @@ function EnergyLineChart({
         ></ChartTooltip>
         <ChartLegend content={<ChartLegendContent />} />
         {labels.map((label, index) => {
-          const color = `var(--color-data${index + 1})`;
+          const color = `var(--color-secondary${index + 1})`;
           return (
             <Line
               key={label}
-              dataKey={`data${index + 1}`}
+              dataKey={`secondary${index + 1}`}
               type="linear"
               stroke={color}
               strokeWidth={2}
@@ -222,20 +227,18 @@ function EnergyAreaChart({
         accessibilityLayer
         data={outputData}
         margin={{
-          top: 5,
+          top: 20,
           left: 20,
           right: 20,
         }}
       >
         <CartesianGrid vertical={false} />
         <XAxis
-          dataKey="dateTime"
+          dataKey="primary"
           tickLine={false}
           tickMargin={10}
           axisLine={false}
-          tickFormatter={(value) =>
-            value === "" ? "" : new Date(value).toLocaleTimeString()
-          }
+          tickFormatter={(value) => Formatter.timeFormatter(value)}
         />
         <YAxis
           axisLine={false}
@@ -256,11 +259,11 @@ function EnergyAreaChart({
           labelFormatter={(value) => new Date(value).toLocaleString()}
         ></ChartTooltip>
         {labels.map((label, index) => {
-          const color = `var(--color-data${index + 1})`;
+          const color = `var(--color-secondary${index + 1})`;
           return (
             <Area
               key={label}
-              dataKey={`data${index + 1}`}
+              dataKey={`secondary${index + 1}`}
               type="step"
               stroke={color}
               fill={color}
@@ -282,6 +285,68 @@ function EnergyAreaChart({
         })}
         <ChartLegend content={<ChartLegendContent />} />
       </AreaChart>
+    </ChartContainer>
+  );
+}
+
+function EnergyBarChart({
+  outputData,
+  labels,
+  colors,
+  primaryFormatter = (value) => value,
+  secondaryFormatter = (value) => value,
+}: {
+  outputData: OutputAxisChartDataProps[];
+  labels: string[];
+  colors?: string[];
+  primaryFormatter?: (value: string) => string;
+  secondaryFormatter?: (value: string) => string;
+}) {
+  return (
+    <ChartContainer config={getChartConfig(labels, colors)} className="max-h-[35vh] w-full">
+      <BarChart accessibilityLayer data={outputData}
+        margin={{
+          top: 20,
+          left: 20,
+          right: 20,
+        }}>
+        <CartesianGrid vertical={false} />
+        <XAxis
+          dataKey="primary"
+          tickLine={false}
+          tickMargin={30}
+          angle={-35}
+          axisLine={false}
+          height={80}
+          tickFormatter={(value) => primaryFormatter(value)}
+          tick={{ width: 120 }}
+        />
+        <YAxis
+          axisLine={false}
+          tickLine={false}
+          tickMargin={40}
+          tickFormatter={(value) => secondaryFormatter(value)}
+          unit={` `}
+        />
+        <ChartTooltip
+          cursor={true}
+          content={
+            <ChartTooltipContent
+              indicator="dot"
+              itemFormatter={(value) => secondaryFormatter(value)}
+            />
+          }
+          labelFormatter={(value) => primaryFormatter(value)}
+        ></ChartTooltip>
+        {labels.map((label, index) => {
+          const color = `var(--color-secondary${index + 1})`;
+          return (
+            <Bar key={index} dataKey={`secondary${index + 1}`} fill={color} radius={4} barSize={40} >
+            </Bar>
+          );
+        })}
+        <ChartLegend content={<ChartLegendContent />} />
+      </BarChart>
     </ChartContainer>
   );
 }

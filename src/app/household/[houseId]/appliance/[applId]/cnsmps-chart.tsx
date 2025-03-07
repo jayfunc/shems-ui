@@ -15,7 +15,7 @@ import { useDataSizeLimit } from "@/extensions/request";
 
 export function CnsmpsChart({ applId }: { applId: number }) {
   const { data } = useSWR<ApplCnsmp[]>(
-    ApiService.buildGetApplCnsmpUri(applId, useDataSizeLimit()),
+    ApiService.buildApplCnsmpUri(applId, useDataSizeLimit()),
   );
 
   return (

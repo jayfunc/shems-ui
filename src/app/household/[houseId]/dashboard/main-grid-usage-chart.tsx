@@ -20,10 +20,10 @@ import useSWR from "swr";
 
 export default function MainGridUsageChart({ houseId }: { houseId: number }) {
   const { data: mainGridAcct } = useSWR<MainGridAcct>(
-    ApiService.buildGetMainGridAcctUri(houseId),
+    ApiService.buildMainGridAcctUri(houseId),
   );
   const { data: mainGridCfg } = useSWR<MainGridCfg>(
-    ApiService.buildGetMainGridCfgUri(),
+    ApiService.buildMainGridCfgUri(),
   );
 
   return (

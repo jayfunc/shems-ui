@@ -71,7 +71,7 @@ export default function Page() {
     } else {
       const found = !isNaN(Number(values.username)) &&
         (await
-          (await fetch(ApiService.buildGetHouseUri(Number(values.username)))).json() as ResponseData<House>
+          (await fetch(ApiService.buildHouseUri(Number(values.username)))).json() as ResponseData<House>
         ).data != null;
       if (!found) {
         showErrorUsernameMsg();

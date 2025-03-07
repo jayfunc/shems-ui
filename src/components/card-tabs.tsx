@@ -11,20 +11,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 export default function CardTabs({
   titles,
   descs,
-  tabKeys,
   defaultTabKeyIndex = 0,
   tabLabels,
   tabContents,
+  className,
 }: {
   titles: string[] | string | React.ReactNode[] | React.ReactNode;
   descs?: string[] | string | React.ReactNode[] | React.ReactNode;
-  tabKeys: string[];
   defaultTabKeyIndex?: number;
   tabLabels: string[];
   tabContents: React.ReactNode[];
+  className?: string;
 }) {
+  const tabKeys = tabLabels.map((value, index) => `${index}`);
   return (
-    <Tabs defaultValue={tabKeys[defaultTabKeyIndex]} className="col-span-full">
+    <Tabs defaultValue={tabKeys[defaultTabKeyIndex]} className={className ?? `col-span-full`}>
       <Card>
         <CardHeader>
           <CardTitle className="flex flex-row">

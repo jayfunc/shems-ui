@@ -12,7 +12,7 @@ import ApiService from "@/services/api";
 import useSWR from "swr";
 
 export default function Detail({ applId }: { applId: number }) {
-  const { data } = useSWR<Appl>(ApiService.buildGetApplUri(applId));
+  const { data } = useSWR<Appl>(ApiService.buildApplUri(applId));
 
   return (
     <Card className="lg:col-span-full">

@@ -127,7 +127,7 @@ function ApplianceGrid({
                         href={`${routing.appliance}/${item.id}`}
                         onMouseOver={() =>
                           preload(
-                            ApiService.buildGetApplCnsmpUri(
+                            ApiService.buildApplCnsmpUri(
                               Number(item.id),
                               dataSizeLimit,
                             ),
@@ -157,7 +157,7 @@ function filterData(data: Appl[], search: string) {
 
 export default function Page() {
   const { data } = useSWR<Appl[]>(
-    ApiService.buildGetAllApplsUri(useCurrentHouseId()),
+    ApiService.buildAllApplsUri(useCurrentHouseId()),
   );
 
   const [search, setSearch] = useState<string>("");

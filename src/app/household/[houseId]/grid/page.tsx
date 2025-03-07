@@ -80,15 +80,15 @@ function MainGridUsageCardTitle({ timeTicks, mainGridCfg }: { timeTicks: number[
 export default function Trading() {
   const houseId = useCurrentHouseId();
   const { data: houseCnsmp } = useSWR<houseCnsmp[]>(
-    ApiService.buildGetHouseCnsmpUri(useCurrentHouseId(), useDataSizeLimit()),
+    ApiService.buildHouseCnsmpUri(useCurrentHouseId(), useDataSizeLimit()),
   );
   const { data: mainGridCfg } = useSWR<MainGridCfg>(
-    ApiService.buildGetMainGridCfgUri(),
+    ApiService.buildMainGridCfgUri(),
   );
   const { data: mainGridAcct } = useSWR<MainGridAcct>(
-    ApiService.buildGetMainGridAcctUri(houseId),
+    ApiService.buildMainGridAcctUri(houseId),
   );
-  const { data: simCfg } = useSWR(ApiService.buildGetSimCfgUri());
+  const { data: simCfg } = useSWR(ApiService.buildSimCfgUri());
 
   const offset = 18;
   let timeTicks = [...Array.from(Array(24).keys()).reverse()];
@@ -109,8 +109,8 @@ export default function Trading() {
     return (
       houseCnsmp?.map((item) => {
         return {
-          dateTime: item.consumeTime,
-          data: item.communityGridConsumeAmount,
+          primary: item.consumeTime,
+          secondary: item.communityGridConsumeAmount,
         };
       }) ?? []
     );
@@ -120,8 +120,8 @@ export default function Trading() {
     return (
       houseCnsmp?.map((item) => {
         return {
-          dateTime: item.consumeTime,
-          data: item.mainGridOnPeakConsumeAmount,
+          primary: item.consumeTime,
+          secondary: item.mainGridOnPeakConsumeAmount,
         };
       }) ?? []
     );
@@ -131,8 +131,8 @@ export default function Trading() {
     return (
       houseCnsmp?.map((item) => {
         return {
-          dateTime: item.consumeTime,
-          data: item.mainGridMidPeakConsumeAmount,
+          primary: item.consumeTime,
+          secondary: item.mainGridMidPeakConsumeAmount,
         };
       }) ?? []
     );
@@ -142,8 +142,8 @@ export default function Trading() {
     return (
       houseCnsmp?.map((item) => {
         return {
-          dateTime: item.consumeTime,
-          data: item.mainGridOffPeakConsumeAmount,
+          primary: item.consumeTime,
+          secondary: item.mainGridOffPeakConsumeAmount,
         };
       }) ?? []
     );
@@ -159,7 +159,6 @@ export default function Trading() {
       <CardTabs
         titles={[MainGridUsageCardTitle({ timeTicks, mainGridCfg }), "Community grid usage"]}
         descs={`${useDataSizeLimit()}-hour energy real-time usage level`}
-        tabKeys={["main", "cmty"]}
         tabLabels={["Main grid usage", "Community grid usage"]}
         tabContents={[
           <AxisChart

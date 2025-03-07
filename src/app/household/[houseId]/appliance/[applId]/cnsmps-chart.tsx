@@ -31,8 +31,8 @@ export function CnsmpsChart({ applId }: { applId: number }) {
               ? []
               : data.map((item) => {
                   return {
-                    data: item.consumeAmount,
-                    dateTime: item.consumeTime,
+                    secondary: item.consumeAmount,
+                    primary: item.consumeTime,
                   };
                 }),
           ]}

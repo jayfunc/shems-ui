@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "EnergyPix",
-  description: "Smart as a Pixie, precise as a pixel, optimizing every watt!",
+  description: "Smart as a pixie, precise as a pixel, optimizing every watt!",
 };
 
 export default async function RootLayout({

@@ -18,6 +18,7 @@ import House from "@/models/house";
 import useSWR from "swr";
 import {
   dataSizeLimitForOrders,
+  dataSizeLimitForOrdersAsString,
   useCurrentHouseId,
 } from "@/extensions/request";
 import { Button } from "@/components/ui/button";
@@ -224,7 +225,7 @@ export default function Trading() {
         </CardContent>
       </Card>
 
-      <div className="flex flex-row gap-2 justify-end col-span-full">
+      <div className="flex flex-col md:flex-row gap-2 justify-end items-end col-span-full">
         <Link className="" href={`${routing.trading}/${routing.summary}`}>
           <Button variant="outline"><DatabaseZap />Summary</Button>
         </Link>
@@ -236,7 +237,7 @@ export default function Trading() {
             </div>
           }
           title="Energy map"
-          desc={`Trading records in the past ${dataSizeLimitForOrders} hours`}
+          desc={`Completed trading records in the past ${dataSizeLimitForOrdersAsString}`}
           content={
             <div className="p-4">
               <WorldMap
@@ -285,7 +286,7 @@ export default function Trading() {
             Trading history
           </CardTitle>
           <CardDescription>
-            {dataSizeLimitForOrders}-hour trading records
+            {dataSizeLimitForOrdersAsString} trading records
           </CardDescription>
         </CardHeader>
         <CardContent>

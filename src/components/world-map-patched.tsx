@@ -384,7 +384,7 @@ const WorldMap = function WorldMap({
           ))}
         </svg>
       </div>
-      <div className="flex flex-row gap-2">
+      <div className="flex flex-row gap-2 items-center">
         <div className="flex flex-col gap-2">
           <div className="flex flex-row items-center gap-2">
             <div className="w-4 h-4 rounded-sm bg-[hsl(var(--power-buy))]" />
@@ -396,12 +396,14 @@ const WorldMap = function WorldMap({
           </div>
         </div>
         <div className="flex-1" />
-        <Button variant="outline" onClick={() => setFitMode(!fitMode)}>
-          <Fullscreen /> {fitMode ? "Fit to city" : "Fit to points"}
-        </Button>
-        <Button variant="outline" onClick={() => setMapMode(!dottedMapMode)}>
-          <ArrowLeftRight /> {dottedMapMode ? "Switch to normal map" : "Switch to dotted map"}
-        </Button>
+        <div className="flex flex-col md:flex-row gap-2 items-end">
+          <Button variant="outline" onClick={() => setFitMode(!fitMode)}>
+            <Fullscreen /> {fitMode ? "Fit to city" : "Fit to points"}
+          </Button>
+          <Button variant="outline" onClick={() => setMapMode(!dottedMapMode)}>
+            <ArrowLeftRight /> {dottedMapMode ? "Switch to normal map" : "Switch to dotted map"}
+          </Button>
+        </div>
       </div>
       {dots.length === 0 && (
         <div className="absolute backdrop-blur-sm -top-1 -left-1 -right-1 -bottom-1 flex flex-col gap-2 items-center justify-center text-center text-muted-foreground">

@@ -4,6 +4,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { usePathname } from "next/navigation";
 
 export const dataSizeLimitForOrders = 24 * 30;
+export const dataSizeLimitForOrdersAsString = "1-month";
 
 export function useDataSizeLimit() {
   return useIsMobile() ? 6 : 12;

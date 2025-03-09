@@ -12,7 +12,7 @@ import {
  * @param dataValues Data only, if you want to override the input data for Pie, please use data instead
  * @param data The input data for Pie
  */
-export default function EnergyPieChart({
+export default function BestPieChart({
   lightPieChartBaseColor = "sky",
   darkPieChartBaseColor = "teal",
   colorStart = 400,
@@ -23,6 +23,7 @@ export default function EnergyPieChart({
   dataValues,
   centerSubtitle = "",
   itemFormatter,
+  showLabel = false,
 }: {
   lightPieChartBaseColor?: string;
   darkPieChartBaseColor?: string;
@@ -34,6 +35,7 @@ export default function EnergyPieChart({
   dataValues?: number[];
   centerSubtitle?: string;
   itemFormatter: (value: string) => string;
+  showLabel?: boolean;
 }) {
   const chartConfig: ChartConfig = {};
 
@@ -66,7 +68,7 @@ export default function EnergyPieChart({
   return (
     <ChartContainer
       config={chartConfig}
-      className="mx-auto -mt-8 h-[25vh] [&_.recharts-pie-label-text]:fill-foreground"
+      className="mx-auto -mt-8 h-[25vh] w-full [&_.recharts-pie-label-text]:fill-foreground"
     >
       <PieChart>
         <ChartTooltip
@@ -93,8 +95,9 @@ export default function EnergyPieChart({
           labelLine={false}
           activeIndex={0}
           label={({ payload, ...props }) => {
+            const hour = 23 - props.index + 6;
             return (
-              <></> || <text
+              <text
                 cx={props.cx}
                 cy={props.cy}
                 x={props.x}
@@ -103,7 +106,8 @@ export default function EnergyPieChart({
                 fill={payload.fill}
                 fontWeight="bold"
               >
-                {payload.nameKey}
+                {/* {payload.nameKey} */}
+                {showLabel && (hour === 7 || hour === 11 || hour === 17 || hour === 19) && `${hour < 10 ? '0' : ''}${hour}:00`}
               </text>
             );
           }}

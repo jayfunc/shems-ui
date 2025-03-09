@@ -1,5 +1,6 @@
-export default class OrderMatch {
-  id: bigint;
+import Base from "./base";
+
+export default class OrderMatch extends Base {
   orderNo: string;
   sellerId: bigint;
   buyerId: bigint;
@@ -11,10 +12,6 @@ export default class OrderMatch {
   sellOrderId: bigint;
   buyOrderId: bigint;
   orderHash: string;
-  simulationTime: Date;
-  deleted: number;
-  createdAt: Date;
-  updatedAt: Date;
 
   constructor(
     id: bigint,
@@ -30,11 +27,8 @@ export default class OrderMatch {
     buyOrderId: bigint,
     orderHash: string,
     simulationTime: Date,
-    deleted: number,
-    createdAt: Date,
-    updatedAt: Date,
   ) {
-    this.id = id;
+    super(id, simulationTime);
     this.orderNo = orderNo;
     this.sellerId = sellerId;
     this.buyerId = buyerId;
@@ -46,9 +40,5 @@ export default class OrderMatch {
     this.sellOrderId = sellOrderId;
     this.buyOrderId = buyOrderId;
     this.orderHash = orderHash;
-    this.simulationTime = simulationTime;
-    this.deleted = deleted;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
   }
 }

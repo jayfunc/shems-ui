@@ -28,12 +28,28 @@ export function DataTableColumnHeader<TData, TValue>({
 
   return (
     <div className={cn("flex items-center space-x-2", className)}>
-      <DropdownMenu>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="-ml-3 h-8 data-[state=open]:bg-accent"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc" ? true : (column.getIsSorted() === "desc" ? false : true))}
+      >
+        <span>{title}</span>
+        {column.getIsSorted() === "desc" ? (
+          <ArrowDown />
+        ) : column.getIsSorted() === "asc" ? (
+          <ArrowUp />
+        ) : (
+          <ChevronsUpDown />
+        )}
+      </Button>
+      {/* <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
             size="sm"
             className="-ml-3 h-8 data-[state=open]:bg-accent"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc" ? true : false)}
           >
             <span>{title}</span>
             {column.getIsSorted() === "desc" ? (
@@ -60,7 +76,7 @@ export function DataTableColumnHeader<TData, TValue>({
             Hide
           </DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu> */}
     </div>
   );
 }

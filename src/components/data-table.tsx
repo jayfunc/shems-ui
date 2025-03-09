@@ -23,6 +23,7 @@ import {
 import { Unlink } from "lucide-react";
 import { DataTablePagination } from "@/components/data-table-pagination";
 import React from "react";
+import { BuySellOrderStatus } from "@/models/order-buy-sell";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -66,9 +67,9 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                     </TableHead>
                   );
                 })}
@@ -77,21 +78,44 @@ export function DataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table.getRowModel().rows.map((row) => {
+                const status: BuySellOrderStatus = row.getValue("orderStatus");
+                let cn = "";
+                let fromColor = "";
+                switch (status) {
+                  case BuySellOrderStatus.Pending:
+                    fromColor = "from-[hsl(var(--order-pending))]";
+                    break;
+                  case BuySellOrderStatus.Completed:
+                    fromColor = "from-[hsl(var(--order-completed))]";
+                    break;
+                  case BuySellOrderStatus.Cancelled:
+                    fromColor = "from-[hsl(var(--order-cancelled))]";
+                    break;
+                  case BuySellOrderStatus.PartiallyCompleted:
+                    fromColor = "from-[hsl(var(--order-partially-completed))]";
+                    break;
+                }
+                cn = `bg-gradient-to-r ${fromColor} to-transparent`;
+                return (
+                  <TableRow
+                    className={`border-0 ${cn}`}
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => {
+                      return (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      )
+                    })}
+                  </TableRow>
+                )
+              })
             ) : (
               <TableRow>
                 <TableCell

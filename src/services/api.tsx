@@ -1,8 +1,8 @@
 import { HouseholdType } from "@/models/house";
 
 export default class ApiService<T> {
-  // static baseUri = "http://34.130.86.28:8080/api";
-  static baseUri = "http://localhost:8080/api";
+  static baseUri = "http://34.130.185.159:8080/api";
+  // static baseUri = "http://localhost:8080/api";
 
   static gridUri = this.baseUri + "/grid";
   static houseUri = this.baseUri + "/house";

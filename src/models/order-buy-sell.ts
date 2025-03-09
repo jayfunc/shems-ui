@@ -1,3 +1,5 @@
+import Base from "./base";
+
 export enum BuySellOrderStatus {
   Pending = 0,
   PartiallyCompleted = 1,
@@ -5,54 +7,49 @@ export enum BuySellOrderStatus {
   Cancelled = 3,
 }
 
-export default class OrderBuy {
-  id: bigint;
+export default class OrderBuySell extends Base {
   orderNo: string;
-  buyerId: bigint;
   orderStatus: BuySellOrderStatus;
   orderTime: Date;
   quantity: number;
-  buyPrice: number;
+  buyerId?: bigint;
+  buyPrice?: number;
+  sellPrice?: number;
+  sellerId?: bigint;
+  matchPrice?: number;
   completedQuantity: number;
   completeTime?: Date;
   cancelTime?: Date;
   orderHash: string;
-  simulationTime: Date;
-  deleted: number;
-  createdAt: Date;
-  updatedAt: Date;
 
   constructor(
     id: bigint,
     orderNo: string,
-    buyerId: bigint,
     orderStatus: BuySellOrderStatus,
     orderTime: Date,
     quantity: number,
+    buyerId: bigint,
     buyPrice: number,
+    sellerId: bigint,
+    sellPrice: number,
     completedQuantity: number,
     orderHash: string,
     simulationTime: Date,
-    deleted: number,
-    createdAt: Date,
-    updatedAt: Date,
     completeTime?: Date,
     cancelTime?: Date,
   ) {
-    this.id = id;
+    super(id, simulationTime);
     this.orderNo = orderNo;
-    this.buyerId = buyerId;
     this.orderStatus = orderStatus;
     this.orderTime = orderTime;
     this.quantity = quantity;
+    this.buyerId = buyerId;
     this.buyPrice = buyPrice;
+    this.sellerId = sellerId;
+    this.sellPrice = sellPrice;
     this.completedQuantity = completedQuantity;
     this.completeTime = completeTime;
     this.cancelTime = cancelTime;
     this.orderHash = orderHash;
-    this.simulationTime = simulationTime;
-    this.deleted = deleted;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
   }
 }

@@ -365,6 +365,11 @@ body {
 
     --power-buy: var(--violet-600);
     --power-sell: var(--teal-600);
+
+    --order-completed: var(--green-50);
+    --order-pending: var(--yellow-50);
+    --order-cancelled: var(--red-50);
+    --order-partially-completed: var(--blue-50);
   }
 
   .dark {
@@ -413,6 +418,11 @@ body {
 
     --power-buy: var(--violet-800);
     --power-sell: var(--teal-800);
+
+    --order-completed: var(--green-950);
+    --order-pending: var(--yellow-950);
+    --order-cancelled: var(--red-950);
+    --order-partially-completed: var(--blue-950);
   }
 }
 

@@ -1,8 +1,15 @@
-# SHEMS - UI
+# EnergyPix
 
-SHEMS - Short for **_Smart Home Energy Management System_**
+EnergyPix - Smart as a pixie, precise as a pixel, optimizing every watt!
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Tech
+
+- JavaScript library: [React](https://react.dev/)
+- React framework: [Next.js](https://nextjs.org)
+- UI: [shadcn/ui](https://ui.shadcn.com/)
+- CSS Framework: [tailwindcss](https://tailwindcss.com/)
+- Animation library: [Motion](https://motion.dev/)
+- Language: [JSX](https://www.typescriptlang.org/docs/handbook/jsx.html)
 
 ## My environment
 
@@ -29,57 +36,14 @@ You can find admin's username, admin's password and user's password in [./src/co
 
 ## Screenshots
 
-### **_For both user and admin_**
+### PC
 
-#### Login
+![pc](/screenshots/pc.jpg)
 
-![login](./screenshots/login.png)
+### Mobile
 
-#### Login dialog
+![mobile](/screenshots/mobile.jpg)
 
-![login-dialog](./screenshots/login-dialog.png)
+### Dark mode
 
----
-
-### **_For user_**
-
-#### Dashboard
-
-![user-dashboard](./screenshots/user-dashboard.png)
-
-#### Dashboard solar drawer
-
-![user-dashboard-solar-drawer](./screenshots/user-dashboard-solar-drawer.png)
-
-#### Dashboard battery drawer
-
-![user-dashboard-battery-drawer](./screenshots/user-dashboard-battery-drawer.png)
-
-#### Dashboard grid drawer
-
-![user-dashboard-grid-drawer](./screenshots/user-dashboard-grid-drawer.png)
-
-#### Appliance
-
-![user-appliance](./screenshots/user-appliance.png)
-
-#### Appliance detail
-
-![user-appliance-item](./screenshots/user-appliance-item.png)
-
-#### Grid
-
-![user-grid](./screenshots/user-grid.png)
-
-#### Trading
-
-![user-trading-map](./screenshots/user-trading-map.png)
-![user-trading-trading](./screenshots/user-trading-trading.png)
-
----
-
-### **_For admin_**
-
-#### Dashboard
-
-![admin-dashboard](./screenshots/admin-dashboard.png)
+![mobile-dark](/screenshots/mobile-dark.jpg)

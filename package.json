@@ -34,6 +34,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
+    "image-js": "^0.36.0",
     "lucide-react": "^0.471.2",
     "motion": "^12.4.3",
     "next": "15.1.4",

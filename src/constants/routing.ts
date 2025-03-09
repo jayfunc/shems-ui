@@ -7,7 +7,7 @@ const routing = {
   login: "login",
   admin: "admin",
   settings: "settings",
-  history: "history",
+  summary: "summary",
 };
 
 export default routing;

@@ -76,9 +76,9 @@ function ApplianceGrid({
 }: {
   appliancesByGroup: Partial<Record<number, Appl[]>>;
   groupEnum:
-    | typeof ApplianceType
-    | typeof AppliancePriority
-    | typeof ApplianceStatus;
+  | typeof ApplianceType
+  | typeof AppliancePriority
+  | typeof ApplianceStatus;
 }) {
   const keys = Object.keys(appliancesByGroup);
   const dataSizeLimit = useDataSizeLimit();
@@ -177,10 +177,10 @@ export default function Page() {
           </div>
           <div className="flex-1" />
           <div className="flex flex-row gap-4 items-center">
-            <TabsList>
-              <TabsTrigger value="type">Type</TabsTrigger>
-              <TabsTrigger value="priority">Priority</TabsTrigger>
-              <TabsTrigger value="status">Status</TabsTrigger>
+            <TabsList className="flex flex-col h-full md:flex-row">
+              <TabsTrigger className="w-full text-wrap md:text-nowrap" value="type">Type</TabsTrigger>
+              <TabsTrigger className="w-full text-wrap md:text-nowrap" value="priority">Priority</TabsTrigger>
+              <TabsTrigger className="w-full text-wrap md:text-nowrap" value="status">Status</TabsTrigger>
             </TabsList>
           </div>
         </div>

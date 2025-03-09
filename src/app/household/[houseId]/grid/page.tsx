@@ -23,7 +23,7 @@ function MainGridUsageCardTitle({ timeTicks, mainGridCfg }: { timeTicks: number[
         <HoverCardTrigger asChild>
           <CircleHelp className="text-muted-foreground size-4 hover:cursor-pointer" />
         </HoverCardTrigger>
-        <HoverCardContent align="start" className="w-[30vw] p-0 opacity-85">
+        <HoverCardContent align="start" className="p-0 opacity-85">
           <CardHeader>
             <CardTitle>Electricity time-of-use price periods</CardTitle>
             <CardDescription>Current time-of-use price periods</CardDescription>
@@ -77,22 +77,10 @@ export default function Trading() {
   const { data: mainGridAcct } = useSWR<MainGridAcct>(
     ApiService.buildMainGridAcctUri(houseId),
   );
-  const { data: simCfg } = useSWR(ApiService.buildSimCfgUri());
 
   const offset = 18;
   let timeTicks = [...Array.from(Array(24).keys()).reverse()];
   timeTicks = [...timeTicks.slice(offset), ...timeTicks.slice(0, offset)];
-
-  function mapToMainGridCnsmpData() {
-    return (
-      houseCnsmp?.map((item) => {
-        return {
-          dateTime: item.consumeTime,
-          data: item.mainGridConsumeAmount,
-        };
-      }) ?? []
-    );
-  }
 
   function mapToCmtyGridCnsmpData() {
     return (
@@ -168,7 +156,7 @@ export default function Trading() {
             secondaryType={SecondaryType.Energy}
             key={1}
             data={[mapToCmtyGridCnsmpData()]}
-            labels={["Community grid usage"]}
+            labels={["Usage"]}
             colors={["--power-cnsmp"]}
             chartType={AxisChartType.Line}
           />,

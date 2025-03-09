@@ -41,10 +41,10 @@ export default function CardTabs({
                 </CardDescription>
               </TabsContent>
             ))}
-            <div className="flex-1" />
-            <TabsList className="flex flex-col h-27 md:flex-row md:h-full">
+            <div className="flex-1 mr-2" />
+            <TabsList className="flex flex-col h-full md:flex-row">
               {tabKeys.map((key, index) => (
-                <TabsTrigger key={key} value={key}>
+                <TabsTrigger key={key} value={key} className="w-full text-wrap md:text-nowrap">
                   {tabLabels[index]}
                 </TabsTrigger>
               ))}

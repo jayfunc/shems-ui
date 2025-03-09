@@ -84,16 +84,16 @@ export function DataTable<TData, TValue>({
                 let fromColor = "";
                 switch (status) {
                   case BuySellOrderStatus.Pending:
-                    fromColor = "from-yellow-200";
+                    fromColor = "from-[hsl(var(--order-pending))]";
                     break;
                   case BuySellOrderStatus.Completed:
-                    fromColor = "from-green-200";
+                    fromColor = "from-[hsl(var(--order-completed))]";
                     break;
                   case BuySellOrderStatus.Cancelled:
-                    fromColor = "from-red-200";
+                    fromColor = "from-[hsl(var(--order-cancelled))]";
                     break;
                   case BuySellOrderStatus.PartiallyCompleted:
-                    fromColor = "from-blue-200";
+                    fromColor = "from-[hsl(var(--order-partially-completed))]";
                     break;
                 }
                 cn = `bg-gradient-to-r ${fromColor} to-transparent`;

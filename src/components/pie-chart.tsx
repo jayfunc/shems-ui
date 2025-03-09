@@ -68,7 +68,7 @@ export default function BestPieChart({
   return (
     <ChartContainer
       config={chartConfig}
-      className="mx-auto -mt-8 h-[25vh] [&_.recharts-pie-label-text]:fill-foreground"
+      className="mx-auto -mt-8 h-[25vh] w-full [&_.recharts-pie-label-text]:fill-foreground"
     >
       <PieChart>
         <ChartTooltip

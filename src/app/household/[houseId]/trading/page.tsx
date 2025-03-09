@@ -477,7 +477,7 @@ export default function Trading() {
       />
 
       <Link className="flex justify-end col-span-full" href={`${routing.trading}/${routing.history}`}>
-        <Button>See my trading history</Button>
+        <Button>View my trading history</Button>
       </Link>
 
     </motion.div>

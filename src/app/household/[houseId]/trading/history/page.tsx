@@ -142,7 +142,7 @@ export default function Trading() {
       <ScrollableDrawer
         trigger={
           <div className="flex justify-end col-span-full">
-            <Button><Map />View in map</Button>
+            <Button><Map />View completed orders in map</Button>
           </div>
         }
         title="Energy map"

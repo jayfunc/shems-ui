@@ -6,12 +6,10 @@ import Image from "next/image";
 import { useTheme } from "next-themes";
 import DottedMap from "@/lib/dotted-map-patched/with-countries";
 import { dataSizeLimitForOrders } from "@/extensions/request";
-import { ArrowLeftRight, Fullscreen, House, LoaderCircle, ShoppingBag, Tag, Unlink } from "lucide-react";
+import { ArrowLeftRight, Fullscreen, LoaderCircle, Unlink } from "lucide-react";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
-import formatText from "@/extensions/string";
-import { DataArray, Image as ImageJS } from 'image-js';
-import { Card } from "./ui/card";
+import { Image as ImageJS } from 'image-js';
 
 interface MapProps {
   dots?: Array<{
@@ -122,9 +120,6 @@ const WorldMap = function WorldMap({
 
   }, [boundary])
 
-  const buyLineColor = resolvedTheme === "dark" ? "oklch(0.541 0.281 293.009)" : "oklch(0.432 0.232 292.759)";
-  const sellLineColor = resolvedTheme === "dark" ? "oklch(0.511 0.262 276.966)" : "oklch(0.398 0.195 277.366)";
-
   const offset = 0.005;
 
   const dotColor = resolvedTheme === "dark" ? "white" : "black";
@@ -218,18 +213,26 @@ const WorldMap = function WorldMap({
               Math.pow(startPoint.x - endPoint.x, 2) +
               Math.pow(startPoint.y - endPoint.y, 2),
             );
+            let color = "";
+            if (dot.start.label?.startsWith("Seller: Me")) {
+              color = "hsl(var(--power-sell))";
+            } else if (dot.end.label?.startsWith("Buyer: Me")) {
+              color = "hsl(var(--power-buy))";
+            }
             return (
               <g key={`path-group-${i}`}>
                 <motion.path
                   d={createCurvedPath(startPoint, endPoint)}
-                  stroke={`url(#path-gradient-${dot.start.label === "You" ? "sell" : "buy"})`}
+                  stroke={color}
                   strokeWidth={lineWidth}
                   strokeDasharray={2}
                   initial={{
                     pathLength: 0,
                     pathOffset: 0,
+                    opacity: 0,
                   }}
                   animate={{
+                    opacity: [0, 0.5, 0],
                     pathLength: [0, 0.5, 1],
                     pathOffset: [0, 0.5, 1],
                     keyTimes: [0, 0.5, 1],
@@ -250,21 +253,6 @@ const WorldMap = function WorldMap({
               </g>
             );
           })}
-
-          <defs>
-            <linearGradient id="path-gradient-buy" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor={resolvedTheme === "dark" ? "black" : "white"} stopOpacity="0" />
-              <stop offset="5%" stopColor={buyLineColor} stopOpacity="1" />
-              <stop offset="95%" stopColor={buyLineColor} stopOpacity="1" />
-              <stop offset="100%" stopColor={resolvedTheme === "dark" ? "black" : "white"} stopOpacity="0" />
-            </linearGradient>
-            <linearGradient id="path-gradient-sell" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor={resolvedTheme === "dark" ? "black" : "white"} stopOpacity="0" />
-              <stop offset="5%" stopColor={sellLineColor} stopOpacity="1" />
-              <stop offset="95%" stopColor={sellLineColor} stopOpacity="1" />
-              <stop offset="100%" stopColor={resolvedTheme === "dark" ? "black" : "white"} stopOpacity="0" />
-            </linearGradient>
-          </defs>
 
           {dots.map((dot, i) => (
             <g key={`points-group-${i}`}>
